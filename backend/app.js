@@ -18,7 +18,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocs = require('./swagger_spec');
 
 app.use('/skill-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
+//Swagger UI will be available at http://localhost:5000/skill-bridge-api-spec
 
 // Database Connection (Placeholder for now, or use existing from .env if available)
 const mongoose = require('mongoose');

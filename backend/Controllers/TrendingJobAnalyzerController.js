@@ -3,8 +3,8 @@ const axios = require('axios');
 // Dummy Data for User
 const dummyUser = {
     id: 1,
-    name: "John Doe",
-    age: 25,
+    name: "Aroshana Sandeep",
+    age: 22,
     preferredField: "Software Engineering"
 };
 
