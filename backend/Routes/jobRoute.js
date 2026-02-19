@@ -1,6 +1,7 @@
-const express = require('express');
+import express from "express";
+import { getTrendingJobs } from '../Controllers/TrendingJobAnalyzerController.js';
+
 const router = express.Router();
-const { getTrendingJobs } = require('../Controllers/TrendingJobAnalyzerController');
 
 /**
  * @swagger
@@ -56,4 +57,4 @@ const { getTrendingJobs } = require('../Controllers/TrendingJobAnalyzerControlle
 // Route to get trending jobs based on user preference
 router.get('/trending', getTrendingJobs);
 
-module.exports = router;
+export default router;

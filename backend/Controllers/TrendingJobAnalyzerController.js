@@ -1,4 +1,5 @@
-const axios = require('axios');
+import axios from 'axios';
+import process from 'process';
 
 // Dummy Data for User
 const dummyUser = {
@@ -8,7 +9,7 @@ const dummyUser = {
     preferredField: "Software Engineering"
 };
 
-const getTrendingJobs = async (req, res) => {
+export const getTrendingJobs = async (req, res) => {
     try {
         const user = dummyUser;
         const appId = process.env.ADZUNA_APP_ID;
@@ -64,8 +65,4 @@ const getTrendingJobs = async (req, res) => {
             error: error.message
         });
     }
-};
-
-module.exports = {
-    getTrendingJobs
 };
