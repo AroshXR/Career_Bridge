@@ -13,6 +13,10 @@ const savedResourceSchema = new schema({
     ref: 'skillModels', // Assuming Member 3 uses this name
     required: true
   },
+  skillName: {
+    type: String,
+    required: true
+  },
   videoTitle: {
     type: String,
     required: true
