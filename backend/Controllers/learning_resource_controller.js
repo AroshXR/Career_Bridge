@@ -1,5 +1,6 @@
 import { configDotenv } from "dotenv";
 import { google } from "googleapis";
+import resource_Model from "../Models/learning_resource_Model.js";
 import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
