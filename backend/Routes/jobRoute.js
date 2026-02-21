@@ -1,5 +1,5 @@
 import express from "express";
-import { getTrendingJobs } from '../Controllers/TrendingJobAnalyzerController.js';
+import { getTrendingJobs, saveJob, getSavedJobs } from '../Controllers/TrendingJobAnalyzerController.js';
 
 const router = express.Router();
 
@@ -56,5 +56,11 @@ const router = express.Router();
  */
 // Route to get trending jobs based on user preference
 router.get('/trending', getTrendingJobs);
+
+// Route to save a job
+router.post('/save', saveJob);
+
+// Route to get saved jobs for a specific user
+router.get('/saved/:username', getSavedJobs);
 
 export default router;

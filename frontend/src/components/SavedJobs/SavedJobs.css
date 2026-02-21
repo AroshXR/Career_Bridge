@@ -1,0 +1,160 @@
+.saved-jobs-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background-color: #f3f2ef;
+    min-height: 100vh;
+}
+
+.saved-jobs-header {
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #0a66c2;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.back-btn:hover {
+    text-decoration: underline;
+}
+
+.saved-jobs-header h1 {
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    margin: 0 0 0.2rem;
+}
+
+.saved-jobs-header p {
+    color: #666e75;
+    margin: 0;
+}
+
+.empty-state {
+    text-align: center;
+    background: white;
+    padding: 4rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #666e75;
+    margin-bottom: 2rem;
+}
+
+.browse-btn {
+    background-color: #0a66c2;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.browse-btn:hover {
+    background-color: #004182;
+}
+
+/* Reusing feed-card styles from TrendingJobAnalyzer.css implicitly if we use global or shared styles, 
+   but here we repeat for independence or we could extract them. 
+   Keeping them similar to TrendingJobAnalyzer for consistency. */
+
+.feed-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.company-logo {
+    width: 48px;
+    height: 48px;
+    background: #0a66c2;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.job-info h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #1a1a1a;
+}
+
+.company-name {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+}
+
+.post-date {
+    margin: 0.1rem 0 0;
+    font-size: 0.8rem;
+    color: #666e75;
+}
+
+.card-body {
+    margin-bottom: 1.5rem;
+}
+
+.job-description {
+    font-size: 0.95rem;
+    color: #404040;
+    line-height: 1.5;
+}
+
+.apply-btn {
+    background-color: white;
+    color: #0a66c2;
+    border: 1px solid #0a66c2;
+    padding: 0.5rem 1.2rem;
+    border-radius: 18px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.apply-btn:hover {
+    background: #f0f7fe;
+}
+
+.loader {
+    text-align: center;
+    padding: 5rem;
+    font-size: 1.2rem;
+}
