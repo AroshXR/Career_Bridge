@@ -98,6 +98,9 @@ export const generateRoadMap = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.status === 503 && attempts < maxAttempts) {
+      console.log(`Gemini server busy try again later`);
+    }
     console.error("AI Roadmap Error:", error);
     res.status(500).json({ message: "Could not generate roadmap" });
   }
