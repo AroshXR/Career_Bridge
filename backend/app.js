@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocs from "./swagger_spec.js";
 import jobRoute from "./Routes/jobRoute.js";
+import skillRoute from "./Routes/skillRoute.js";
 
 configDotenv();
 
@@ -18,6 +19,7 @@ app.use(cors());
 
 // Routes
 app.use('/api/v1/jobs', jobRoute);
+app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
 
 // Swagger Configuration
