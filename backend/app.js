@@ -6,7 +6,6 @@ import userRoute from "./Routes/userRoute.js";
 import Progress from "./Models/Progress.js";
 import learning_resource from "./Routes/learning_resourse_Route.js";
 import cors from "cors";
-import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocs from "./swagger_spec.js";
 import jobRoute from "./Routes/jobRoute.js";
