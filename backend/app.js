@@ -3,7 +3,7 @@ import { log } from "node:console"
 import express from "express";
 import { configDotenv } from "dotenv";
 import userRoute from "./Routes/userRoute.js";
-import Progress from "./Models/Progress.js";
+import user_prog from "./Models/Progress.js";
 import learning_resource from "./Routes/learning_resourse_Route.js";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
@@ -17,10 +17,11 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 
 // Routes
-app.use("/api/users", userRoute);
-app.use("/api/progress",Progress);
+app.use("/api/v1/users", userRoute);
+app.use("/api/v1/progress", user_prog);
 app.use('/api/v1/jobs', jobRoute);
 app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
@@ -32,20 +33,20 @@ app.use('/skill-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 // Basic health check
 app.get("/", (req, res) => {
-  res.send("Skill Bridge Backend is running...");
+    res.send("Skill Bridge Backend is running...");
 });
 
 const db_connect = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URL);
-    log(`MongoDB Successfully Connected`);
-    app.listen(PORT, () => {
-      log(`Server Running on PORT ${PORT}`);
-    });
-  } catch (err) {
-    log(`Error Occur while Connecting to MongoDB`);
-    log("Error was: ", err);
-  }
+    try {
+        await mongoose.connect(process.env.MONGO_URL);
+        log(`MongoDB Successfully Connected`);
+        app.listen(PORT, () => {
+            log(`Server Running on PORT ${PORT}`);
+        });
+    } catch (err) {
+        log(`Error Occur while Connecting to MongoDB`);
+        log("Error was: ", err);
+    }
 };
 
 db_connect();
