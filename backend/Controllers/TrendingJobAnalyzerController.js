@@ -7,77 +7,75 @@ const dummyUser = {
     id: 1,
     name: "Aroshana Sandeep",
     age: 22,
-    preferredField: "Software Engineering"
+    preferredSkills: ["React", "Node.js", "MongoDB"],
+    preferredArea: "Software Engineer"
 };
 
 export const getTrendingJobs = async (req, res) => {
     try {
         const user = dummyUser;
-        const appId = process.env.ADZUNA_APP_ID;
-        const appKey = process.env.ADZUNA_APP_KEY;
+        const rapidApiKey = process.env.RAPIDAPI_KEY;
 
-        // Take all parameters dynamically from the frontend query
-        const { country, limit, what } = req.query;
+        // Construct a query based on user's preferred skills and job area (role)
+        const skillsQuery = user.preferredSkills.join(' ');
+        const searchQuery = `Trending ${user.preferredArea} jobs with ${skillsQuery}`;
 
-        // Use frontend values, falling back to user preferences only if not provided
-        const targetCountry = country || 'gb';
-        const resultsPerPage = limit || 10;
-        const searchTerm = what || user.preferredField;
+        console.log(`Fetching trending jobs for role: "${user.preferredArea}" and skills: "${skillsQuery}" using JSearch`);
 
-        // Log for debugging
-        console.log(`Fetching jobs: "${searchTerm}" in ${targetCountry} (Count: ${resultsPerPage})`);
+        const options = {
+            method: 'GET',
+            url: process.env.BASE_URL,
+            params: {
+                query: searchQuery,
+                page: '1',
+                num_pages: '1',
+                date_posted: 'all'
+            },
+            headers: {
+                'x-rapidapi-key': rapidApiKey,
+                'x-rapidapi-host': 'jsearch.p.rapidapi.com'
+            }
+        };
 
-        // Construct the Adzuna API URL using dynamic parameters from frontend
-        const apiUrl = `https://api.adzuna.com/v1/api/jobs/${targetCountry}/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=${resultsPerPage}&what=${encodeURIComponent(searchTerm)}&content-type=application/json`;
+        const response = await axios.request(options);
+        const rawData = response.data;
 
-        // Fetch jobs from Adzuna API
-        const response = await axios.get(apiUrl);
-        const jobs = response.data.results;
+        let jobList = [];
+        if (rawData.data && Array.isArray(rawData.data)) {
+            jobList = rawData.data;
+        }
 
-        // Map the API response to our custom format
-        const formattedJobs = jobs.map(job => ({
-            id: job.id,
-            title: job.title,
-            company: job.company.display_name,
-            field: job.category.label,
-            location: job.location.display_name,
-            description: job.description,
-            url: job.redirect_url,
-            salary_min: job.salary_min,
-            salary_max: job.salary_max,
-            created: job.created
+        const formattedJobs = jobList.map(job => ({
+            id: job.job_id || Math.random().toString(36).substr(2, 9),
+            title: job.job_title || 'Untitled Job',
+            company: job.employer_name || 'Hidden Company',
+            field: job.job_category || user.preferredSkills[0] || 'Jobs',
+            location: job.job_city && job.job_country ? `${job.job_city}, ${job.job_country}` : (job.job_location || user.preferredArea),
+            description: job.job_description || "View full details on the job site.",
+            url: job.job_apply_link || job.job_google_link,
+            salary_min: job.job_min_salary || null,
+            salary_max: job.job_max_salary || null,
+            created: job.job_posted_at_datetime_utc || new Date().toISOString()
         }));
 
         res.status(200).json({
             success: true,
             user: {
                 name: user.name,
-                preferredField: user.preferredField,
-                currentCountry: country
+                preferredSkills: user.preferredSkills,
+                preferredArea: user.preferredArea,
+                provider: "JSearch"
             },
             count: formattedJobs.length,
             jobs: formattedJobs
         });
 
     } catch (error) {
-        console.error("Error fetching jobs:", error.message);
-        // Handle specific API errors if needed
-        if (error.response) {
-            console.error("API Response Data:", error.response.data);
-            console.error("API Response Status:", error.response.status);
-
-            // If Adzuna returns 404 for a country, handle it gracefully
-            if (error.response.status === 404) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Country not supported by the job provider."
-                });
-            }
-        }
+        console.error("Error fetching jobs from JSearch:", error.message);
 
         res.status(500).json({
             success: false,
-            message: "Server Error",
+            message: "Server Error while fetching trending jobs.",
             error: error.message
         });
     }

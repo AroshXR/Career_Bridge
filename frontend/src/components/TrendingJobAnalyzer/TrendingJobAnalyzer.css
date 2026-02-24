@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
 .analyzer-container {
-    max-width: 900px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 3rem 1.5rem;
     background-color: #f8fafc;
@@ -91,9 +91,9 @@
 }
 
 .job-feed {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 2rem;
 }
 
 .feed-card {
@@ -105,6 +105,9 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     cursor: default;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .feed-card:hover {
@@ -158,6 +161,8 @@
 
 .card-body {
     margin-bottom: 2rem;
+    flex: 1;
+    /* Pushes actions to the bottom */
 }
 
 .job-description {
@@ -193,6 +198,8 @@
     gap: 1rem;
     padding-top: 1.5rem;
     border-top: 1px solid #f1f5f9;
+    margin-top: auto;
+    /* Ensures actions are always at the bottom */
 }
 
 .apply-btn {

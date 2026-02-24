@@ -13,6 +13,7 @@ const TrendingJobAnalyzer = () => {
 
     // Supported countries for Adzuna
     const countries = [
+        { code: 'lk', name: 'Sri Lanka' },
         { code: 'gb', name: 'United Kingdom' },
         { code: 'us', name: 'United States' },
         { code: 'in', name: 'India' },
@@ -45,7 +46,7 @@ const TrendingJobAnalyzer = () => {
             setLoading(false);
         } catch (err) {
             console.error("Error fetching jobs:", err);
-            setError(err.response?.data?.message || "Failed to load trending jobs. Please ensure the backend server is running.");
+            setError(err.response?.data?.message || "Failed to load trending jobs. Please try again later.");
             setLoading(false);
         }
     };
@@ -143,7 +144,9 @@ const TrendingJobAnalyzer = () => {
                         </div>
                         <div className="stat-item">
                             <span className="stat-label">Currency</span>
-                            <span className="stat-value">{country === 'us' ? 'USD' : country === 'in' ? 'INR' : 'GBP'}</span>
+                            <span className="stat-value">
+                                {country === 'us' ? 'USD' : country === 'in' ? 'INR' : country === 'lk' ? 'LKR' : 'GBP'}
+                            </span>
                         </div>
                     </div>
 
@@ -174,9 +177,9 @@ const TrendingJobAnalyzer = () => {
                                         <span className="tag">{job.field}</span>
                                         {job.salary_min && (
                                             <span className="tag salary">
-                                                {country === 'in' ? '₹' : country === 'us' ? '$' : '£'}
+                                                {country === 'in' ? '₹' : country === 'us' ? '$' : country === 'lk' ? 'Rs.' : '£'}
                                                 {Math.round(job.salary_min).toLocaleString()} -
-                                                {country === 'in' ? '₹' : country === 'us' ? '$' : '£'}
+                                                {country === 'in' ? '₹' : country === 'us' ? '$' : country === 'lk' ? 'Rs.' : '£'}
                                                 {Math.round(job.salary_max).toLocaleString()}
                                             </span>
                                         )}
