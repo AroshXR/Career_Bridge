@@ -6,6 +6,7 @@ import Register from './components/Register/Register';
 import Home from './components/Home/Home';
 import TrendingJobAnalyzer from './components/TrendingJobAnalyzer/TrendingJobAnalyzer';
 import SavedJobs from './components/SavedJobs/SavedJobs';
+import UserDashboard from './components/Dashboards/dashboardUser';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/profile" element={<UserDashboard/>}/>
           <Route path="/job-analyzer" element={<TrendingJobAnalyzer />} />
           <Route path="/saved-jobs" element={<SavedJobs />} />
         </Routes>
