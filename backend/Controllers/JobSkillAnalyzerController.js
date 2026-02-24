@@ -145,46 +145,62 @@ const MOCK_JOBS = [
   },
 ];
 
+
+
 // --- CREATE: Analyze and Save ---
 export const analyzeAndSaveSkills = async (req, res) => {
-    const { jobId } = req.params;
-    const { userId } = req.body; // Expecting userId from frontend
+    ////Extracts the JobId from the URL and userId from the body of the request.
+    const { jobId } = req.params; 
+    const { userId } = req.body; 
 
     try {
+        //Checks the database (SkillModel) to see if this user has already analyzed this job. 
         let existingSkillDoc = await SkillModel.findOne({ jobId, userId });
         if (existingSkillDoc) return res.status(200).json(existingSkillDoc);
 
+        //Pulls a list of jobs from the mock data (Later change to fetch from DB)
         const jobsArray = MOCK_JOBS[0].jobs;
+        //Searches that list to find the job that matches the provided jobId.
         const selectedJob = jobsArray.find((j) => j.id === jobId);
         if (!selectedJob) return res.status(404).json({ message: "Job not found" });
 
+
+        //Calls the fetchSkillsFromESCO helper function to fetch essential and optional skills
         const { essential, optional } = await fetchSkillsFromEsco(selectedJob.title);
 
+        //Defines a helper function that processes a list of skills, uses Promises.all for asynchronous enrichment
         const enrichData = async (list) => await Promise.all(
             list.map(async (skill) => ({ 
                 ...skill, 
                 ...(await fetchSkillResourceDetails(skill.uri)),
-                userNote: "" 
+                userNote: "",
+                status: "pending" 
             }))
         );
 
+        //Combines essential and optional skills into one array and saves it in the database.
         const newSkillDoc = await SkillModel.create({
             userId,
             jobId: selectedJob.id,
             jobTitle: selectedJob.title,
             skills: [...(await enrichData(essential)), ...(await enrichData(optional))],
         });
-
+       
         res.status(201).json(newSkillDoc);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+
+
 // --- READ: Get User Dashboard ---
 export const getMySavedSkills = async (req, res) => {
+    //Extracts userId from the URL parameters
     const { userId } = req.params;
+
     try {
+        //Queries the DB for all skill documents associated with that userId
         const mySkills = await SkillModel.find({ userId }).sort({ updatedAt: -1 });
         res.status(200).json(mySkills);
     } catch (error) {
@@ -192,49 +208,54 @@ export const getMySavedSkills = async (req, res) => {
     }
 };
 
-// --- UPDATE: Edit Skill/Note ---
+
+
+// --- UPDATE: Edit Skill/Note/Status ---
 export const updateSkillDetails = async (req, res) => {
+    //Extracts jobId and skillId from the URL parameters
     const { jobId, skillId } = req.params;
-    const { userNote, importance, userId } = req.body;
+    //Extracts more data from the body of the request
+    const { userNote, importance, status, userId } = req.body;
 
-    if (!userId) {
-        return res.status(400).json({ message: "userId is required" });
-    }
+    //checks if userId is provided in the request body
+    if (!userId) return res.status(400).json({ message: "userId is required" });
 
+    //Finds the specific skill within the skills array of the relevant document and updates it.
     try {
         const updatedDoc = await SkillModel.findOneAndUpdate(
             { jobId, userId, "skills._id": skillId },
             {
                 $set: {
                     "skills.$.userNote": userNote,
-                    "skills.$.importance": importance
+                    "skills.$.importance": importance,
+                    "skills.$.status": status // Allows marking as 'completed' or 'pending'
                 }
             },
             { new: true }
         );
 
-        if (!updatedDoc) {
-            return res.status(404).json({
-                message: "Skill not found for this user and job"
-            });
-        }
+        if (!updatedDoc) return res.status(404).json({ message: "Skill not found" });
 
         res.status(200).json(updatedDoc);
-
     } catch (error) {
         res.status(500).json({ error: "Update failed", details: error.message });
     }
 };
 
-//Remove One Skill from List
+
+
+
+// --- DELETE: Remove One Skill ---
 export const removeSkillFromList = async (req, res) => {
+    //Extracts jobId and skillId from the URL parameters
     const { jobId, skillId } = req.params;
+    //Extracts userId from the query parameters
     const userId = req.query.userId;
 
-    if (!userId) {
-        return res.status(400).json({ message: "userId is required" });
-    }
+    //checks if userId is provided in the query parameers
+    if (!userId) return res.status(400).json({ message: "userId is required" });
 
+    //Finds the specific skill within the skills array and removes it 
     try {
         const updatedDoc = await SkillModel.findOneAndUpdate(
             { jobId, userId },
@@ -242,92 +263,73 @@ export const removeSkillFromList = async (req, res) => {
             { new: true }
         );
 
-        if (!updatedDoc) {
-            return res.status(404).json({
-                message: "Skill not found or unauthorized"
-            });
-        }
-
+        //If the skill or document isn't found, it returns a 404 error. Otherwise, it returns the updated document with the skill removed.
+        if (!updatedDoc) return res.status(404).json({ message: "Skill not found" });
         res.status(200).json(updatedDoc);
-
     } catch (error) {
-        res.status(500).json({ error: "Delete skill failed", details: error.message });
+        res.status(500).json({ error: "Delete skill failed" });
     }
 };
-// --- DELETE: Delete Full Analysis ---
+
+
+
+
+// --- DELETE: Full Analysis ---
 export const deleteFullAnalysis = async (req, res) => {
     const { jobId } = req.params;
     const userId = req.query.userId;
 
-    if (!userId) {
-        return res.status(400).json({ message: "userId is required" });
-    }
+    if (!userId) return res.status(400).json({ message: "userId is required" });
 
     try {
         const deletedDoc = await SkillModel.findOneAndDelete({ jobId, userId });
-
-        if (!deletedDoc) {
-            return res.status(404).json({
-                message: "Analysis not found or unauthorized"
-            });
-        }
-
+        if (!deletedDoc) return res.status(404).json({ message: "Analysis not found" });
         res.status(200).json({ message: "Analysis removed successfully" });
-
     } catch (error) {
-        res.status(500).json({ error: "Delete analysis failed", details: error.message });
+        res.status(500).json({ error: "Delete analysis failed" });
     }
-};/**
- * Helper: Fetches and categorizes Essential vs Optional
- */
-const fetchSkillsFromEsco = async (jobTitle) => {
-  const searchUrl = `https://ec.europa.eu/esco/api/search?text=${encodeURIComponent(jobTitle)}&type=occupation&language=en`;
-  const searchRes = await axios.get(searchUrl);
-  const occupation = searchRes.data?._embedded?.results?.[0];
-
-  if (!occupation) return { essential: [], optional: [] };
-
-  const profileRes = await axios.get(occupation._links.self.href);
-  const links = profileRes.data._links;
-
-  const process = (list, importance) =>
-    list?.map((s) => ({
-      name: s.title,
-      uri: s.uri,
-      importance: importance,
-    })) || [];
-
-  const allEssential = [
-    ...process(links.hasEssentialSkill, "Essential"),
-    ...process(links.hasEssentialKnowledge, "Essential"),
-  ];
-
-  const allOptional = [
-    ...process(links.hasOptionalSkill, "Optional"),
-    ...process(links.hasOptionalKnowledge, "Optional"),
-  ];
-
-  return {
-    essential: allEssential.slice(0, 10),
-    optional: allOptional.slice(0, 10),
-  };
 };
 
-/**
- * Helper: Fetches Description, AltLabels, and ReuseLevel
- */
-const fetchSkillResourceDetails = async (uri) => {
-  try {
-    const resourceUrl = `https://ec.europa.eu/esco/api/resource/skill?uri=${encodeURIComponent(uri)}&language=en`;
-    const res = await axios.get(resourceUrl);
-    const data = res.data;
+
+
+
+// --- HELPERS ---
+
+const fetchSkillsFromEsco = async (jobTitle) => {
+    const searchUrl = `https://ec.europa.eu/esco/api/search?text=${encodeURIComponent(jobTitle)}&type=occupation&language=en`;
+    const searchRes = await axios.get(searchUrl);
+    const occupation = searchRes.data?._embedded?.results?.[0];
+
+    if (!occupation) return { essential: [], optional: [] };
+
+    const profileRes = await axios.get(occupation._links.self.href);
+    const links = profileRes.data._links;
+
+    const process = (list, importance) =>
+        list?.map((s) => ({
+            name: s.title,
+            uri: s.uri,
+            importance: importance,
+        })) || [];
 
     return {
-      description: data.description?.en?.literal || "No description available.",
-      altLabels: data.alternativeLabel?.en || [],
-      reuseLevel: data.reuseLevel || "sector-specific"
+        essential: process(links.hasEssentialSkill, "Essential").slice(0, 10),
+        optional: process(links.hasOptionalSkill, "Optional").slice(0, 10),
     };
-  } catch (error) {
-    return { description: "Details unavailable.", altLabels: [], reuseLevel: "unknown" };
-  }
+};
+
+
+
+const fetchSkillResourceDetails = async (uri) => {
+    try {
+        const resourceUrl = `https://ec.europa.eu/esco/api/resource/skill?uri=${encodeURIComponent(uri)}&language=en`;
+        const res = await axios.get(resourceUrl);
+        return {
+            description: res.data.description?.en?.literal || "No description available.",
+            altLabels: res.data.alternativeLabel?.en || [],
+            reuseLevel: res.data.reuseLevel || "sector-specific"
+        };
+    } catch (error) {
+        return { description: "Details unavailable.", altLabels: [], reuseLevel: "unknown" };
+    }
 };

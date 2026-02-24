@@ -117,6 +117,9 @@ router.patch("/:jobId/:skillId", updateSkillDetails);
  *       - in: path
  *         name: skillId
  *         required: true
+ *       - in: query
+ *         name: userId
+ *         required: true
  *         schema:
  *           type: string
  *     responses:
@@ -137,6 +140,9 @@ router.delete("/:jobId/:skillId", removeSkillFromList);
  *     parameters:
  *       - in: path
  *         name: jobId
+ *         required: true
+ *       - in: query
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string
