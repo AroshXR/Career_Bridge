@@ -3,6 +3,7 @@ import { log } from "node:console"
 import express from "express";
 import { configDotenv } from "dotenv";
 import userRoute from "./Routes/userRoute.js";
+import Progress from "./Models/Progress.js";
 import learning_resource from "./Routes/learning_resourse_Route.js";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -20,9 +21,11 @@ app.use(express.json());
 
 // Routes
 app.use("/api/users", userRoute);
+app.use("/api/progress",Progress);
 app.use('/api/v1/jobs', jobRoute);
 app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
+
 
 // Swagger Configuration
 app.use('/skill-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
