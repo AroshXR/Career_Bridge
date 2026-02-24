@@ -7,6 +7,7 @@ import Home from '../src/Components/Home/Home';
 import TrendingJobAnalyzer from '../src/Components/TrendingJobAnalyzer/TrendingJobAnalyzer';
 import SavedJobs from '../src/Components/SavedJobs/SavedJobs';
 import LearningResources from '../src/Components/Learning_Resources/learning_resources';
+import UserDashboard from '../src/components/Dashboards/dashboardUser';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/profile" element={<UserDashboard/>}/>
           <Route path="/job-analyzer" element={<TrendingJobAnalyzer />} />
           <Route path="/saved-jobs" element={<SavedJobs />} />
           <Route path="/learning-resources" element={<LearningResources />} />
