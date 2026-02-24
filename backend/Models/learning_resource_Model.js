@@ -13,37 +13,41 @@ const savedResourceSchema = new schema({
     ref: 'skillModels', // Assuming Member 3 uses this name
     required: true
   },
+  skillName: {
+    type: String,
+    required: true
+  },
   videoTitle: {
-    type: String, // Title fetched from YouTube API
+    type: String,
     required: true
   },
   videoUrl: {
-    type: String, // Link fetched from YouTube API
+    type: String,
     required: true
   },
   thumbnail: {
-    type: String, // Image URL from YouTube
+    type: String,
     required: false
   },
   userEmail: {
-    type: String, // Email address for the alert
+    type: String,
     required: true
   },
   scheduledTime: {
-    type: Date, // When the user wants to be notified
+    type: Date,
     required: true
   },
   priority: {
-    type: String, // Level of importance
+    type: String,
     enum: ['Low', 'Medium', 'High'],
     default: 'Medium'
   },
   notes: {
-    type: String, // Custom notes from the user
+    type: String,
     required: false
   },
   isCompleted: {
-    type: Boolean, // To track progress
+    type: Boolean,
     default: false
   }
 }, { timestamps: true });
