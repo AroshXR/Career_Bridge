@@ -1,34 +1,52 @@
 import mongoose from "mongoose";
 import { log } from "node:console"
 import express from "express";
-import { configDotenv } from "dotenv";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
+import path from "path";
+import { fileURLToPath } from "url"; // ADD THIS IMPORT
+
 import userRoute from "./Routes/userRoute.js";
 import Progress from "./Models/Progress.js";
 import learning_resource from "./Routes/learning_resourse_Route.js";
-import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocs from "./swagger_spec.js";
 import jobRoute from "./Routes/jobRoute.js";
 import skillRoute from "./Routes/skillRoute.js";
+import authRoutes from "./Routes/authRoutes.js";
+import uploadRoutes from "./Routes/uploadRoutes.js";
 
-configDotenv();
-const PORT = process.env.PORT || 4000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PORT = process.env.PORT || 5000;
 const app = express();
 
-// Middleware
-app.use(express.json());
+//  middleware - bawa chnaged
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+// Serve static files from uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/users", userRoute);
-app.use("/api/progress",Progress);
+app.use("/api/progress", Progress);
 app.use('/api/v1/jobs', jobRoute);
 app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
-
+app.use("/api/auth", authRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Swagger Configuration
 app.use('/skill-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-// Swagger UI will be available at http://localhost:5000/skill-bridge-api-spec
 
 // Basic health check
 app.get("/", (req, res) => {
