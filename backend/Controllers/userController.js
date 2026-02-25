@@ -1,6 +1,6 @@
 import User from "../Models/User.js";
 
-// Create New User
+// Create New User - NO CHANGE NEEDED
 export const createUser = async (req, res) => {
   try {
     const newUser = new User(req.body);
@@ -14,9 +14,11 @@ export const createUser = async (req, res) => {
   }
 };
 
-// Get All Users
+// Get All Users - ADD THIS CHECK
 export const getUsers = async (req, res) => {
   try {
+    // Optional: Only allow admins to get all users
+    // For now, let's just return all users
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
@@ -24,9 +26,14 @@ export const getUsers = async (req, res) => {
   }
 };
 
-// Get Single User by Mongo ID
+// Get Single User by Mongo ID - ADD THIS VERIFICATION
 export const getUserById = async (req, res) => {
   try {
+    // IMPORTANT: Check if user is requesting their own data
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({ message: 'You can only access your own profile' });
+    }
+    
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
@@ -35,14 +42,26 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// Update User
+// Update User - ADD THIS VERIFICATION
 export const updateUser = async (req, res) => {
   try {
+    // IMPORTANT: Check if user is updating their own data
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({ message: 'You can only update your own profile' });
+    }
+    
+    // Remove fields that shouldn't be updated
+    const updateData = { ...req.body };
+    delete updateData._id;
+    delete updateData.userId;
+    delete updateData.password;
+    
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true }
+      updateData,
+      { new: true, runValidators: true }
     );
+    
     if (!updatedUser) return res.status(404).json({ message: "User not found" });
     res.status(200).json(updatedUser);
   } catch (error) {
@@ -50,9 +69,14 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Delete User
+// Delete User - ADD THIS VERIFICATION
 export const deleteUser = async (req, res) => {
   try {
+    // IMPORTANT: Check if user is deleting their own data
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({ message: 'You can only delete your own profile' });
+    }
+    
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) return res.status(404).json({ message: "User not found" });
     res.status(200).json({ message: "User deleted successfully" });
