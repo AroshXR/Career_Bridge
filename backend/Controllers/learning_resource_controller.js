@@ -1,5 +1,6 @@
 import { configDotenv } from "dotenv";
 import { google } from "googleapis";
+import resource_Model from "../Models/learning_resource_Model.js";
 import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -21,7 +22,7 @@ export const skillSearch = async (req, res) => {
       key: process.env.YOUTUBE_DATA_API_KEY,
       part: 'snippet',
       q: `${skill} complete course tutorial`, // Refines search for learning content
-      maxResults: 10,
+      maxResults: 20,
       type: 'video',
       order: 'relevance',
       videoDuration: 'long',
@@ -46,29 +47,35 @@ export const skillSearch = async (req, res) => {
 
 
 export const findProfessionalCourses = async (req, res) => {
-
   try {
-
     const { skill } = req.params;
 
-    const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(skill)}+course&fields=id,title,thumbnail_480_url,url,duration&limit=10`;
+    // Added 'longer_than=60' to ensure videos are 1 hour or more
+    const url = `https://api.dailymotion.com/videos?search=${encodeURIComponent(skill)}+course&fields=id,title,thumbnail_480_url,url,duration&longer_than=60&limit=10`;
 
     const response = await axios.get(url);
 
-    const courses = response.data.list.map(video => ({
-      title: video.title,
-      thumbnail: video.thumbnail_480_url,
-      videoUrl: video.url,
-      duration: Math.floor(video.duration / 60) + " mins", // Convert seconds to minutes
-      platform: 'Dailymotion',
-      price: 'Free'
-    }));
+    const courses = response.data.list.map(video => {
+      // Logic to show duration in "Xh Ym" format (e.g., 1h 25m)
+      const totalMinutes = Math.floor(video.duration / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+      const durationText = hours > 0 ? `${hours}h ${mins}m` : `${mins} mins`;
+
+      return {
+        title: video.title,
+        thumbnail: video.thumbnail_480_url,
+        videoUrl: video.url,
+        duration: durationText,
+        platform: 'Dailymotion'
+      };
+    });
 
     res.status(200).json(courses);
 
   } catch (error) {
-    console.log(`Error Occur in Paid & Unpaid Courses fetch section...Error is${error}`);
-    res.status(500).json({ message: "Error Occur in Paid & Unpaid Courses fetch section" });
+    console.log(`Error in Courses fetch: ${error.message}`);
+    res.status(500).json({ message: "Error Occur in Professional Courses fetch section" });
   }
 };
 
@@ -105,4 +112,26 @@ export const generateRoadMap = async (req, res) => {
     res.status(500).json({ message: "Could not generate roadmap" });
   }
 };
+
+export const getAllSavedCoursesById = async (req, res) => {
+
+  const { userId } = req.params;
+
+  try {
+
+    const findCourses = await resource_Model.find({ userId }).sort({ createdAt: -1 });
+
+    if (!findCourses || findCourses.length === 0) {
+      return res.status(404).json({ message: "No saved courses found for this user." });
+    }
+
+    return res.status(200).json(findCourses);
+
+  } catch (error) {
+
+    console.error("Error fetching saved resources:", error.message);
+    res.status(500).json({ message: "Server error while fetching resources" });
+
+  }
+}
 
