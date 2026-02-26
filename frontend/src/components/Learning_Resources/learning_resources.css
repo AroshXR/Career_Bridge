@@ -528,3 +528,68 @@
         opacity: 1;
     }
 }
+
+.header-top_learn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.manage-toggle_btn {
+    background: white;
+    color: #4f7df3;
+    border: 2px solid #4f7df3;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.manage-toggle_btn:hover {
+    background: #4f7df3;
+    color: white;
+}
+
+.card-actions_learn {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.view-btn_learn,
+.save-btn_learn_inline {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-btn_learn {
+    background: #4f7df3;
+    color: white;
+    border: none;
+}
+
+.save-btn_learn_inline {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.save-btn_learn_inline:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+@media (max-width: 768px) {
+    .header-top_learn {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}

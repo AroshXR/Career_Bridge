@@ -1,0 +1,238 @@
+.manage-container_learn_resman {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn_learn_resman 0.5s ease-out;
+}
+
+@keyframes fadeIn_learn_resman {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.manage-header_learn_resman {
+    margin-bottom: 40px;
+}
+
+.back-btn_learn_resman {
+    background: transparent;
+    border: none;
+    color: #4f7df3;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s;
+}
+
+.back-btn_learn_resman:hover {
+    transform: translateX(-5px);
+}
+
+.manage-header_learn_resman h1 {
+    font-size: 2.5rem;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.manage-header_learn_resman p {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+.manage-grid_learn_resman {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.manage-card_learn_resman {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.manage-card_learn_resman:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.manage-card-image_learn_resman {
+    position: relative;
+    height: 180px;
+}
+
+.manage-card-image_learn_resman img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.priority-badge_learn_resman {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+}
+
+.priority-badge_learn_resman[data-priority="High"] {
+    background: #ef4444;
+}
+
+.priority-badge_learn_resman[data-priority="Medium"] {
+    background: #f59e0b;
+}
+
+.priority-badge_learn_resman[data-priority="Low"] {
+    background: #10b981;
+}
+
+.manage-card-info_learn_resman {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.skill-tag_manage_resman {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    width: fit-content;
+}
+
+.manage-card-info_learn_resman h3 {
+    font-size: 1.15rem;
+    color: #1e293b;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-clamp: 2;
+}
+
+.manage-meta_learn_resman {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.meta-item_learn_resman {
+    font-size: 0.85rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.manage-notes_learn_resman {
+    font-size: 0.9rem;
+    color: #475569;
+    font-style: italic;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 3px solid #cbd5e1;
+}
+
+.manage-actions_learn_resman {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.open-video_btn_resman,
+.delete-resource_btn_resman {
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.open-video_btn_resman {
+    background: #4f7df3;
+    color: white;
+}
+
+.open-video_btn_resman:hover {
+    background: #3b66d6;
+}
+
+.delete-resource_btn_resman {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.delete-resource_btn_resman:hover {
+    background: #fecaca;
+}
+
+.no-resources_learn_resman {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.empty-icon_learn_resman {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.no-resources_learn_resman h3 {
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.no-resources_learn_resman p {
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+.search-now_btn_resman {
+    padding: 12px 24px;
+    background: #4f7df3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.manage-loading_learn_resman,
+.manage-error_learn_resman {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.1rem;
+}
+
+.manage-error_learn_resman {
+    color: #dc2626;
+}
