@@ -11,7 +11,10 @@ const TrendingJobAnalyzer = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentCategory, setCurrentCategory] = useState("Information Technology");
-    const [user, setUser] = useState({ name: 'Professional' });
+    const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem('user');
+        return savedUser ? JSON.parse(savedUser) : { name: 'Professional' };
+    });
 
     const [currentPage, setCurrentPage] = useState(1);
     const [loadingMessage, setLoadingMessage] = useState("Aggregating global market signals...");
@@ -75,7 +78,15 @@ const TrendingJobAnalyzer = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getTrendingJobs?category=${encodeURIComponent(currentCategory)}`);
+            
+            const token = localStorage.getItem('token');
+            const response = await axios.get(
+                `http://localhost:5000/api/v1/trendingJobAnalyzer/getTrendingJobs?category=${encodeURIComponent(currentCategory)}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
             if (response.data.status === "00") {
                 setRoles(response.data.data.roles || []);
                 setStats(response.data.data.stats || { totalMarketSignals: 0, analyzedRoles: 0 });
@@ -108,15 +119,17 @@ const TrendingJobAnalyzer = () => {
 
     const handleSaveRole = async (role) => {
         try {
-            const username = "aroshana_sandeep"; // Simplified dummy user
+            const token = localStorage.getItem('token');
             await axios.post('http://localhost:5000/api/v1/trendingJobAnalyzer/saveJob', {
                 jobId: `trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`,
                 title: role.title,
                 description: role.description,
                 company: "Market Opportunity",
                 location: "Global / Remote",
-                url: "#",
-                username: username
+                url: "#"
+                // username removed - backend handles it via token
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
             });
             alert(`${role.title} saved to your career interests!`);
         } catch (err) {

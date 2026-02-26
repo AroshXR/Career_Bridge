@@ -10,7 +10,7 @@ const SavedJobs = () => {
     const [showUpdateSuccess, setShowUpdateSuccess] = useState(null);
     const navigate = useNavigate();
 
-    const username = "aroshana_sandeep";
+    // No hardcoded username - fetched via token on backend
 
     useEffect(() => {
         fetchSavedJobs();
@@ -19,8 +19,10 @@ const SavedJobs = () => {
     const fetchSavedJobs = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs/${username}`);
-            // Standardized response uses status "00" and nested data field
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (response.data.status === "00") {
                 setSavedJobs(response.data.data.jobs || []);
             }
@@ -35,7 +37,10 @@ const SavedJobs = () => {
     const handleDeleteJob = async (id) => {
         if (!window.confirm("Are you sure you want to remove this job?")) return;
         try {
-            const response = await axios.delete(`http://localhost:5000/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`);
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(`http://localhost:5000/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (response.data.status === "00") {
                 setSavedJobs(savedJobs.filter(job => job._id !== id));
             }
@@ -48,7 +53,10 @@ const SavedJobs = () => {
     const handleUpdateJob = async (id, updates) => {
         try {
             // Backend now uses PUT for update as requested by user
-            const response = await axios.put(`http://localhost:5000/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates);
+            const token = localStorage.getItem('token');
+            const response = await axios.put(`http://localhost:5000/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             if (response.data.status === "00") {
                 setSavedJobs(savedJobs.map(job => job._id === id ? { ...job, ...updates } : job));
                 setShowUpdateSuccess(id);

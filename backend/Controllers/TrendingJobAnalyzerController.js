@@ -19,9 +19,26 @@ const trendingCache = {
 export const getTrendingJobs = async (req, res) => {
     try {
         const queryCategory = req.query.category;
-        const category = (queryCategory && queryCategory.trim()) ? queryCategory : 'Information Technology';
+        let category = (queryCategory && queryCategory.trim()) ? queryCategory : null;
 
-        console.log(`[TrendingController] Request for category: "${category}"`);
+        // If no category provided, fetch from user profile
+        if (!category && req.user) {
+            try {
+                const user = await User.findById(req.user.id);
+                if (user && user.industrialPreference && user.industrialPreference.length > 0) {
+                    category = user.industrialPreference[0];
+                    console.log(`[TrendingController] Using user preference category: "${category}"`);
+                }
+            } catch (userErr) {
+                console.warn("[TrendingController] Failed to fetch user preferences:", userErr.message);
+            }
+        }
+
+        // Fallback to default
+        if (!category) {
+            category = 'Information Technology';
+            console.log(`[TrendingController] Using fallback category: "${category}"`);
+        }
 
         const rapidApiKey = process.env.RAPIDAPI_KEY;
         const adzunaAppId = process.env.ADZUNA_APP_ID;
@@ -126,7 +143,7 @@ export const getTrendingJobs = async (req, res) => {
             Return ONLY a valid JSON array of objects: [{ "title": string, "description": string, "key_skills": [string], "demand_level": "High"|"Moderate", "average_salary": string, "growth_factor": string }]
         `;
 
-        const generateWithRetry = async (prompt, maxRetries = 3) => {
+        const generateWithRetry = async (prompt, maxRetries = 4) => {
             let lastError;
             for (let i = 0; i < maxRetries; i++) {
                 try {
@@ -135,10 +152,10 @@ export const getTrendingJobs = async (req, res) => {
                     return await result.response.text();
                 } catch (err) {
                     lastError = err;
-                    // Check for 429 Too Many Requests
-                    if (err.status === 429 || err.message?.includes('429') || err.message?.includes('Quota exceeded')) {
+                    // Check for 429 (Rate Limit) or 503 (High Demand/Overloaded)
+                    if (err.status === 429 || err.status === 503 || err.message?.includes('429') || err.message?.includes('503') || err.message?.includes('Quota exceeded')) {
                         const waitTime = Math.pow(2, i) * 2000 + Math.random() * 1000;
-                        console.warn(`[TrendingController] Rate limited (429). Retrying in ${Math.round(waitTime / 1000)}s...`);
+                        console.warn(`[TrendingController] API Busy (${err.status || 'Error'}). Retrying in ${Math.round(waitTime / 1000)}s...`);
                         await new Promise(resolve => setTimeout(resolve, waitTime));
                         continue;
                     }
@@ -188,14 +205,24 @@ export const getTrendingJobs = async (req, res) => {
 
 export const saveJob = async (req, res) => {
     try {
-        const { jobId, title, description, username, company, location } = req.body;
-        if (!jobId || !username) {
+        const { jobId, title, description, company, location } = req.body;
+        const userEmail = req.user.email; // Use email from token as username identifier
+
+        if (!jobId) {
             return res.status(400).json(ResponseGenerator.sendError(
                 "4001",
-                "jobId and username are required"
+                "jobId is required"
             ));
         }
-        const newSavedJob = new SavedJob({ jobId, title, description, username, company, location });
+
+        const newSavedJob = new SavedJob({ 
+            jobId, 
+            title, 
+            description, 
+            username: userEmail, 
+            company, 
+            location 
+        });
         await newSavedJob.save();
         res.status(201).json(ResponseGenerator.sendSuccess(
             { savedJob: newSavedJob, message: "Job saved successfully" }
@@ -211,12 +238,8 @@ export const saveJob = async (req, res) => {
 
 export const getSavedJobs = async (req, res) => {
     try {
-        const { username } = req.params;
-        if (!username) return res.status(400).json(ResponseGenerator.sendError(
-            "4003",
-            "Username is required"
-        ));
-        const savedJobs = await SavedJob.find({ username }).sort({ savedAt: -1 });
+        const userEmail = req.user.email;
+        const savedJobs = await SavedJob.find({ username: userEmail }).sort({ savedAt: -1 });
         res.status(200).json(ResponseGenerator.sendSuccess(
             { jobs: savedJobs, count: savedJobs.length }
         ));
@@ -230,8 +253,8 @@ export const updateSavedJob = async (req, res) => {
         const { id } = req.params;
         const { notes } = req.body;
 
-        const updatedJob = await SavedJob.findByIdAndUpdate(
-            id,
+        const updatedJob = await SavedJob.findOneAndUpdate(
+            { _id: id, username: req.user.email },
             { $set: { notes } },
             { new: true, runValidators: true }
         );
@@ -239,7 +262,7 @@ export const updateSavedJob = async (req, res) => {
         if (!updatedJob) {
             return res.status(404).json(ResponseGenerator.sendError(
                 "4041",
-                "Saved job not found"
+                "Saved job not found or unauthorized"
             ));
         }
 
@@ -254,12 +277,12 @@ export const updateSavedJob = async (req, res) => {
 export const deleteSavedJob = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedJob = await SavedJob.findByIdAndDelete(id);
+        const deletedJob = await SavedJob.findOneAndDelete({ _id: id, username: req.user.email });
 
         if (!deletedJob) {
             return res.status(404).json(ResponseGenerator.sendError(
                 "4041",
-                "Saved job not found"
+                "Saved job not found or unauthorized"
             ));
         }
 
