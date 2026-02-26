@@ -5,12 +5,12 @@ const schema = mongoose.Schema;
 const savedResourceSchema = new schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId, // Connects to Member 1's User ID
-    ref: 'userModels', // Points to the model name you provided
+    ref: 'users', // Points to the model name you provided
     required: true
   },
   skillId: {
     type: mongoose.Schema.Types.ObjectId, // Connects to Member 3's Skill ID
-    ref: 'skillModels', // Assuming Member 3 uses this name
+    ref: 'SkillModels', // Assuming Member 3 uses this name
     required: true
   },
   skillName: {

@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
 .analyzer-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem;
+    width: 100%;
+    margin: 0;
+    padding: 3rem 2rem;
     background-color: #f8fafc;
     min-height: 100vh;
     font-family: 'Outfit', sans-serif;
@@ -32,6 +32,45 @@
     height: 200%;
     background: linear-gradient(45deg, transparent, rgba(99, 102, 241, 0.05), transparent);
     transform: rotate(30deg);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.header-top-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.back-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    background: #6366f1 !important;
+    border: none !important;
+    padding: 0.6rem 1.4rem !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-size: 0.9rem !important;
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2) !important;
+    position: relative;
+    z-index: 11;
+    text-decoration: none !important;
+}
+
+.back-btn:hover {
+    background: #4f46e5;
+    transform: translateX(-4px);
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+}
+
+.back-icon {
+    font-size: 1.2rem;
 }
 
 .header-info h1 {
@@ -91,9 +130,9 @@
 }
 
 .job-feed {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 2rem;
 }
 
 .feed-card {
@@ -105,6 +144,9 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     cursor: default;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .feed-card:hover {
@@ -141,7 +183,7 @@
     font-weight: 700;
 }
 
-.company-name {
+.job-location {
     margin: 0;
     color: #475569;
     font-size: 1rem;
@@ -158,6 +200,8 @@
 
 .card-body {
     margin-bottom: 2rem;
+    flex: 1;
+    /* Pushes actions to the bottom */
 }
 
 .job-description {
@@ -193,22 +237,25 @@
     gap: 1rem;
     padding-top: 1.5rem;
     border-top: 1px solid #f1f5f9;
+    margin-top: auto;
+    /* Ensures actions are always at the bottom */
 }
 
-.apply-btn {
+.skills-btn {
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     color: white;
     border: none;
-    padding: 0.8rem 2rem;
+    padding: 0.8rem 1.5rem;
     border-radius: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 1rem;
+    font-size: 0.95rem;
     box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    white-space: nowrap;
 }
 
-.apply-btn:hover {
+.skills-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
     filter: brightness(1.1);
@@ -240,26 +287,46 @@
     box-shadow: none;
 }
 
-.loader,
-.error-message {
+.loader {
     text-align: center;
     padding: 10rem 2rem;
-    font-size: 1.3rem;
-    color: #64748b;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 2rem;
+    min-height: 400px;
+    justify-content: center;
 }
 
-.loader::after {
-    content: '';
-    width: 40px;
-    height: 40px;
+.loader-spinner {
+    width: 50px;
+    height: 50px;
     border: 4px solid #f1f5f9;
     border-top: 4px solid #6366f1;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.1);
+}
+
+.loading-text {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #475569;
+    max-width: 400px;
+    line-height: 1.6;
+    animation: textFadeSlide 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes textFadeSlide {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes spin {
@@ -344,6 +411,42 @@
     margin-bottom: 0.5rem;
 }
 
+.refresh-btn {
+    background: white;
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-end;
+    margin-bottom: 0.1rem;
+}
+
+.refresh-btn:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: #6366f1;
+    transform: translateY(-1px);
+}
+
+.refresh-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.refresh-btn span {
+    font-size: 1.1rem;
+}
+
 .dot {
     margin: 0 0.5rem;
     color: #cbd5e0;
@@ -390,6 +493,202 @@
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+.category-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f1f5f9;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+}
+
+.category-selector label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.category-selector select {
+    background: transparent;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    outline: none;
+}
+
+.growth-info {
+    font-size: 0.85rem;
+    color: #475569;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.growth-info strong {
+    color: #6366f1;
+}
+
+.role-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.analyze-skills-btn,
+.save-role-btn {
+    padding: 0.7rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.analyze-skills-btn {
+    background: #6366f1;
+    color: white;
+}
+
+.analyze-skills-btn:hover {
+    background: #4f46e5;
+    transform: translateY(-2px);
+}
+
+.save-role-btn {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.save-role-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.section-header {
+    margin: 3rem 0 1.5rem;
+    padding: 0 1rem;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.section-header h2 span {
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.section-header p {
+    color: #64748b;
+    margin: 0.4rem 0 0;
+}
+
+.role-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.role-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.role-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #6366f1;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.role-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    width: fit-content;
+    margin-bottom: 1rem;
+}
+
+.role-card h3 {
+    font-size: 1.35rem;
+    color: #1e293b;
+    margin: 0 0 0.8rem;
+    font-weight: 700;
+}
+
+.role-desc {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.skill-tag {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.role-footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.salary-est {
+    font-weight: 700;
+    color: #059669;
+    font-size: 0.95rem;
+}
+
 @media (max-width: 640px) {
     .analyzer-header {
         flex-direction: column;
@@ -406,7 +705,7 @@
         flex-direction: column;
     }
 
-    .apply-btn,
+    .skills-btn,
     .save-btn {
         width: 100%;
         text-align: center;
@@ -425,4 +724,75 @@
     .country-selector select {
         width: 100%;
     }
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.pag-btn {
+    background: white;
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.pag-btn:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: #6366f1;
+    transform: translateY(-1px);
+}
+
+.pag-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.page-num {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-num:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.page-num.active {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
 }

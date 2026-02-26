@@ -15,8 +15,7 @@ const savedJobSchema = new mongoose.Schema({
         required: true
     },
     company: {
-        type: String,
-        required: true
+        type: String
     },
     location: {
         type: String
@@ -24,8 +23,9 @@ const savedJobSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    url: {
-        type: String
+    notes: {
+        type: String,
+        default: ''
     },
     savedAt: {
         type: Date,
