@@ -138,7 +138,7 @@ export const getTrendingJobs = async (req, res) => {
         const prompt = `
             Sector: "${category}" as of ${currentDate}.
             Market Signals (Current Job Openings): JSearch Results: ${JSON.stringify(jSearchJobs)}, Adzuna: ${JSON.stringify(adzunaJobs)}.
-            Task: Using these market signals AND your internal specialized market knowledge, suggest exactly 50 unique high-growth roles for this sector for the year 2026.
+            Task: Using these market signals AND your internal specialized market knowledge, suggest exactly 25 unique high-growth roles for this sector for the year 2026.
             Note: If market signals are sparse or empty, focus heavily on your internal knowledge of the "${category}" industry to predict emerging roles.
             Return ONLY a valid JSON array of objects: [{ "title": string, "description": string, "key_skills": [string], "demand_level": "High"|"Moderate", "average_salary": string, "growth_factor": string }]
         `;
