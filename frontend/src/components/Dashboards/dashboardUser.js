@@ -28,7 +28,7 @@ const DashboardUser = () => {
   useEffect(() => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
-    if (!savedUser || !token){
+    if (!savedUser || !token) {
       navigate("/login");
       return;
     }
@@ -39,10 +39,11 @@ const DashboardUser = () => {
   const fetchUser = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/api/users/${id}`, {
-            headers: {  // ADD THIS HEADERS OBJECT
-                'Authorization': `Bearer ${token}`
-            }});
+      const response = await axios.get(`http://localhost:5000/api/v1/users/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (response.data) {
         setUser(response.data);
         setFormData({
@@ -51,8 +52,8 @@ const DashboardUser = () => {
           phone: response.data.phone || "",
           birthday: response.data.birthday ? response.data.birthday.split("T")[0] : "",
           age: response.data.age || "",
-          industrialPreference: Array.isArray(response.data.industrialPreference) 
-            ? response.data.industrialPreference 
+          industrialPreference: Array.isArray(response.data.industrialPreference)
+            ? response.data.industrialPreference
             : (response.data.industrialPreference ? response.data.industrialPreference.split(",").map(s => s.trim()) : []),
           background: response.data.background || "",
           university: response.data.university || "",
@@ -86,14 +87,15 @@ const DashboardUser = () => {
     formData.append("image", file);
 
     try {
-       const token = localStorage.getItem("token"); 
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         `http://localhost:5000/api/upload/profile-picture/${user._id}`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data",
+          headers: {
+            "Content-Type": "multipart/form-data",
             'Authorization': `Bearer ${token}`
-           },
+          },
         }
       );
 
@@ -121,15 +123,16 @@ const DashboardUser = () => {
     formData.append("cv", file);
 
     try {
-       const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         `http://localhost:5000/api/upload/cv/${user._id}`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data",
+          headers: {
+            "Content-Type": "multipart/form-data",
             'Authorization': `Bearer ${token}`
-           },
-          
+          },
+
         }
       );
 
@@ -162,11 +165,11 @@ const DashboardUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       // Calculate age from birthday
       const calculatedAge = formData.birthday ? calculateAge(formData.birthday) : formData.age;
-      
+
       // Prepare data for update
       const updateData = {
         name: formData.name,
@@ -184,16 +187,17 @@ const DashboardUser = () => {
       };
 
       // Remove undefined fields
-      Object.keys(updateData).forEach(key => 
+      Object.keys(updateData).forEach(key =>
         updateData[key] === undefined && delete updateData[key]
       );
-      
-       const token = localStorage.getItem("token");
+
+      const token = localStorage.getItem("token");
       const response = await axios.put(
-        `http://localhost:5000/api/users/${user._id}`,
+        `http://localhost:5000/api/v1/users/${user._id}`,
         updateData,
         {
-          headers: { "Content-Type": "application/json" ,
+          headers: {
+            "Content-Type": "application/json",
             'Authorization': `Bearer ${token}`
           },
         }
@@ -213,39 +217,39 @@ const DashboardUser = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-     localStorage.removeItem("token");
+    localStorage.removeItem("token");
     navigate("/login");
   };
 
   const handleDeleteAccount = async () => {
-  // Show confirmation dialog
-  const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
-  
-  if (!confirmDelete) return;
-  
-  try {
-    const token = localStorage.getItem("token");
-    await axios.delete(
-      `http://localhost:5000/api/users/${user._id}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
+    // Show confirmation dialog
+    const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
+
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `http://localhost:5000/api/v1/users/${user._id}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         }
-      }
-    );
-    
-    // Clear local storage
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    
-    // Redirect to login
-    navigate("/login");
-    
-  } catch (error) {
-    console.error("Error deleting account:", error);
-    alert("Failed to delete account. Please try again.");
-  }
-};
+      );
+
+      // Clear local storage
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+
+      // Redirect to login
+      navigate("/login");
+
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("Failed to delete account. Please try again.");
+    }
+  };
 
 
   if (!user) {
@@ -340,25 +344,25 @@ const DashboardUser = () => {
         </div>
 
         <div className="button_group">
-        <button
-          className="button8_update_profile"
-          onClick={() => setShowModal(true)}
-        >
-          Update Profile
-        </button>
-        <button
-          className="button8_logout"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-        <button
-          className="button8_delete_account"
-          onClick={handleDeleteAccount}
-        >
-          Delete Account
-        </button>
-      </div>
+          <button
+            className="button8_update_profile"
+            onClick={() => setShowModal(true)}
+          >
+            Update Profile
+          </button>
+          <button
+            className="button8_logout"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+          <button
+            className="button8_delete_account"
+            onClick={handleDeleteAccount}
+          >
+            Delete Account
+          </button>
+        </div>
       </div>
 
       {/* RIGHT PANEL - four clickable cards */}
@@ -568,41 +572,41 @@ const DashboardUser = () => {
               </div>
 
               <div className="form_row">
-              {/* LinkedIn Field */}
-              <div className="form_group">
-                <label>LinkedIn URL</label>
-                <input
-                  type="url"
-                  name="linkedin"
-                  value={formData.linkedin}
-                  onChange={handleInputChange}
-                  placeholder="https://linkedin.com/in/username"
-                />
-              </div>
-              
-              {/* CV Upload Field - Now in the same row */}
-              <div className="form_group">
-                <label>CV/Resume</label>
-                <div className="cv_upload_container">
+                {/* LinkedIn Field */}
+                <div className="form_group">
+                  <label>LinkedIn URL</label>
                   <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleCVUpload}
-                    className="cv_input"
-                    id="cv-upload"
-                    disabled={uploading}
+                    type="url"
+                    name="linkedin"
+                    value={formData.linkedin}
+                    onChange={handleInputChange}
+                    placeholder="https://linkedin.com/in/username"
                   />
-                  <label htmlFor="cv-upload" className="cv_upload_label">
-                    {uploading ? "Uploading..." : " Upload CV"}
-                  </label>
-                  {formData.cv && (
-                    <a href={formData.cv} target="_blank" rel="noopener noreferrer" className="view_cv_link">
-                      View
-                    </a>
-                  )}
+                </div>
+
+                {/* CV Upload Field - Now in the same row */}
+                <div className="form_group">
+                  <label>CV/Resume</label>
+                  <div className="cv_upload_container">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleCVUpload}
+                      className="cv_input"
+                      id="cv-upload"
+                      disabled={uploading}
+                    />
+                    <label htmlFor="cv-upload" className="cv_upload_label">
+                      {uploading ? "Uploading..." : " Upload CV"}
+                    </label>
+                    {formData.cv && (
+                      <a href={formData.cv} target="_blank" rel="noopener noreferrer" className="view_cv_link">
+                        View
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
               <div className="modal_footer">
                 <button
@@ -627,17 +631,17 @@ const DashboardUser = () => {
 // Helper function to calculate profile completeness
 const calculateProfileCompleteness = (user) => {
   const fields = [
-    'profilePicture', 'phone', 'birthday', 'university', 'background', 
+    'profilePicture', 'phone', 'birthday', 'university', 'background',
     'industrialPreference', 'portfolio', 'github', 'linkedin', 'cv'
   ];
-  
+
   const filledFields = fields.filter(field => {
     const value = user[field];
     if (!value) return false;
     if (Array.isArray(value)) return value.length > 0;
     return true;
   });
-  
+
   return Math.round((filledFields.length / fields.length) * 100);
 };
 
