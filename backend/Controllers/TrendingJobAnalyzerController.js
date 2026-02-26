@@ -1,35 +1,62 @@
 import axios from 'axios';
 import process from 'process';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import SavedJob from '../Models/SavedJobModel.js';
+import User from '../Models/User.js';
+import ResponseGenerator from '../utils/ResponseGenerator.js';
 
-// Dummy Data for User
-const dummyUser = {
-    id: 1,
-    name: "Aroshana Sandeep",
-    age: 22,
-    preferredSkills: ["React", "Node.js", "MongoDB"],
-    preferredArea: "Software Engineer"
+console.log("[TrendingController] Module LOADED at", new Date().toISOString());
+
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// Simple In-Memory Cache for Trending Jobs
+const trendingCache = {
+    data: {},
+    lastUpdatedDate: null
 };
 
 export const getTrendingJobs = async (req, res) => {
     try {
-        const user = dummyUser;
+        const queryCategory = req.query.category;
+        const category = (queryCategory && queryCategory.trim()) ? queryCategory : 'Information Technology';
+
+        console.log(`[TrendingController] Request for category: "${category}"`);
+
         const rapidApiKey = process.env.RAPIDAPI_KEY;
+        const adzunaAppId = process.env.ADZUNA_APP_ID;
+        const adzunaAppKey = process.env.ADZUNA_APP_KEY;
 
-        // Construct a query based on user's preferred skills and job area (role)
-        const skillsQuery = user.preferredSkills.join(' ');
-        const searchQuery = `Trending ${user.preferredArea} jobs with ${skillsQuery}`;
+        // Use current date
+        const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-        console.log(`Fetching trending jobs for role: "${user.preferredArea}" and skills: "${skillsQuery}" using JSearch`);
+        // --- Cache Logic ---
+        if (trendingCache.lastUpdatedDate !== currentDate) {
+            trendingCache.data = {};
+            trendingCache.lastUpdatedDate = currentDate;
+        }
 
-        const options = {
+        if (trendingCache.data[category]) {
+            console.log(`[TrendingController] Serving cached data for: ${category}`);
+            return res.json(ResponseGenerator.sendSuccess({
+                meta: { category, timestamp: new Date().toISOString(), cached: true },
+                ...trendingCache.data[category]
+            }));
+        }
+
+        console.log(`[TrendingController] Cache miss. Fetching signals for: ${category}`);
+
+        // Clean category for search queries
+        const searchKeyword = category.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, ' ').replace(/\s+/g, ' ').trim();
+
+        // 1. JSearch API Configuration
+        const jSearchOptions = {
             method: 'GET',
-            url: process.env.BASE_URL,
+            url: 'https://jsearch.p.rapidapi.com/search',
             params: {
-                query: searchQuery,
+                query: `Trending ${searchKeyword} jobs globally`,
                 page: '1',
-                num_pages: '1',
-                date_posted: 'all'
+                num_pages: '1'
             },
             headers: {
                 'x-rapidapi-key': rapidApiKey,
@@ -37,100 +64,209 @@ export const getTrendingJobs = async (req, res) => {
             }
         };
 
-        const response = await axios.request(options);
-        const rawData = response.data;
+        // 2. Adzuna Fetch Logic
+        const fetchAdzuna = async () => {
+            if (!adzunaAppId || !adzunaAppKey) return [];
+            try {
+                const url = `https://api.adzuna.com/v1/api/jobs/gb/search/1`;
+                const response = await axios.get(url, {
+                    params: {
+                        app_id: adzunaAppId,
+                        app_key: adzunaAppKey,
+                        what: searchKeyword,
+                        results_per_page: 15
+                    }
+                });
+                return (response.data.results || []).map(job => ({
+                    title: job.title.replace(/<\/?[^>]+(>|$)/g, ""),
+                    description: job.description.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 100)
+                }));
+            } catch (err) {
+                console.error("[TrendingController] Adzuna Error:", err.message);
+                return [];
+            }
+        };
 
-        let jobList = [];
-        if (rawData.data && Array.isArray(rawData.data)) {
-            jobList = rawData.data;
+        // Signals Fetching (Externalized below in final version, or kept inline for simplicity as requested)
+
+        // Concurrent Fetching
+        console.log(`[TrendingController] Fetching signals for: ${searchKeyword}`);
+
+        let jSearchJobs = []; // Declare jSearchJobs here
+        let adzunaJobs = [];
+
+        try {
+            const results = await Promise.allSettled([
+                axios.request(jSearchOptions),
+                fetchAdzuna()
+            ]);
+
+            if (results[0].status === 'fulfilled') {
+                jSearchJobs = (results[0].value.data.data || []).slice(0, 15).map(job => ({
+                    t: job.job_title,
+                    d: job.job_description?.substring(0, 100)
+                }));
+            }
+            if (results[1].status === 'fulfilled') {
+                adzunaJobs = results[1].value;
+            }
+        } catch (signalErr) {
+            console.error("[TrendingController] Signal Fetch Warning:", signalErr.message);
         }
 
-        const formattedJobs = jobList.map(job => ({
-            id: job.job_id || Math.random().toString(36).substr(2, 9),
-            title: job.job_title || 'Untitled Job',
-            company: job.employer_name || 'Hidden Company',
-            field: job.job_category || user.preferredSkills[0] || 'Jobs',
-            location: job.job_city && job.job_country ? `${job.job_city}, ${job.job_country}` : (job.job_location || user.preferredArea),
-            description: job.job_description || "View full details on the job site.",
-            url: job.job_apply_link || job.job_google_link,
-            salary_min: job.job_min_salary || null,
-            salary_max: job.job_max_salary || null,
-            created: job.job_posted_at_datetime_utc || new Date().toISOString()
+        console.log(`[TrendingController] Signals Found - JSearch: ${jSearchJobs.length}, Adzuna: ${adzunaJobs.length}`);
+
+        // 4. Stabilized Single Gemini Analysis (with Retry Logic for 429)
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const prompt = `
+            Sector: "${category}" as of ${currentDate}.
+            Market Signals (Current Job Openings): JSearch Results: ${JSON.stringify(jSearchJobs)}, Adzuna: ${JSON.stringify(adzunaJobs)}.
+            Task: Using these market signals AND your internal specialized market knowledge, suggest exactly 50 unique high-growth roles for this sector for the year 2026.
+            Note: If market signals are sparse or empty, focus heavily on your internal knowledge of the "${category}" industry to predict emerging roles.
+            Return ONLY a valid JSON array of objects: [{ "title": string, "description": string, "key_skills": [string], "demand_level": "High"|"Moderate", "average_salary": string, "growth_factor": string }]
+        `;
+
+        const generateWithRetry = async (prompt, maxRetries = 3) => {
+            let lastError;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    console.log(`[TrendingController] Gemini Request attempt ${i + 1} for: ${category}...`);
+                    const result = await model.generateContent(prompt);
+                    return await result.response.text();
+                } catch (err) {
+                    lastError = err;
+                    // Check for 429 Too Many Requests
+                    if (err.status === 429 || err.message?.includes('429') || err.message?.includes('Quota exceeded')) {
+                        const waitTime = Math.pow(2, i) * 2000 + Math.random() * 1000;
+                        console.warn(`[TrendingController] Rate limited (429). Retrying in ${Math.round(waitTime / 1000)}s...`);
+                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                        continue;
+                    }
+                    throw err; // Re-throw other errors
+                }
+            }
+            throw lastError;
+        };
+
+        const responseText = await generateWithRetry(prompt);
+
+        let trendingRoles = [];
+        try {
+            const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+            const rawData = JSON.parse(jsonMatch ? jsonMatch[0] : responseText);
+            trendingRoles = Array.isArray(rawData) ? rawData : [];
+        } catch (parseErr) {
+            console.error("[TrendingController] Gemini Parse Error. Response was not valid JSON.");
+            throw new Error("AI returned invalid data format");
+        }
+
+        console.log(`[TrendingController] Total roles generated for ${category}: ${trendingRoles.length}`);
+
+        // Store results in cache
+        const finalResponse = {
+            stats: {
+                totalMarketSignals: jSearchJobs.length + adzunaJobs.length,
+                analyzedRoles: trendingRoles.length
+            },
+            roles: trendingRoles
+        };
+        trendingCache.data[category] = finalResponse;
+
+        res.json(ResponseGenerator.sendSuccess({
+            meta: { category, timestamp: new Date().toISOString(), cached: false },
+            ...finalResponse
         }));
 
-        res.status(200).json({
-            success: true,
-            user: {
-                name: user.name,
-                preferredSkills: user.preferredSkills,
-                preferredArea: user.preferredArea,
-                provider: "JSearch"
-            },
-            count: formattedJobs.length,
-            jobs: formattedJobs
-        });
-
     } catch (error) {
-        console.error("Error fetching jobs from JSearch:", error.message);
-
-        res.status(500).json({
-            success: false,
-            message: "Server Error while fetching trending jobs.",
-            error: error.message
-        });
+        console.error("Critical Controller Error:", error);
+        res.status(500).json(ResponseGenerator.sendError(
+            "5000",
+            error.message || "Failed to process trending roles"
+        ));
     }
 };
+
 export const saveJob = async (req, res) => {
     try {
-        const { jobId, title, company, location, description, url, username } = req.body;
-
+        const { jobId, title, description, username, company, location } = req.body;
         if (!jobId || !username) {
-            return res.status(400).json({ success: false, message: "jobId and username are required" });
+            return res.status(400).json(ResponseGenerator.sendError(
+                "4001",
+                "jobId and username are required"
+            ));
         }
-
-        const newSavedJob = new SavedJob({
-            jobId,
-            title,
-            company,
-            location,
-            description,
-            url,
-            username
-        });
-
+        const newSavedJob = new SavedJob({ jobId, title, description, username, company, location });
         await newSavedJob.save();
-
-        res.status(201).json({
-            success: true,
-            message: "Job saved successfully",
-            savedJob: newSavedJob
-        });
-
+        res.status(201).json(ResponseGenerator.sendSuccess(
+            { savedJob: newSavedJob, message: "Job saved successfully" }
+        ));
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ success: false, message: "Job already saved by this user" });
-        }
-        res.status(500).json({ success: false, message: "Error saving job", error: error.message });
+        const isDuplicate = error.code === 11000;
+        res.status(isDuplicate ? 400 : 500).json(ResponseGenerator.sendError(
+            isDuplicate ? "4002" : "5000",
+            isDuplicate ? "Job already saved" : error.message
+        ));
     }
 };
 
 export const getSavedJobs = async (req, res) => {
     try {
         const { username } = req.params;
+        if (!username) return res.status(400).json(ResponseGenerator.sendError(
+            "4003",
+            "Username is required"
+        ));
+        const savedJobs = await SavedJob.find({ username }).sort({ savedAt: -1 });
+        res.status(200).json(ResponseGenerator.sendSuccess(
+            { jobs: savedJobs, count: savedJobs.length }
+        ));
+    } catch (error) {
+        res.status(500).json(ResponseGenerator.sendError("5000", error.message));
+    }
+};
 
-        if (!username) {
-            return res.status(400).json({ success: false, message: "Username is required" });
+export const updateSavedJob = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { notes } = req.body;
+
+        const updatedJob = await SavedJob.findByIdAndUpdate(
+            id,
+            { $set: { notes } },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedJob) {
+            return res.status(404).json(ResponseGenerator.sendError(
+                "4041",
+                "Saved job not found"
+            ));
         }
 
-        const savedJobs = await SavedJob.find({ username }).sort({ savedAt: -1 });
-
-        res.status(200).json({
-            success: true,
-            count: savedJobs.length,
-            savedJobs
-        });
-
+        res.status(200).json(ResponseGenerator.sendSuccess(
+            { updatedJob, message: "Job updated successfully" }
+        ));
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error fetching saved jobs", error: error.message });
+        res.status(500).json(ResponseGenerator.sendError("5000", error.message));
+    }
+};
+
+export const deleteSavedJob = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedJob = await SavedJob.findByIdAndDelete(id);
+
+        if (!deletedJob) {
+            return res.status(404).json(ResponseGenerator.sendError(
+                "4041",
+                "Saved job not found"
+            ));
+        }
+
+        res.status(200).json(ResponseGenerator.sendSuccess(
+            { message: "Job deleted successfully" }
+        ));
+    } catch (error) {
+        res.status(500).json(ResponseGenerator.sendError("5000", error.message));
     }
 };
