@@ -115,10 +115,11 @@ export const generateRoadMap = async (req, res) => {
 
 export const getAllSavedCoursesById = async (req, res) => {
 
-  const { userId } = req.params;
+  const { userId } = req.params; // Using userId from route params
 
   try {
-
+    // Corrected: using .find({ userId }) instead of .findById({ userId }) 
+    // to list all saved videos belonging to the passed userId.
     const findCourses = await resource_Model.find({ userId }).sort({ createdAt: -1 });
 
     if (!findCourses || findCourses.length === 0) {
@@ -133,5 +134,115 @@ export const getAllSavedCoursesById = async (req, res) => {
     res.status(500).json({ message: "Server error while fetching resources" });
 
   }
-}
+};
 
+export const saveResource = async (req, res) => {
+  try {
+    const {
+      userId,
+      skillId,
+      skillName,
+      videoTitle,
+      videoUrl,
+      thumbnail,
+      userEmail,
+      scheduledTime,
+      priority,
+      notes,
+    } = req.body;
+
+    if (!userId || !skillId || !skillName || !videoTitle || !videoUrl || !userEmail || !scheduledTime) {
+      return res.status(400).json({ message: "Required fields are missing." });
+    }
+
+    const newResource = new resource_Model({
+      userId,
+      skillId,
+      skillName,
+      videoTitle,
+      videoUrl,
+      thumbnail,
+      userEmail,
+      scheduledTime,
+      priority,
+      notes,
+    });
+
+    const savedResource = await newResource.save();
+
+    res.status(200).json({
+      message: "Resource saved successfully",
+      savedResource,
+    });
+  } catch (error) {
+    console.error("Error saving resource:", error.message);
+    res.status(500).json({ message: "Server error while saving resource" });
+  }
+};
+
+export const updateSaveResource = async (req, res) => {
+  try {
+    const {
+      id, // Resource ID (_id)
+      userEmail,
+      scheduledTime,
+      priority,
+      notes,
+      isCompleted
+    } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Resource ID (id) is required." });
+    }
+
+    // Build the update object with only allowed fields
+    const updateData = {};
+    if (userEmail !== undefined) updateData.userEmail = userEmail;
+    if (scheduledTime !== undefined) updateData.scheduledTime = scheduledTime;
+    if (priority !== undefined) updateData.priority = priority;
+    if (notes !== undefined) updateData.notes = notes;
+    if (isCompleted !== undefined) updateData.isCompleted = isCompleted;
+
+    // Use findByIdAndUpdate to update the specific resource
+    const updatedResource = await resource_Model.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { returnDocument: 'after', runValidators: true }
+    );
+
+    if (!updatedResource) {
+      return res.status(404).json({ message: "Resource not found." });
+    }
+
+    res.status(200).json({
+      message: "Resource updated successfully",
+      updatedResource
+    });
+
+  } catch (error) {
+    console.error("Error occur while update saving resource:", error.message);
+    res.status(500).json({ message: "Server error while update saving resource" });
+  }
+};
+
+export const deleteSavedResources = async (req, res) => {
+
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Resource ID is required." });
+    }
+
+    const result = await resource_Model.findByIdAndDelete(id);
+
+    if (result) {
+      res.status(200).json({ message: "Resource Successfully Deleted" });
+    } else {
+      return res.status(404).json({ message: "Resource not found." });
+    }
+  } catch (error) {
+    console.log(`Error Occur while deleting resource....Error: ${error}`);
+    res.status(500).json({ message: "Error Occur while deleting resource." });
+  }
+};

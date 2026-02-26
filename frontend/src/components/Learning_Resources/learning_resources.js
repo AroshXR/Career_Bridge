@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './learning_resources.css';
+import ResourcesSave from './resources_save';
+import ResourcesManage from './resources_manage';
 
 function LearningResources() {
   const [skill, setSkill] = useState('');
@@ -11,6 +13,12 @@ function LearningResources() {
   const [activeTab, setActiveTab] = useState('youtube');
   const [error, setError] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [savingResource, setSavingResource] = useState(null);
+  const [showManage, setShowManage] = useState(false);
+
+  if (showManage) {
+    return <ResourcesManage onClose={() => setShowManage(false)} />;
+  }
 
   const getEmbedUrl = (url) => {
     if (!url) return '';
@@ -49,7 +57,12 @@ function LearningResources() {
   return (
     <div className="learning-container_learn">
       <div className="search-header_learn">
-        <h1>Find Your Learning Path</h1>
+        <div className="header-top_learn">
+          <h1>Find Your Learning Path</h1>
+          <button className="manage-toggle_btn" onClick={() => setShowManage(true)}>
+            My Saved Resources 🔖
+          </button>
+        </div>
         <p>Search for any skill and we'll find the best resources for you.</p>
         <form onSubmit={handleSearch} className="search-box_learn">
           <input
@@ -117,12 +130,20 @@ function LearningResources() {
                     <div className="card-info_learn">
                       <h3>{video.title}</h3>
                       <p>{video.description.substring(0, 100)}...</p>
-                      <button
-                        onClick={() => setSelectedVideo({ url: video.videoUrl, title: video.title })}
-                        className="view-btn_learn"
-                      >
-                        Watch Now
-                      </button>
+                      <div className="card-actions_learn">
+                        <button
+                          onClick={() => setSelectedVideo({ url: video.videoUrl, title: video.title })}
+                          className="view-btn_learn"
+                        >
+                          Play Here
+                        </button>
+                        <button
+                          onClick={() => setSavingResource({ ...video, title: video.title })}
+                          className="save-btn_learn_inline"
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -143,12 +164,20 @@ function LearningResources() {
                         <span>Duration: {course.duration}</span>
                         <span className="price_learn">{course.price}</span>
                       </div>
-                      <button
-                        onClick={() => window.open(course.videoUrl, '_blank', 'noopener,noreferrer')}
-                        className="view-btn_learn"
-                      >
-                        View Course
-                      </button>
+                      <div className="card-actions_learn">
+                        <button
+                          onClick={() => window.open(course.videoUrl, '_blank', 'noopener,noreferrer')}
+                          className="view-btn_learn"
+                        >
+                          Go to Course
+                        </button>
+                        <button
+                          onClick={() => setSavingResource({ ...course })}
+                          className="save-btn_learn_inline"
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -188,6 +217,14 @@ function LearningResources() {
             <h3>{selectedVideo.title}</h3>
           </div>
         </div>
+      )}
+
+      {savingResource && (
+        <ResourcesSave
+          resource={savingResource}
+          skillName={skill}
+          onClose={() => setSavingResource(null)}
+        />
       )}
     </div>
   );
