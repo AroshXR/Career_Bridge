@@ -1,4 +1,5 @@
 import express from 'express';
+import auth from '../middleware/auth.js';
 import {
     analyzeAndSaveSkills,
     getMySavedSkills,
@@ -9,14 +10,10 @@ import {
 
 const router = express.Router();
 
-router.post("/analyze/:jobId", analyzeAndSaveSkills);
-
-router.get("/user/:userId", getMySavedSkills);
-
-router.patch("/:jobId/:skillId", updateSkillDetails);
-
-router.delete("/:jobId/:skillId", removeSkillFromList);
-
-router.delete("/:jobId", deleteFullAnalysis);
+router.post("/analyze/:jobId", auth, analyzeAndSaveSkills);
+router.get("/user/:userId", auth, getMySavedSkills);
+router.patch("/:jobId/:skillId", auth, updateSkillDetails);
+router.delete("/:jobId/:skillId", auth, removeSkillFromList);
+router.delete("/:jobId", auth, deleteFullAnalysis);
 
 export default router;

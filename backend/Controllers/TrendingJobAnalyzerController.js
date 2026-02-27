@@ -197,7 +197,7 @@ export const getTrendingJobs = async (req, res) => {
     } catch (error) {
         console.error("Critical Controller Error:", error);
         res.status(500).json(ResponseGenerator.sendError(
-            "5000",
+            ResponseGenerator.INTERNAL_SERVER_ERROR,
             error.message || "Failed to process trending roles"
         ));
     }
@@ -210,18 +210,18 @@ export const saveJob = async (req, res) => {
 
         if (!jobId) {
             return res.status(400).json(ResponseGenerator.sendError(
-                "4001",
+                ResponseGenerator.BAD_REQUEST,
                 "jobId is required"
             ));
         }
 
-        const newSavedJob = new SavedJob({ 
-            jobId, 
-            title, 
-            description, 
-            username: userEmail, 
-            company, 
-            location 
+        const newSavedJob = new SavedJob({
+            jobId,
+            title,
+            description,
+            username: userEmail,
+            company,
+            location
         });
         await newSavedJob.save();
         res.status(201).json(ResponseGenerator.sendSuccess(
@@ -230,7 +230,7 @@ export const saveJob = async (req, res) => {
     } catch (error) {
         const isDuplicate = error.code === 11000;
         res.status(isDuplicate ? 400 : 500).json(ResponseGenerator.sendError(
-            isDuplicate ? "4002" : "5000",
+            isDuplicate ? ResponseGenerator.CONFLICT : ResponseGenerator.INTERNAL_SERVER_ERROR,
             isDuplicate ? "Job already saved" : error.message
         ));
     }
@@ -244,7 +244,7 @@ export const getSavedJobs = async (req, res) => {
             { jobs: savedJobs, count: savedJobs.length }
         ));
     } catch (error) {
-        res.status(500).json(ResponseGenerator.sendError("5000", error.message));
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, error.message));
     }
 };
 
@@ -261,7 +261,7 @@ export const updateSavedJob = async (req, res) => {
 
         if (!updatedJob) {
             return res.status(404).json(ResponseGenerator.sendError(
-                "4041",
+                ResponseGenerator.NOT_FOUND,
                 "Saved job not found or unauthorized"
             ));
         }
@@ -270,7 +270,7 @@ export const updateSavedJob = async (req, res) => {
             { updatedJob, message: "Job updated successfully" }
         ));
     } catch (error) {
-        res.status(500).json(ResponseGenerator.sendError("5000", error.message));
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, error.message));
     }
 };
 
@@ -281,7 +281,7 @@ export const deleteSavedJob = async (req, res) => {
 
         if (!deletedJob) {
             return res.status(404).json(ResponseGenerator.sendError(
-                "4041",
+                ResponseGenerator.NOT_FOUND,
                 "Saved job not found or unauthorized"
             ));
         }
@@ -290,6 +290,6 @@ export const deleteSavedJob = async (req, res) => {
             { message: "Job deleted successfully" }
         ));
     } catch (error) {
-        res.status(500).json(ResponseGenerator.sendError("5000", error.message));
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, error.message));
     }
 };

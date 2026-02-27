@@ -1,6 +1,7 @@
 import axios from "axios";
 import process from "process";
 import SkillModel from "../Models/SkillModel.js";
+import ResponseGenerator from "../utils/ResponseGenerator.js";
 
 const MOCK_JOBS = [
   {
@@ -152,11 +153,11 @@ export const analyzeAndSaveSkills = async (req, res) => {
 
   try {
     let existingSkillDoc = await SkillModel.findOne({ jobId, userId });
-    if (existingSkillDoc) return res.status(200).json(existingSkillDoc);
+    if (existingSkillDoc) return res.status(200).json(ResponseGenerator.sendSuccess(existingSkillDoc, "Skill analysis already exists"));
 
     const jobsArray = MOCK_JOBS[0].jobs;
     const selectedJob = jobsArray.find((j) => j.id === jobId);
-    if (!selectedJob) return res.status(404).json({ message: "Job not found" });
+    if (!selectedJob) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Job not found", "Skill analysis failed"));
 
     const { essential, optional } = await fetchSkillsFromEsco(selectedJob.title);
 
@@ -175,9 +176,9 @@ export const analyzeAndSaveSkills = async (req, res) => {
       skills: [...(await enrichData(essential)), ...(await enrichData(optional))],
     });
 
-    res.status(201).json(newSkillDoc);
+    res.status(201).json(ResponseGenerator.sendSuccess(newSkillDoc, "Skills analyzed and saved successfully"));
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Skill analysis failed", error.message));
   }
 };
 
@@ -186,9 +187,9 @@ export const getMySavedSkills = async (req, res) => {
   const { userId } = req.params;
   try {
     const mySkills = await SkillModel.find({ userId }).sort({ updatedAt: -1 });
-    res.status(200).json(mySkills);
+    res.status(200).json(ResponseGenerator.sendSuccess(mySkills, "User skills retrieved successfully"));
   } catch (error) {
-    res.status(500).json({ error: "Fetch failed" });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Fetch failed", error.message));
   }
 };
 
@@ -198,7 +199,7 @@ export const updateSkillDetails = async (req, res) => {
   const { userNote, importance, userId } = req.body;
 
   if (!userId) {
-    return res.status(400).json({ message: "userId is required" });
+    return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Update failed"));
   }
 
   try {
@@ -214,15 +215,13 @@ export const updateSkillDetails = async (req, res) => {
     );
 
     if (!updatedDoc) {
-      return res.status(404).json({
-        message: "Skill not found for this user and job"
-      });
+      return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Skill not found for this user and job", "Update failed"));
     }
 
-    res.status(200).json(updatedDoc);
+    res.status(200).json(ResponseGenerator.sendSuccess(updatedDoc, "Skill details updated successfully"));
 
   } catch (error) {
-    res.status(500).json({ error: "Update failed", details: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Update failed", error.message));
   }
 };
 
@@ -232,7 +231,7 @@ export const removeSkillFromList = async (req, res) => {
   const userId = req.query.userId;
 
   if (!userId) {
-    return res.status(400).json({ message: "userId is required" });
+    return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Delete skill failed"));
   }
 
   try {
@@ -243,15 +242,13 @@ export const removeSkillFromList = async (req, res) => {
     );
 
     if (!updatedDoc) {
-      return res.status(404).json({
-        message: "Skill not found or unauthorized"
-      });
+      return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Skill not found or unauthorized", "Delete skill failed"));
     }
 
-    res.status(200).json(updatedDoc);
+    res.status(200).json(ResponseGenerator.sendSuccess(updatedDoc, "Skill removed from list successfully"));
 
   } catch (error) {
-    res.status(500).json({ error: "Delete skill failed", details: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Delete skill failed", error.message));
   }
 };
 // --- DELETE: Delete Full Analysis ---
@@ -260,22 +257,20 @@ export const deleteFullAnalysis = async (req, res) => {
   const userId = req.query.userId;
 
   if (!userId) {
-    return res.status(400).json({ message: "userId is required" });
+    return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Delete analysis failed"));
   }
 
   try {
     const deletedDoc = await SkillModel.findOneAndDelete({ jobId, userId });
 
     if (!deletedDoc) {
-      return res.status(404).json({
-        message: "Analysis not found or unauthorized"
-      });
+      return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Analysis not found or unauthorized", "Delete analysis failed"));
     }
 
-    res.status(200).json({ message: "Analysis removed successfully" });
+    res.status(200).json(ResponseGenerator.sendSuccess(null, "Analysis removed successfully"));
 
   } catch (error) {
-    res.status(500).json({ error: "Delete analysis failed", details: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Delete analysis failed", error.message));
   }
 };/**
  * Helper: Fetches and categorizes Essential vs Optional
