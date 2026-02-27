@@ -5,30 +5,70 @@
  *     summary: Get trending jobs based on user preference
  *     description: Fetches trending jobs from consolidated market signals.
  *     tags: [TrendingJobAnalyzer]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         description: The job category to analyze
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - Information Technology
+ *             - Health Care
+ *             - Finance
+ *             - Engineering
+ *             - Marketing
+ *             - Education
+ *             - Business Management
+ *             - Creative Arts
+ *             - Hospitality
  *     responses:
  *       200:
  *         description: A list of trending jobs
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "00"
- *                 data:
- *                   type: object
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
  *                   properties:
- *                     roles:
- *                       type: array
- *                       items:
- *                         type: object
- *                 description:
- *                   type: string
- *                 error:
- *                   type: object
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         meta:
+ *                           type: object
+ *                           properties:
+ *                             category: { type: 'string' }
+ *                             timestamp: { type: 'string', format: 'date-time' }
+ *                             cached: { type: 'boolean' }
+ *                         stats:
+ *                           type: object
+ *                           properties:
+ *                             totalMarketSignals: { type: 'number' }
+ *                             analyzedRoles: { type: 'number' }
+ *                         roles:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               title: { type: 'string' }
+ *                               description: { type: 'string' }
+ *                               key_skills: { type: 'array', items: { type: 'string' } }
+ *                               demand_level: { type: 'string' }
+ *                               average_salary: { type: 'string' }
+ *                               growth_factor: { type: 'string' }
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  * 
  * /api/v1/trendingJobAnalyzer/saveJob:
  *   post:
@@ -70,29 +110,65 @@
  *     responses:
  *       201:
  *         description: Job saved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         description: Bad request (e.g., duplicate job)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  * 
- * /api/v1/trendingJobAnalyzer/getSavedJobs/{username}:
+ * /api/v1/trendingJobAnalyzer/getSavedJobs:
  *   get:
- *     summary: Get saved jobs for a user
+ *     summary: Get saved jobs for the logged-in user
  *     tags: [TrendingJobAnalyzer]
- *     parameters:
- *       - in: path
- *         name: username
- *         required: true
- *         schema:
- *           type: string
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: List of saved jobs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  * 
  * /api/v1/trendingJobAnalyzer/updateSavedJob/{id}:
  *   put:
  *     summary: Update a saved job
+ *     description: Updates notes for a specific saved job using its database ID.
  *     tags: [TrendingJobAnalyzer]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: The unique Database ID (_id) of the saved job
  *         schema:
  *           type: string
  *     requestBody:
@@ -111,18 +187,64 @@
  *     responses:
  *       200:
  *         description: Job updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Job not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  * 
  * /api/v1/trendingJobAnalyzer/deleteSavedJob/{id}:
  *   delete:
  *     summary: Delete a saved job
+ *     description: Removes a specific saved job using its database ID.
  *     tags: [TrendingJobAnalyzer]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: The unique Database ID (_id) of the saved job
  *         schema:
  *           type: string
  *     responses:
  *       200:
  *         description: Job deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Job not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */

@@ -3,6 +3,7 @@ import { google } from "googleapis";
 import resource_Model from "../Models/learning_resource_Model.js";
 import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import ResponseGenerator from "../utils/ResponseGenerator.js";
 
 configDotenv();
 
@@ -15,7 +16,7 @@ export const skillSearch = async (req, res) => {
     const { skill } = req.params;
 
     if (!skill) {
-      return res.status(400).json({ message: "Skill Name is required" });
+      return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "Skill Name is required", "YouTube search failed"));
     }
 
     const response = await youtube.search.list({
@@ -38,10 +39,10 @@ export const skillSearch = async (req, res) => {
       videoUrl: `https://www.youtube.com/watch?v=${item.id.videoId}`
     }));
 
-    res.status(200).json(videos);
+    res.status(200).json(ResponseGenerator.sendSuccess(videos, "YouTube videos fetched successfully"));
   } catch (error) {
     console.error("YouTube API Error:", error);
-    res.status(500).json({ message: "Error fetching videos from YouTube" });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Error fetching videos from YouTube", error.message));
   }
 };
 
@@ -71,11 +72,11 @@ export const findProfessionalCourses = async (req, res) => {
       };
     });
 
-    res.status(200).json(courses);
+    res.status(200).json(ResponseGenerator.sendSuccess(courses, "Professional courses fetched successfully"));
 
   } catch (error) {
     console.log(`Error in Courses fetch: ${error.message}`);
-    res.status(500).json({ message: "Error Occur in Professional Courses fetch section" });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Error fetching professional courses", error.message));
   }
 };
 
@@ -99,17 +100,16 @@ export const generateRoadMap = async (req, res) => {
     // Clean the text to ensure it's valid JSON
     const cleanJson = JSON.parse(text.replace(/```json|```/g, ""));
 
-    res.status(200).json({
+    res.status(200).json(ResponseGenerator.sendSuccess({
       skill: skill,
       roadmap: cleanJson.roadmap
-    });
+    }, "AI Roadmap generated successfully"));
 
   } catch (error) {
     if (error.status === 503 && attempts < maxAttempts) {
       console.log(`Gemini server busy try again later`);
     }
-    console.error("AI Roadmap Error:", error);
-    res.status(500).json({ message: "Could not generate roadmap" });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Could not generate roadmap", error.message));
   }
 };
 
@@ -123,15 +123,14 @@ export const getAllSavedCoursesById = async (req, res) => {
     const findCourses = await resource_Model.find({ userId }).sort({ createdAt: -1 });
 
     if (!findCourses || findCourses.length === 0) {
-      return res.status(404).json({ message: "No saved courses found for this user." });
+      return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "No saved courses found for this user.", "Fetch failed"));
     }
 
-    return res.status(200).json(findCourses);
+    return res.status(200).json(ResponseGenerator.sendSuccess(findCourses, "Saved courses retrieved successfully"));
 
   } catch (error) {
-
     console.error("Error fetching saved resources:", error.message);
-    res.status(500).json({ message: "Server error while fetching resources" });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Server error while fetching resources", error.message));
 
   }
 };
@@ -152,7 +151,7 @@ export const saveResource = async (req, res) => {
     } = req.body;
 
     if (!userId || !skillId || !skillName || !videoTitle || !videoUrl || !userEmail || !scheduledTime) {
-      return res.status(400).json({ message: "Required fields are missing." });
+      return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "Required fields are missing.", "Save resource failed"));
     }
 
     const newResource = new resource_Model({
@@ -170,13 +169,10 @@ export const saveResource = async (req, res) => {
 
     const savedResource = await newResource.save();
 
-    res.status(200).json({
-      message: "Resource saved successfully",
-      savedResource,
-    });
+    res.status(200).json(ResponseGenerator.sendSuccess(savedResource, "Resource saved successfully"));
   } catch (error) {
     console.error("Error saving resource:", error.message);
-    res.status(500).json({ message: "Server error while saving resource" });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Server error while saving resource", error.message));
   }
 };
 
@@ -192,7 +188,7 @@ export const updateSaveResource = async (req, res) => {
     } = req.body;
 
     if (!id) {
-      return res.status(400).json({ message: "Resource ID (id) is required." });
+      return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "Resource ID (id) is required.", "Update failed"));
     }
 
     // Build the update object with only allowed fields
@@ -211,17 +207,14 @@ export const updateSaveResource = async (req, res) => {
     );
 
     if (!updatedResource) {
-      return res.status(404).json({ message: "Resource not found." });
+      return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Resource not found.", "Update failed"));
     }
 
-    res.status(200).json({
-      message: "Resource updated successfully",
-      updatedResource
-    });
+    res.status(200).json(ResponseGenerator.sendSuccess(updatedResource, "Resource updated successfully"));
 
   } catch (error) {
     console.error("Error occur while update saving resource:", error.message);
-    res.status(500).json({ message: "Server error while update saving resource" });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Server error while update saving resource", error.message));
   }
 };
 
@@ -231,18 +224,17 @@ export const deleteSavedResources = async (req, res) => {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ message: "Resource ID is required." });
+      return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "Resource ID is required.", "Delete failed"));
     }
 
     const result = await resource_Model.findByIdAndDelete(id);
 
     if (result) {
-      res.status(200).json({ message: "Resource Successfully Deleted" });
+      res.status(200).json(ResponseGenerator.sendSuccess(null, "Resource Successfully Deleted"));
     } else {
-      return res.status(404).json({ message: "Resource not found." });
+      return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Resource not found.", "Delete failed"));
     }
   } catch (error) {
-    console.log(`Error Occur while deleting resource....Error: ${error}`);
-    res.status(500).json({ message: "Error Occur while deleting resource." });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Error occurred while deleting resource.", error.message));
   }
 };

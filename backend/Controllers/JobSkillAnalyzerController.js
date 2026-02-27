@@ -1,6 +1,7 @@
 import axios from "axios";
 import process from "process";
 import SkillModel from "../Models/SkillModel.js";
+import ResponseGenerator from "../utils/ResponseGenerator.js";
 
 const MOCK_JOBS = [
   {
