@@ -2,174 +2,33 @@ import axios from "axios";
 import process from "process";
 import SkillModel from "../Models/SkillModel.js";
 import ResponseGenerator from "../utils/ResponseGenerator.js";
+import SavedJob from "../Models/SavedJobModel.js"
 
-const MOCK_JOBS = [
-  {
-    success: true,
-    user: {
-      name: "Aroshana Sandeep",
-      preferredField: "Software Engineering",
-    },
-    count: 10,
-    jobs: [
-      {
-        id: "3",
-        title: "Software Engineer",
-        company: "Rolls Royce",
-        field: "Engineering Jobs",
-        location: "Pear Tree, Derby",
-        description:
-          "Job Description Software Engineer Derby or Solihull 37 hours per week Permanent We are looking for Software Engineers to join our Software Systems Capability function in Derby or Solihull Why join Rolls-Royce? At Rolls-Royce we are proud to be a business that has truly helped to shape the modern world and are committed to always being a force for progress; powering, protecting and connecting people everywhere. By joining Rolls-Royce, you'll have the opportunity to work on world-class solutions,…",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 39514.05,
-        salary_max: 39514.05,
-        created: "2026-02-19T22:30:19Z",
-      },
-      {
-        id: "5603018176",
-        title: "Software Engineer",
-        company: "WALLACE HIND SELECTION LIMITED",
-        field: "IT Jobs",
-        location: "Wrexham Technology Park, Wrexham",
-        description:
-          "Based in North Wales, join a leading European manufacturing organisation renowned for innovative technologies and award-winning operations. As our Software Engineer, you will support and develop OT applications, integrate automation systems, and play a key role in driving smart factory and Industry 4.0 digital transformation initiatives. BASIC SALARY: £35,000 - £40,000 BENEFITS: · Early finish on Fridays – circa 20 Fridays off per year · Enhanced employer pension contributions · Reduced gym mem…",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 0,
-        salary_max: 40000,
-        created: "2026-01-28T09:22:39Z",
-      },
-      {
-        id: "5604684284",
-        title: "Software Engineer",
-        company: "WALLACE HIND SELECTION LIMITED",
-        field: "IT Jobs",
-        location: "Hoole, Chester",
-        description:
-          "Based in North Wales, join a leading European manufacturing organisation renowned for innovative technologies and award-winning operations. As our Software Engineer, you will support and develop OT applications, integrate automation systems, and play a key role in driving smart factory and Industry 4.0 digital transformation initiatives. BASIC SALARY: £35,000 - £40,000 BENEFITS: · Early finish on Fridays – circa 20 Fridays off per year · Enhanced employer pension contributions · Reduced gym mem…",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 0,
-        salary_max: 40000,
-        created: "2026-01-29T13:25:58Z",
-      },
-      {
-        id: "5608586973",
-        title: "Software Engineer",
-        company: "Anson Mccade",
-        field: "IT Jobs",
-        location: "Gloucester, Gloucestershire",
-        description:
-          "Day Rate: £650  (Inside IR35) Contract Length: 12 months Clearance Required: UKIC DV An opportunity is available for an experienced Software Engineer to support a high-profile national security programme, delivering solutions that have real-world impact across UK Government environments. This is a long-term day-rate contract with a strong on-site requirement, predominantly based at a Cheltenham customer site , with some travel to Gloucester . The Role You will join a growing engineering team wo…",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 66584.93,
-        salary_max: 66584.93,
-        created: "2026-02-01T11:22:05Z",
-      },
-      {
-        id: "5639752920",
-        title: "Software Engineer",
-        company: "Chroma Recruitment Ltd",
-        field: "IT Jobs",
-        location: "Wolverham, Ellesmere Port",
-        description:
-          "Chroma are working with a nationally recognised engineering services provider who are searching for a Control Systems Software Engineer to join their team due to investments increasing the scale of their projects. We're looking for a versatile and experienced Control Systems Software Engineer who is highly skilled in the design and coding of PLC software. Your role will involve designing, developing, and maintaining new control systems as well as reworking the existing code. Control Systems Sof…",
-        url: "https://www.google.com/search?q=control+systems+engineer+jobs",
-        salary_min: 42058.6,
-        salary_max: 42058.6,
-        created: "2026-02-21T11:39:11Z",
-      },
-      {
-        id: "5590275043",
-        title: "Software Engineer",
-        company: "WALLACE HIND SELECTION LIMITED",
-        field: "IT Jobs",
-        location: "Halton, Runcorn",
-        description:
-          "Based in North Wales, join a leading European manufacturing organisation renowned for innovative technologies and award-winning operations. As our Software Engineer, you will support and develop OT applications, integrate automation systems, and play a key role in driving smart factory and Industry 4.0 digital transformation initiatives. BASIC SALARY: £35,000 - £40,000 BENEFITS: · Early finish on Fridays – circa 20 Fridays off per year · Enhanced employer pension contributions · Reduced gym mem…",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 0,
-        salary_max: 40000,
-        created: "2026-01-18T07:12:42Z",
-      },
-      {
-        id: "5610466362",
-        title: "Software Engineer",
-        company: "Broadwood Resources Limited",
-        field: "IT Jobs",
-        location: "Buckie, Moray",
-        description:
-          "Benefits: Competitive salary  bonus Full-time position A great place to work within a supportive team Opportunity to work with one of the hottest new connected accounting systems globally Building competency jointly with the MD, with the opportunity to move into a management position Mileage allowance Pension Company Overview: This is an exciting opportunity to join an established IT solutions provider who is looking to appoint a motivated and focused Software Engineer for its Head Office in Cu…",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 30000,
-        salary_max: 30000,
-        created: "2026-02-02T17:07:19Z",
-      },
-      {
-        id: "5615157456",
-        title: "Software Engineer",
-        company: "Thales UK Limited",
-        field: "IT Jobs",
-        location: "Belfast, Northern Ireland",
-        description:
-          "Location: Belfast, United Kingdom Thales people architect solutions that are relied upon to deliver operational advantage at every decisive moment throughout the mission. Defence and armed forces customers rely on us to deliver the full range of defensive systems for land, sea, and air. From early warning, to threat neutralisation, our platforms cover all levels from very short-range systems, to extended protection across the entire battle-space including Airspace Mobility Solutions, Vehicles a…",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 55787.12,
-        salary_max: 55787.12,
-        created: "2026-02-05T04:07:51Z",
-      },
-      {
-        id: "5607334840",
-        title: "Software Engineer",
-        company: "JAM Recruitment Ltd",
-        field: "IT Jobs",
-        location: "Cheltenham, Gloucestershire",
-        description:
-          "DV Cleared Software Engineer (DBA / Data-Focused) Contract: 12 months Location: Cheltenham (5 days per week onsite, occasional travel to Gloucester) Rate: £500 - £570 per day (Umbrella, Inside IR35) Must hold live UKIC DV clearance About the Role An exciting opportunity has arisen for an experienced Software Engineer with a strong DBA background to support a growing national security programme based in Cheltenham. This role sits within a high-performing technical team delivering solutions that …",
-        url: "https://www.google.com/search?q=software+engineer+jobs",
-        salary_min: 130000,
-        salary_max: 148200,
-        created: "2026-01-31T09:00:44Z",
-      },
-      {
-        id: "1",
-        title: "Frontend UI Developer",
-        company: "Bennett & Game Recruitment",
-        field: "IT Jobs",
-        location: "Slough, Berkshire",
-        description:
-          "Position: Software EngineerLocation: Bristol or SloughSalary: £40,000-£45,000 My client is a long-established Engineering Services company supporting clients across the UK within the pharmaceutical and food processing sectors. They are looking to employ a junior software project engineer based in either Slough or Bristol although a significant amount of working from home can be expected once fully inducted. A clean driving licence and a willingness to travel to project sites is essential. As a …",
-        url: "https://www.google.com/search?q=frontend+developer+jobs",
-        salary_min: 40000,
-        salary_max: 45000,
-        created: "2026-02-11T23:09:45Z",
-      },
-    ],
-  },
-];
+
 
 
 
 // --- CREATE: Analyze and Save ---
 export const analyzeAndSaveSkills = async (req, res) => {
-    ////Extracts the JobId from the URL and userId from the body of the request.
     const { jobId } = req.params; 
-    const { userId } = req.body; 
+    const userEmail = req.user.email; // Consistent with your Trending Controller
 
     try {
-        //Checks the database (SkillModel) to see if this user has already analyzed this job. 
-        let existingSkillDoc = await SkillModel.findOne({ jobId, userId });
+        // Check if this specific job analysis already exists for this user
+        let existingSkillDoc = await SkillModel.findOne({ jobId, userId: userEmail });
         if (existingSkillDoc) return res.status(200).json(existingSkillDoc);
 
-        //Pulls a list of jobs from the mock data (Later change to fetch from DB)
-        const jobsArray = MOCK_JOBS[0].jobs;
-        //Searches that list to find the job that matches the provided jobId.
-        const selectedJob = jobsArray.find((j) => j.id === jobId);
-        if (!selectedJob) return res.status(404).json({ message: "Job not found" });
+        // FETCH FROM DATABASE instead of MOCK_JOBS
+        // We look for the job in the SavedJobModel collection
+        const selectedJob = await SavedJob.findOne({ jobId: jobId, username: userEmail });
+        
+        if (!selectedJob) {
+            return res.status(404).json({ message: "Job not found in your saved list" });
+        }
 
-
-        //Calls the fetchSkillsFromESCO helper function to fetch essential and optional skills
+        // Use the title from the DB to fetch ESCO skills
         const { essential, optional } = await fetchSkillsFromEsco(selectedJob.title);
 
-        //Defines a helper function that processes a list of skills, uses Promises.all for asynchronous enrichment
         const enrichData = async (list) => await Promise.all(
             list.map(async (skill) => ({ 
                 ...skill, 
@@ -179,12 +38,15 @@ export const analyzeAndSaveSkills = async (req, res) => {
             }))
         );
 
-        //Combines essential and optional skills into one array and saves it in the database.
+        // Create the analysis document using data from the database
         const newSkillDoc = await SkillModel.create({
-            userId,
-            jobId: selectedJob.id,
+            userId: userEmail,
+            jobId: selectedJob.jobId,
             jobTitle: selectedJob.title,
-            skills: [...(await enrichData(essential)), ...(await enrichData(optional))],
+            skills: [
+                ...(await enrichData(essential)), 
+                ...(await enrichData(optional))
+            ],
         });
        
         res.status(201).json(newSkillDoc);
@@ -192,7 +54,6 @@ export const analyzeAndSaveSkills = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 
 // --- READ: Get User Dashboard ---
