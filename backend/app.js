@@ -51,6 +51,7 @@ app.use("/api/upload", uploadRoutes);
 
 // Swagger Configuration
 app.use('/skill-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+//Swagger open URL : http://localhost:5000/skill-bridge-api-spec/
 
 // Basic health check
 app.get("/", (req, res) => {
