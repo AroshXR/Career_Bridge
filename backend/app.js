@@ -12,7 +12,7 @@ import userRoute from "./Routes/userRoute.js";
 import progress from "./Models/Progress.js";
 import learning_resource from "./Routes/learning_resourse_Route.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocs from "./swagger_spec.js";
+import swaggerDocs from "./swagger_docs/swagger_spec.js";
 import jobRoute from "./Routes/jobRoute.js";
 import skillRoute from "./Routes/skillRoute.js";
 import authRoutes from "./Routes/authRoutes.js";
@@ -43,7 +43,7 @@ app.use(cors());
 // Routes
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/progress", progress);
-app.use('/api/v1/jobs', jobRoute);
+app.use('/api/v1/trendingJobAnalyzer', jobRoute);
 app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
 app.use("/api/auth", authRoutes);

@@ -1,6 +1,7 @@
 import Progress from "../Models/Progress.js";
 import User from "../Models/User.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import ResponseGenerator from "../utils/ResponseGenerator.js";
 
 // 1️⃣ Start Skill (Create Progress)
 export const startSkill = async (req, res) => {
@@ -10,7 +11,7 @@ export const startSkill = async (req, res) => {
     const existingProgress = await Progress.findOne({ userId, skillId });
 
     if (existingProgress) {
-      return res.status(400).json({ message: "Skill already started" });
+      return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "Skill already started", "Start skill failed"));
     }
 
     const newProgress = new Progress({
@@ -23,9 +24,9 @@ export const startSkill = async (req, res) => {
 
     await newProgress.save();
 
-    res.status(201).json(newProgress);
+    res.status(201).json(ResponseGenerator.sendSuccess(newProgress, "Skill started successfully"));
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Start skill failed", error.message));
   }
 };
 
@@ -33,9 +34,9 @@ export const startSkill = async (req, res) => {
 export const getUserProgress = async (req, res) => {
   try {
     const progress = await Progress.find({ userId: req.params.userId });
-    res.status(200).json(progress);
+    res.status(200).json(ResponseGenerator.sendSuccess(progress, "User progress retrieved successfully"));
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Fetch progress failed", error.message));
   }
 };
 
@@ -47,7 +48,7 @@ export const completeTask = async (req, res) => {
     const progress = await Progress.findById(progressId);
 
     if (!progress) {
-      return res.status(404).json({ message: "Progress not found" });
+      return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Progress not found", "Task completion failed"));
     }
 
     progress.tasks[taskIndex].completed = true;
@@ -64,9 +65,9 @@ export const completeTask = async (req, res) => {
 
     await progress.save();
 
-    res.status(200).json(progress);
+    res.status(200).json(ResponseGenerator.sendSuccess(progress, "Task marked as completed"));
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Task completion failed", error.message));
   }
 };
 
@@ -107,9 +108,9 @@ export const checkReminder = async (req, res) => {
       await progress.save();
     }
 
-    res.status(200).json({ message: "Reminders processed", count: reminders.length });
+    res.status(200).json(ResponseGenerator.sendSuccess({ count: reminders.length }, "Reminders processed successfully"));
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Reminder processing failed", error.message));
   }
 };
 

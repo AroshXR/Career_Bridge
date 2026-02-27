@@ -1,4 +1,5 @@
 import User from "../Models/User.js";
+import ResponseGenerator from "../utils/ResponseGenerator.js";
 
 /**
  * Analyzes a user's progress across all courses.
@@ -10,14 +11,14 @@ export const analyzeUserProgress = async (req, res) => {
         const user = await User.findById(id);
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "User not found", "Progress analysis failed"));
         }
 
         const progress = user.progress || [];
         const totalCourses = progress.length;
 
         if (totalCourses === 0) {
-            return res.status(200).json({
+            return res.status(200).json(ResponseGenerator.sendSuccess({
                 userId: user.userId,
                 name: user.name,
                 summary: "No progress data available",
@@ -27,7 +28,7 @@ export const analyzeUserProgress = async (req, res) => {
                     completionRate: 0,
                     averageScore: 0
                 }
-            });
+            }, "No progress data available"));
         }
 
         const completedCourses = progress.filter(p => p.status === "Completed").length;
@@ -35,7 +36,7 @@ export const analyzeUserProgress = async (req, res) => {
         const averageScore = totalScore / totalCourses;
         const completionRate = (completedCourses / totalCourses) * 100;
 
-        res.status(200).json({
+        res.status(200).json(ResponseGenerator.sendSuccess({
             userId: user.userId,
             name: user.name,
             stats: {
@@ -45,8 +46,8 @@ export const analyzeUserProgress = async (req, res) => {
                 averageScore: averageScore.toFixed(2)
             },
             detailedProgress: progress
-        });
+        }, "User progress analyzed successfully"));
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Progress analysis failed", error.message));
     }
 };

@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import Splash from '../src/components/Splash/Splash';
-import Login from '../src/components/Login/Login';
-import Register from '../src/components/Register/Register';
-import Home from '../src/components/Home/Home';
-import TrendingJobAnalyzer from '../src/components/TrendingJobAnalyzer/TrendingJobAnalyzer';
-import SavedJobs from '../src/components/SavedJobs/SavedJobs';
-import LearningResources from '../src/components/Learning_Resources/learning_resources';
-import UserDashboard from '../src/components/Dashboards/dashboardUser';
+import Splash from './components/Splash/Splash';
+import Login from './components/Login/Login';
+import Register from './components/Register/Register';
+import Home from './components/Home/Home';
+import TrendingJobAnalyzer from './components/TrendingJobAnalyzer/TrendingJobAnalyzer';
+import SavedJobs from './components/SavedJobs/SavedJobs';
+import LearningResources from './components/Learning_Resources/learning_resources';
+import UserDashboard from './components/Dashboards/dashboardUser';
 import CvGenerator from '../src/components/CvGenerator/CvGenerator';
 
 function App() {

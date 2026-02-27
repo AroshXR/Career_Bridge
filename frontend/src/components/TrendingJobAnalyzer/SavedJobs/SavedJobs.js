@@ -10,7 +10,8 @@ const SavedJobs = () => {
     const [showUpdateSuccess, setShowUpdateSuccess] = useState(null);
     const navigate = useNavigate();
 
-    // No hardcoded username - fetched via token on backend
+    // Dummy username for simulation
+    const username = "aroshana_sandeep";
 
     useEffect(() => {
         fetchSavedJobs();
@@ -19,12 +20,9 @@ const SavedJobs = () => {
     const fetchSavedJobs = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (response.data.status === "00") {
-                setSavedJobs(response.data.data.jobs || []);
+            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs/${username}`);
+            if (response.data.success) {
+                setSavedJobs(response.data.savedJobs);
             }
             setLoading(false);
         } catch (err) {
@@ -37,13 +35,8 @@ const SavedJobs = () => {
     const handleDeleteJob = async (id) => {
         if (!window.confirm("Are you sure you want to remove this job?")) return;
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.delete(`http://localhost:5000/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (response.data.status === "00") {
-                setSavedJobs(savedJobs.filter(job => job._id !== id));
-            }
+            await axios.delete(`http://localhost:5000/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`);
+            setSavedJobs(savedJobs.filter(job => job._id !== id));
         } catch (err) {
             console.error("Error deleting job:", err);
             alert("Failed to delete job.");
@@ -52,12 +45,8 @@ const SavedJobs = () => {
 
     const handleUpdateJob = async (id, updates) => {
         try {
-            // Backend now uses PUT for update as requested by user
-            const token = localStorage.getItem('token');
-            const response = await axios.put(`http://localhost:5000/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (response.data.status === "00") {
+            const response = await axios.patch(`http://localhost:5000/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates);
+            if (response.data.success) {
                 setSavedJobs(savedJobs.map(job => job._id === id ? { ...job, ...updates } : job));
                 setShowUpdateSuccess(id);
                 setTimeout(() => setShowUpdateSuccess(null), 2000);
@@ -109,6 +98,8 @@ const SavedJobs = () => {
                             </div>
 
                             <div className="job-meta-row">
+
+
                                 <div className="notes-section">
                                     <label>Career Notes</label>
                                     <textarea
@@ -135,6 +126,14 @@ const SavedJobs = () => {
                             </div>
 
                             <div className="card-actions">
+                                <div className="action-left">
+                                    <button
+                                        className="apply-btn"
+                                        onClick={() => window.open(job.url, '_blank')}
+                                    >
+                                        {job.url === '#' ? 'Market Insights' : 'View on Adzuna'}
+                                    </button>
+                                </div>
                                 <button
                                     className="delete-btn"
                                     onClick={() => handleDeleteJob(job._id)}
