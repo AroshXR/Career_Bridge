@@ -19,6 +19,58 @@ const userSchema = new mongoose.Schema(
     portfolio: { type: String }, // Portfolio URL
     github: { type: String }, // GitHub URL
     linkedin: { type: String }, // LinkedIn URL
+
+    // ===== NEW CV FIELDS (ADD THIS ENTIRE BLOCK) =====
+    cvDetails: {
+      professionalSummary: { type: String },
+      education: [{
+        institution: String,
+        degree: String,
+        fieldOfStudy: String,
+        startDate: Date,
+        endDate: Date,
+        current: { type: Boolean, default: false },
+        description: String
+      }],
+      experience: [{
+        company: String,
+        position: String,
+        location: String,
+        startDate: Date,
+        endDate: Date,
+        current: { type: Boolean, default: false },
+        description: String,
+        achievements: [String]
+      }],
+      skills: [{
+        name: String,
+        level: { type: String, enum: ['Beginner', 'Intermediate', 'Advanced', 'Expert'] }
+      }],
+      languages: [{
+        name: String,
+        proficiency: { type: String, enum: ['Basic', 'Conversational', 'Professional', 'Native'] }
+      }],
+      certifications: [{
+        name: String,
+        issuingOrganization: String,
+        issueDate: Date,
+        credentialUrl: String
+      }],
+      projects: [{
+        name: String,
+        description: String,
+        technologies: [String],
+        githubLink: String,
+        liveLink: String
+      }],
+      achievements: [{
+        title: String,
+        description: String,
+        date: Date
+      }]
+    }
+    // ===== END OF NEW CV FIELDS =====
+
   },
   { timestamps: true }
 );

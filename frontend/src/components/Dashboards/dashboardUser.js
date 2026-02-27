@@ -362,6 +362,24 @@ const DashboardUser = () => {
           >
             Delete Account
           </button>
+
+          <button 
+            className="btn-generate-cv"
+            onClick={() => navigate('/cv-generator')}
+            style={{
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              margin: '10px 0'
+            }}
+          >
+            Generate Professional CV
+          </button>
+
         </div>
       </div>
 

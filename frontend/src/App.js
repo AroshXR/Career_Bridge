@@ -8,6 +8,7 @@ import TrendingJobAnalyzer from '../src/components/TrendingJobAnalyzer/TrendingJ
 import SavedJobs from '../src/components/SavedJobs/SavedJobs';
 import LearningResources from '../src/components/Learning_Resources/learning_resources';
 import UserDashboard from '../src/components/Dashboards/dashboardUser';
+import CvGenerator from '../src/components/CvGenerator/CvGenerator';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<UserDashboard />} />
+           <Route path="/cv-generator" element={<CvGenerator />} />
           <Route path="/job-analyzer" element={<TrendingJobAnalyzer />} />
           <Route path="/saved-jobs" element={<SavedJobs />} />
           <Route path="/learning-resources" element={<LearningResources />} />
