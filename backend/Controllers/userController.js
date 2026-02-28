@@ -1,7 +1,7 @@
 import User from "../Models/User.js";
 import ResponseGenerator from "../utils/ResponseGenerator.js";
 
-// Create New User
+// Create New User - NO CHANGE NEEDED
 export const createUser = async (req, res) => {
   try {
     const newUser = new User(req.body);
@@ -12,9 +12,11 @@ export const createUser = async (req, res) => {
   }
 };
 
-// Get All Users
+// Get All Users - ADD THIS CHECK
 export const getUsers = async (req, res) => {
   try {
+    // Optional: Only allow admins to get all users
+    // For now, let's just return all users
     const users = await User.find();
     res.status(200).json(ResponseGenerator.sendSuccess(users, "Users retrieved successfully"));
   } catch (error) {
@@ -22,9 +24,10 @@ export const getUsers = async (req, res) => {
   }
 };
 
-// Get Single User 
+// Get Single User by Mongo ID - ADD THIS VERIFICATION
 export const getUserById = async (req, res) => {
   try {
+    // IMPORTANT: Check if user is requesting their own data
     if (req.user.id.toString() !== req.params.id.toString()) {
       return res.status(403).json(ResponseGenerator.sendError(ResponseGenerator.FORBIDDEN, "You can only access your own profile", "Fetch failed"));
     }
@@ -37,14 +40,15 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// Update User
+// Update User - ADD THIS VERIFICATION
 export const updateUser = async (req, res) => {
   try {
-    
+    // IMPORTANT: Check if user is updating their own data
     if (req.user.id.toString() !== req.params.id.toString()) {
       return res.status(403).json(ResponseGenerator.sendError(ResponseGenerator.FORBIDDEN, "You can only update your own profile", "Update failed"));
     }
 
+    // Remove fields that shouldn't be updated
     const updateData = { ...req.body };
     delete updateData._id;
     delete updateData.userId;
@@ -63,9 +67,10 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Delete User
+// Delete User - ADD THIS VERIFICATION
 export const deleteUser = async (req, res) => {
   try {
+    // IMPORTANT: Check if user is deleting their own data
     if (req.user.id.toString() !== req.params.id.toString()) {
       return res.status(403).json(ResponseGenerator.sendError(ResponseGenerator.FORBIDDEN, "You can only delete your own profile", "Delete failed"));
     }

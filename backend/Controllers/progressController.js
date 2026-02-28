@@ -3,7 +3,7 @@ import User from "../Models/User.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import ResponseGenerator from "../utils/ResponseGenerator.js";
 
-//Create Progress
+// 1️⃣ Start Skill (Create Progress)
 export const startSkill = async (req, res) => {
   try {
     const { userId, skillId, skillName, tasks } = req.body;
@@ -30,7 +30,7 @@ export const startSkill = async (req, res) => {
   }
 };
 
-//Get User Progress
+// 2️⃣ Get User Progress
 export const getUserProgress = async (req, res) => {
   try {
     const progress = await Progress.find({ userId: req.params.userId });
@@ -40,7 +40,7 @@ export const getUserProgress = async (req, res) => {
   }
 };
 
-//Mark Task Completed
+// 3️⃣ Mark Task Completed
 export const completeTask = async (req, res) => {
   try {
     const { progressId, taskIndex } = req.body;
@@ -53,7 +53,7 @@ export const completeTask = async (req, res) => {
 
     progress.tasks[taskIndex].completed = true;
 
-    //Calculate percentage
+    // Calculate percentage
     const totalTasks = progress.tasks.length;
     const completedTasks = progress.tasks.filter(t => t.completed).length;
 
@@ -71,7 +71,7 @@ export const completeTask = async (req, res) => {
   }
 };
 
-//Check Reminder & Send Emails
+// 4️⃣ Check Reminder & Send Emails
 export const checkReminder = async (req, res) => {
   try {
     const today = new Date();
@@ -103,7 +103,7 @@ export const checkReminder = async (req, res) => {
 
       await sendEmail(user.email, subject, text, html);
 
-      // Update next reminder date
+      // Update next reminder date (+3 days)
       progress.nextReminderDate = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
       await progress.save();
     }

@@ -12,6 +12,8 @@ import jobRoute from "./Routes/jobRoute.js";
 import skillRoute from "./Routes/skillRoute.js";
 import authRoutes from "./Routes/authRoutes.js";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url"; // ADD THIS IMPORT
+
 
 dotenv.config();
 
