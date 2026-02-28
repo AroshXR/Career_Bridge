@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/users:
+ * /api/v1/users:
  *   post:
  *     summary: Create a new user (Admin/Internal use)
  *     tags: [User Management]
@@ -55,7 +55,7 @@
 
 /**
  * @swagger
- * /api/users:
+ * /api/v1/users:
  *   get:
  *     summary: Get all users
  *     tags: [User Management]
@@ -79,7 +79,7 @@
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/v1/users/{id}:
  *   get:
  *     summary: Get user profile by ID
  *     tags: [User Management]
@@ -101,7 +101,7 @@
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/v1/users/{id}:
  *   put:
  *     summary: Update user profile
  *     tags: [User Management]
@@ -136,7 +136,7 @@
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/v1/users/{id}:
  *   delete:
  *     summary: Delete user account
  *     tags: [User Management]
@@ -155,7 +155,7 @@
 
 /**
  * @swagger
- * /api/users/{id}/analyze:
+ * /api/v1/users/{id}/analyze:
  *   get:
  *     summary: Analyze user progress
  *     tags: [User Management]

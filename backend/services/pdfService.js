@@ -72,7 +72,7 @@ export const generatePDF = (cvData) => {
       
       doc.moveDown(0.5);
       
-      // EDUCATION SECTION (only if has data)
+      // EDUCATION SECTION
       if (hasData(cvData.education)) {
         doc.fontSize(16)
            .font('Helvetica-Bold')
@@ -94,7 +94,7 @@ export const generatePDF = (cvData) => {
         doc.moveDown(0.5);
       }
       
-      // EXPERIENCE SECTION (only if has data)
+      // EXPERIENCE SECTION
       if (hasData(cvData.experience)) {
         doc.fontSize(16)
            .font('Helvetica-Bold')
@@ -124,7 +124,7 @@ export const generatePDF = (cvData) => {
         doc.moveDown(0.5);
       }
       
-      // SKILLS SECTION (only if has data)
+      // SKILLS SECTION
       if (hasData(cvData.skills)) {
         doc.fontSize(16)
            .font('Helvetica-Bold')
@@ -138,7 +138,7 @@ export const generatePDF = (cvData) => {
            .moveDown(0.5);
       }
       
-      // LANGUAGES SECTION (only if has data)
+      // LANGUAGES SECTION
       if (hasData(cvData.languages)) {
         doc.fontSize(16)
            .font('Helvetica-Bold')
@@ -153,7 +153,7 @@ export const generatePDF = (cvData) => {
         doc.moveDown(0.5);
       }
       
-      // PROJECTS SECTION (only if has data)
+      // PROJECTS SECTION
       if (hasData(cvData.projects)) {
         doc.fontSize(16)
            .font('Helvetica-Bold')
@@ -176,7 +176,7 @@ export const generatePDF = (cvData) => {
         });
       }
       
-      // ACHIEVEMENTS SECTION (only if has data)
+      // ACHIEVEMENTS SECTION
       if (hasData(cvData.achievements)) {
         doc.fontSize(16)
            .font('Helvetica-Bold')

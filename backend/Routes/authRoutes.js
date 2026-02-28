@@ -1,8 +1,18 @@
 import express from "express";
-import bcrypt from "bcryptjs";
-import User from "../Models/User.js";
+import {
+  checkEnv,
+  testAuth,
+  register,
+  login
+} from "../Controllers/authController.js";
 
 const router = express.Router();
+
+// Route to check environment variables
+router.get("/check-env", checkEnv);
+
+// Test route
+router.get("/test", testAuth);
 
 // Route for user registration
 router.post("/register", register);

@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/users/cv/generate:
+ * /api/v1/users/cv/generate:
  *   post:
  *     summary: Generate a professional CV PDF
  *     tags: [CV Management]
@@ -51,7 +51,7 @@
 
 /**
  * @swagger
- * /api/users/cv/save:
+ * /api/v1/users/cv/save:
  *   post:
  *     summary: Save CV details to user profile
  *     tags: [CV Management]
@@ -70,7 +70,7 @@
 
 /**
  * @swagger
- * /api/users/cv/my-cv:
+ * /api/v1/users/cv/my-cv:
  *   get:
  *     summary: Get current user's saved CV data
  *     tags: [CV Management]
@@ -83,7 +83,7 @@
 
 /**
  * @swagger
- * /api/users/cv/import/github:
+ * /api/v1/users/cv/import/github:
  *   post:
  *     summary: Import profile data from GitHub
  *     tags: [CV Management]
@@ -107,7 +107,7 @@
 
 /**
  * @swagger
- * /api/users/cv/skills/{jobRole}:
+ * /api/v1/users/cv/skills/{jobRole}:
  *   get:
  *     summary: Get skill suggestions for a job role
  *     tags: [CV Management]

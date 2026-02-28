@@ -8,7 +8,7 @@ export const generateCV = async (req, res) => {
   try {
     const cvData = req.body;
     
-    // Filter out empty sections
+  
     const filteredData = {
       personal: {
         name: cvData.personal?.name || req.user.name,

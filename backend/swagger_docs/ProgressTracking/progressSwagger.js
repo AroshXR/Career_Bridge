@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/progress:
+ * /api/v1/progress:
  *   post:
  *     summary: Start learning a new skill
  *     tags: [Progress Tracking]
@@ -40,7 +40,7 @@
 
 /**
  * @swagger
- * /api/progress/user/{userId}:
+ * /api/v1/progress/user/{userId}:
  *   get:
  *     summary: Get all progress records for a user
  *     tags: [Progress Tracking]
@@ -57,7 +57,7 @@
 
 /**
  * @swagger
- * /api/progress/complete-task:
+ * /api/v1/progress/complete-task:
  *   put:
  *     summary: Mark a specific task as completed
  *     tags: [Progress Tracking]
@@ -80,7 +80,7 @@
 
 /**
  * @swagger
- * /api/progress/reminder/send:
+ * /api/v1/progress/reminder/send:
  *   get:
  *     summary: Manually trigger reminder emails
  *     tags: [Progress Tracking]
