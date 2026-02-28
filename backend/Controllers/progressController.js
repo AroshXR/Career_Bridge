@@ -3,7 +3,7 @@ import User from "../Models/User.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import ResponseGenerator from "../utils/ResponseGenerator.js";
 
-// 1️⃣ Start Skill (Create Progress)
+// Start Skill
 export const startSkill = async (req, res) => {
   try {
     const { userId, skillId, skillName, tasks } = req.body;
@@ -30,7 +30,7 @@ export const startSkill = async (req, res) => {
   }
 };
 
-// 2️⃣ Get User Progress
+//Get User Progress
 export const getUserProgress = async (req, res) => {
   try {
     const progress = await Progress.find({ userId: req.params.userId });
@@ -40,7 +40,7 @@ export const getUserProgress = async (req, res) => {
   }
 };
 
-// 3️⃣ Mark Task Completed
+//Mark Task Completed
 export const completeTask = async (req, res) => {
   try {
     const { progressId, taskIndex } = req.body;
@@ -71,7 +71,7 @@ export const completeTask = async (req, res) => {
   }
 };
 
-// 4️⃣ Check Reminder & Send Emails
+//Check Reminder & Send Emails
 export const checkReminder = async (req, res) => {
   try {
     const today = new Date();
@@ -114,4 +114,4 @@ export const checkReminder = async (req, res) => {
   }
 };
 
-//Progress COntroller
+//Progress Controller
