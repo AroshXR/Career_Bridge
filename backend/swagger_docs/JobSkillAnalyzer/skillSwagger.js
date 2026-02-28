@@ -116,9 +116,6 @@
  *       - in: path
  *         name: skillId
  *         required: true
- *       - in: query
- *         name: userId
- *         required: true
  *     responses:
  *       200:
  *         description: Skill removed successfully
@@ -152,9 +149,6 @@
  *     parameters:
  *       - in: path
  *         name: jobId
- *         required: true
- *       - in: query
- *         name: userId
  *         required: true
  *     responses:
  *       200:
