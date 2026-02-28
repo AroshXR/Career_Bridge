@@ -1,12 +1,12 @@
-# Career Bridge: AI-Powered Career Development Platform
+# Career Bridge: Career Development Platform
 
-Career Bridge is a comprehensive, intelligent platform designed to bridge the gap between current skills and the rapidly evolving job market. By leveraging AI-driven analytics, the platform helps users identify trending roles, analyze required skills, and generate personalized learning roadmaps.
+Career Bridge is a comprehensive, intelligent platform designed to bridge the gap between current skills and the rapidly evolving job market. By leveraging advanced analytics, the platform helps users identify trending roles, analyze required skills, and generate personalized learning roadmaps.
 
 ## 🚀 Core Features
 
-### 1. **AI Trending Job Analyzer**
+### 1. **Trending Job Analyzer**
 *   Aggregates live market signals from **JSearch** and **Adzuna**.
-*   Uses **Google Gemini AI** to predict the top 25 high-growth roles for 2026.
+*   Uses generative models to predict the top 25 high-growth roles for 2026.
 *   Personalized filtering by industry (IT, Finance, Engineering, etc.).
 
 ### 2. **Intelligent Job Skill Analyzer**
@@ -15,7 +15,7 @@ Career Bridge is a comprehensive, intelligent platform designed to bridge the ga
 
 ### 3. **Dynamic Learning Resource Generator**
 *   Searches **YouTube** and **Dailymotion** for targeted learning content based on specific skills.
-*   Generates AI-powered **10-step learning roadmaps** to master new technologies.
+*   Generates 10-step learning roadmaps to master new technologies.
 
 ### 4. **User Career Dashboard**
 *   Secure authentication using **JWT**.
@@ -34,7 +34,7 @@ Career Bridge is a comprehensive, intelligent platform designed to bridge the ga
 ### **Backend**
 *   **Node.js & Express**: Scalable server-side architecture.
 *   **MongoDB & Mongoose**: Flexible NoSQL data storage.
-*   **Google Gemini AI**: Powering intelligent analytics and roadmap generation.
+*   **Generative Models**: Powering intelligent analytics and roadmap generation.
 *   **Swagger (OpenAPI)**: Comprehensive and interactive API documentation.
 
 ### **Integrations**
