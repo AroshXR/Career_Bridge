@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     github: { type: String }, // GitHub URL
     linkedin: { type: String }, // LinkedIn URL
 
-    // ===== NEW CV FIELDS (ADD THIS ENTIRE BLOCK) =====
+   
     cvDetails: {
       professionalSummary: { type: String },
       education: [{
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
         date: Date
       }]
     }
-    // ===== END OF NEW CV FIELDS =====
+    
 
   },
   { timestamps: true }
