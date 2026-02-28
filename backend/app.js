@@ -6,10 +6,10 @@ import {configDotenv} from "dotenv";
 
 configDotenv();
 import path from "path";
-import { fileURLToPath } from "url"; // ADD THIS IMPORT
+import { fileURLToPath } from "url"; 
 
 import userRoute from "./Routes/userRoute.js";
-import progress from "./Models/Progress.js";
+import progressRoutes from "./Routes/progressRoutes.js";
 import learning_resource from "./Routes/learning_resourse_Route.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocs from "./swagger_docs/swagger_spec.js";
@@ -42,7 +42,7 @@ app.use(cors());
 
 // Routes
 app.use("/api/v1/users", userRoute);
-app.use("/api/v1/progress", progress);
+app.use("/api/v1/progress", progressRoutes);
 app.use('/api/v1/trendingJobAnalyzer', jobRoute);
 app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
