@@ -1,0 +1,152 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './SavedJobs.css';
+
+const SavedJobs = () => {
+    const [savedJobs, setSavedJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [showUpdateSuccess, setShowUpdateSuccess] = useState(null);
+    const navigate = useNavigate();
+
+    // Dummy username for simulation
+    const username = "aroshana_sandeep";
+
+    useEffect(() => {
+        fetchSavedJobs();
+    }, []);
+
+    const fetchSavedJobs = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs/${username}`);
+            if (response.data.success) {
+                setSavedJobs(response.data.savedJobs);
+            }
+            setLoading(false);
+        } catch (err) {
+            console.error("Error fetching saved jobs:", err);
+            setError("Failed to load saved jobs. Please ensure the backend server is running.");
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteJob = async (id) => {
+        if (!window.confirm("Are you sure you want to remove this job?")) return;
+        try {
+            await axios.delete(`http://localhost:5000/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`);
+            setSavedJobs(savedJobs.filter(job => job._id !== id));
+        } catch (err) {
+            console.error("Error deleting job:", err);
+            alert("Failed to delete job.");
+        }
+    };
+
+    const handleUpdateJob = async (id, updates) => {
+        try {
+            const response = await axios.patch(`http://localhost:5000/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates);
+            if (response.data.success) {
+                setSavedJobs(savedJobs.map(job => job._id === id ? { ...job, ...updates } : job));
+                setShowUpdateSuccess(id);
+                setTimeout(() => setShowUpdateSuccess(null), 2000);
+            }
+        } catch (err) {
+            console.error("Error updating job:", err);
+            alert("Failed to update job.");
+        }
+    };
+
+    if (loading) return <div className="loader">Loading your saved jobs...</div>;
+
+    return (
+        <div className="saved-jobs-container">
+            <header className="saved-jobs-header">
+                <button className="back-btn" onClick={() => navigate('/home')}>← Back to Dashboard</button>
+                <h1>My Saved Jobs</h1>
+                <p>You have {savedJobs.length} jobs saved.</p>
+            </header>
+
+            {error && <div className="error-message">{error}</div>}
+
+            <div className="job-feed">
+                {savedJobs.length === 0 ? (
+                    <div className="empty-state">
+                        <div className="empty-icon">🔖</div>
+                        <h3>No saved jobs yet</h3>
+                        <p>Browse the Job Analyzer and save opportunities you're interested in.</p>
+                        <button className="browse-btn" onClick={() => navigate('/job-analyzer')}>
+                            Browse Trending Jobs
+                        </button>
+                    </div>
+                ) : (
+                    savedJobs.map((job) => (
+                        <div key={job._id} className="feed-card">
+                            <div className="card-header">
+                                <div className="job-info">
+                                    <h3 className="job-title">{job.title}</h3>
+                                    <p className="post-date text-muted">Saved on {new Date(job.savedAt).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+
+                            <div className="card-body">
+                                <p className="job-description">
+                                    {job.description && job.description.length > 200
+                                        ? `${job.description.substring(0, 200)}...`
+                                        : job.description}
+                                </p>
+                            </div>
+
+                            <div className="job-meta-row">
+
+
+                                <div className="notes-section">
+                                    <label>Career Notes</label>
+                                    <textarea
+                                        className="notes-textarea"
+                                        placeholder="Add notes about your interest, interview dates, etc..."
+                                        defaultValue={job.notes || ''}
+                                        id={`notes-${job._id}`}
+                                    ></textarea>
+                                    <div className="update-btn-container">
+                                        <button
+                                            className="update-notes-btn"
+                                            onClick={() => {
+                                                const newNote = document.getElementById(`notes-${job._id}`).value;
+                                                handleUpdateJob(job._id, { notes: newNote });
+                                            }}
+                                        >
+                                            Update Notes
+                                        </button>
+                                        {showUpdateSuccess === job._id && (
+                                            <span className="update-indicator">✓ Saved!</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="card-actions">
+                                <div className="action-left">
+                                    <button
+                                        className="apply-btn"
+                                        onClick={() => window.open(job.url, '_blank')}
+                                    >
+                                        {job.url === '#' ? 'Market Insights' : 'View on Adzuna'}
+                                    </button>
+                                </div>
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => handleDeleteJob(job._id)}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default SavedJobs;

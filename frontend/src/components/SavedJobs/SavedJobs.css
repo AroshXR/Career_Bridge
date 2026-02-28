@@ -1,0 +1,230 @@
+.saved-jobs-container {
+    width: 100%;
+    margin: 0;
+    padding: 3rem 2rem;
+    background-color: #f3f2ef;
+    min-height: 100vh;
+}
+
+.saved-jobs-header {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #0a66c2;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.back-btn:hover {
+    text-decoration: underline;
+}
+
+.saved-jobs-header h1 {
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    margin: 0 0 0.2rem;
+}
+
+.saved-jobs-header p {
+    color: #666e75;
+    margin: 0;
+}
+
+.empty-state {
+    text-align: center;
+    background: white;
+    padding: 4rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #666e75;
+    margin-bottom: 2rem;
+}
+
+.browse-btn {
+    background-color: #0a66c2;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.browse-btn:hover {
+    background-color: #004182;
+}
+
+.feed-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.job-info h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #1a1a1a;
+}
+
+.post-date {
+    margin: 0.1rem 0 0;
+    font-size: 0.8rem;
+    color: #666e75;
+}
+
+.card-body {
+    margin-bottom: 1.5rem;
+}
+
+.job-description {
+    font-size: 0.95rem;
+    color: #404040;
+    line-height: 1.5;
+}
+
+.job-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: #f8fafc;
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.notes-section {
+    width: 100%;
+}
+
+.notes-section label {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.notes-textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    transition: all 0.2s;
+    background: #ffffff;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.notes-textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.update-btn-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.update-notes-btn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.update-notes-btn:hover {
+    background: #4f46e5;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    transform: translateY(-1px);
+}
+
+.update-indicator {
+    font-size: 0.85rem;
+    color: #22c55e;
+    font-weight: 600;
+    animation: fadeIn 0.3s ease;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1.2rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.delete-btn {
+    background: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.delete-btn:hover {
+    background: #ef4444;
+    color: white;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
