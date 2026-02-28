@@ -20,7 +20,12 @@ const skillModelSchema = new mongoose.Schema({
             importance: String, // 'Essential' or 'Optional'
             description: String,
             altLabels: [String],
-            userNote: { type: String, default: "" } // For the 'Edit' feature
+            userNote: { type: String, default: "" }, // For the 'Edit' feature
+            status: { 
+                type: String, 
+                enum: ['pending', 'completed'], 
+                default: 'pending'
+            }
         }
     ],
     roadmap: [
