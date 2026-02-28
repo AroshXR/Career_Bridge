@@ -6,7 +6,7 @@ import {configDotenv} from "dotenv";
 
 configDotenv();
 import path from "path";
-import { fileURLToPath } from "url"; // ADD THIS IMPORT
+import { fileURLToPath } from "url";
 
 import userRoute from "./Routes/userRoute.js";
 import progress from "./Models/Progress.js";

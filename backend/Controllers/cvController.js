@@ -1,6 +1,6 @@
 import User from "../Models/User.js";
 import { generatePDF } from "../services/pdfService.js";
-import { fetchGitHubData, getTrendingSkills } from "../services/thirdPartyApiService.js"; // Removed getMockLinkedInData
+import { fetchGitHubData, getTrendingSkills } from "../services/thirdPartyApiService.js"; 
 
 // @desc    Generate PDF without saving
 // @route   POST /api/v1/users/cv/generate
@@ -8,7 +8,6 @@ export const generateCV = async (req, res) => {
   try {
     const cvData = req.body;
     
-    // Filter out empty sections
     const filteredData = {
       personal: {
         name: cvData.personal?.name || req.user.name,
@@ -52,7 +51,6 @@ export const saveCVData = async (req, res) => {
       userId,
       { 
         cvDetails: cvData,
-        // Also update main profile fields if provided
         phone: cvData.personal?.phone || req.user.phone,
         github: cvData.personal?.github || req.user.github,
         linkedin: cvData.personal?.linkedin || req.user.linkedin,
@@ -80,8 +78,7 @@ export const getMyCV = async (req, res) => {
     const userId = req.user.id;
     
     const user = await User.findById(userId).select('cvDetails phone github linkedin portfolio name email');
-    
-    // Format response to include both cvDetails and basic info
+
     const responseData = {
       personal: {
         name: user.name,
@@ -118,7 +115,7 @@ export const importFromGitHub = async (req, res) => {
     const githubData = await fetchGitHubData(githubUsername);
     
     if (!githubData) {
-      // Return mock data for demo if GitHub API fails
+    
       return res.json({
         success: true,
         data: {

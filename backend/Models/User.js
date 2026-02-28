@@ -9,18 +9,15 @@ const userSchema = new mongoose.Schema(
     birthday: { type: Date },
     age: { type: Number },
     industrialPreference: { type: [String] }, // skills
-    background: { type: String },
-    university: { type: String },
-    cv: { type: String }, // CV/Resume URL
-    profilePicture: { type: String, default: "" },
-    
-    // Additional fields from dashboard
-    phone: { type: String },
-    portfolio: { type: String }, // Portfolio URL
-    github: { type: String }, // GitHub URL
-    linkedin: { type: String }, // LinkedIn URL
+    background: { type: String },                           //background
+    university: { type: String },                          //Uni
+    cv: { type: String },                               // CV URL
+    profilePicture: { type: String, default: "" },       //Profile Number
+    phone: { type: String },                            //Phone number
+    portfolio: { type: String },                        // Portfolio URL
+    github: { type: String },                           // GitHub URL
+    linkedin: { type: String },                         // LinkedIn URL
 
-    // ===== NEW CV FIELDS (ADD THIS ENTIRE BLOCK) =====
     cvDetails: {
       professionalSummary: { type: String },
       education: [{
@@ -69,7 +66,6 @@ const userSchema = new mongoose.Schema(
         date: Date
       }]
     }
-    // ===== END OF NEW CV FIELDS =====
 
   },
   { timestamps: true }

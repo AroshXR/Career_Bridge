@@ -45,10 +45,10 @@ if (!fs.existsSync("uploads/cvs")) {
 const uploadProfile = multer({ storage: profileStorage });
 const uploadCV = multer({ storage: cvStorage });
 
-// Upload profile picture - ADD AUTH MIDDLEWARE
+// Upload profile picture 
 router.post("/profile-picture/:userId", authMiddleware, uploadProfile.single("image"), async (req, res) => {
   try {
-    // ADD THIS CHECK - Verify user is uploading to their own account
+    //Verify user is uploading to their own account
     if (req.user.id !== req.params.userId) {
       return res.status(403).json({ message: 'You can only upload to your own profile' });
     }
@@ -64,10 +64,10 @@ router.post("/profile-picture/:userId", authMiddleware, uploadProfile.single("im
   }
 });
 
-// Upload CV - ADD AUTH MIDDLEWARE
+// Upload CV
 router.post("/cv/:userId", authMiddleware, uploadCV.single("cv"), async (req, res) => {
   try {
-    // ADD THIS CHECK - Verify user is uploading to their own account
+    //Verify user is uploading to their own account
     if (req.user.id !== req.params.userId) {
       return res.status(403).json({ message: 'You can only upload to your own profile' });
     }
