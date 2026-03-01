@@ -1,72 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link } from "react-router-dom";
 import "./dashboardUser.css";
 
-const DashboardUser = () => {
-  const navigate = useNavigate();
+const UserDashboard = () => {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    birthday: "",
-    age: "",
-    industrialPreference: [],
-    background: "",
-    university: "",
-    cv: "",
-    profilePicture: "",
-    portfolio: "",
-    github: "",
-    linkedin: ""
-  });
-  const [previewImage, setPreviewImage] = useState(null);
+  const [formData, setFormData] = useState({ ...user });
+  const [previewImage, setPreviewImage] = useState(user.profilePic);
 
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem("user"));
-    const token = localStorage.getItem("token");
-    if (!savedUser || !token) {
-      navigate("/login");
-      return;
-    }
-    setUser(savedUser);
-    fetchUser(savedUser._id);
-  }, [navigate]);
+    fetchUser();
+  }, []);
 
-  const fetchUser = async (id) => {
+  const fetchUser = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/api/v1/users/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.data) {
-        setUser(response.data);
-        setFormData({
-          name: response.data.name || "",
-          email: response.data.email || "",
-          phone: response.data.phone || "",
-          birthday: response.data.birthday ? response.data.birthday.split("T")[0] : "",
-          age: response.data.age || "",
-          industrialPreference: Array.isArray(response.data.industrialPreference)
-            ? response.data.industrialPreference
-            : (response.data.industrialPreference ? response.data.industrialPreference.split(",").map(s => s.trim()) : []),
-          background: response.data.background || "",
-          university: response.data.university || "",
-          cv: response.data.cv || "",
-          profilePicture: response.data.profilePicture || "",
-          portfolio: response.data.portfolio || "",
-          github: response.data.github || "",
-          linkedin: response.data.linkedin || ""
-        });
-        setPreviewImage(response.data.profilePicture || "");
-      }
+      const response = await fetch(
+        "http://localhost:5000/api/users/:_id",
+      );
+      const data = await response.json();
+      setUser(data);
+      setFormData(data);
     } catch (error) {
       console.error("Error fetching user:", error);
+    }
+  };
+
+  const handleCVUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        cvFile: file,
+        cvName: file.name,
+      }));
     }
   };
 
@@ -78,183 +45,43 @@ const DashboardUser = () => {
     }));
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:5000/api/upload/profile-picture/${user._id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            'Authorization': `Bearer ${token}`
-          },
-        }
-      );
-
-      if (response.data.imageUrl) {
-        setPreviewImage(response.data.imageUrl);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
         setFormData((prev) => ({
           ...prev,
-          profilePicture: response.data.imageUrl,
+          profilePic: reader.result,
         }));
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      alert("Failed to upload image");
-    } finally {
-      setUploading(false);
+      };
+      reader.readAsDataURL(file);
     }
-  };
-
-  const handleCVUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("cv", file);
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `http://localhost:5000/api/upload/cv/${user._id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            'Authorization': `Bearer ${token}`
-          },
-
-        }
-      );
-
-      if (response.data.cvUrl) {
-        setFormData((prev) => ({
-          ...prev,
-          cv: response.data.cvUrl,
-        }));
-        alert("CV uploaded successfully!");
-      }
-    } catch (error) {
-      console.error("Error uploading CV:", error);
-      alert("Failed to upload CV");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const calculateAge = (birthday) => {
-    if (!birthday) return "";
-    const birthDate = new Date(birthday);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Calculate age from birthday
-      const calculatedAge = formData.birthday ? calculateAge(formData.birthday) : formData.age;
-
-      // Prepare data for update
-      const updateData = {
-        name: formData.name,
-        phone: formData.phone || undefined,
-        birthday: formData.birthday || undefined,
-        age: calculatedAge || undefined,
-        industrialPreference: formData.industrialPreference.filter(s => s), // Remove empty strings
-        background: formData.background || undefined,
-        university: formData.university || undefined,
-        cv: formData.cv || undefined,
-        profilePicture: previewImage || formData.profilePicture || undefined,
-        portfolio: formData.portfolio || undefined,
-        github: formData.github || undefined,
-        linkedin: formData.linkedin || undefined
-      };
-
-      // Remove undefined fields
-      Object.keys(updateData).forEach(key =>
-        updateData[key] === undefined && delete updateData[key]
-      );
-
-      const token = localStorage.getItem("token");
-      const response = await axios.put(
-        `http://localhost:5000/api/v1/users/${user._id}`,
-        updateData,
+      const response = await fetch(
+        `http://localhost:5000/api/users/${user._id}`,
         {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`
           },
+          body: JSON.stringify(formData),
         }
       );
 
-      if (response.data) {
-        setUser(response.data);
-        localStorage.setItem("user", JSON.stringify(response.data));
-        setShowModal(false);
-        alert("Profile updated successfully!");
-      }
+      const updatedData = await response.json();
+      setUser(updatedData);
+      setShowModal(false);
     } catch (error) {
       console.error("Error updating user:", error);
-      alert("Failed to update profile");
     }
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
-
-  const handleDeleteAccount = async () => {
-    // Show confirmation dialog
-    const confirmDelete = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
-
-    if (!confirmDelete) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(
-        `http://localhost:5000/api/v1/users/${user._id}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
-
-      // Clear local storage
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-
-      // Redirect to login
-      navigate("/login");
-
-    } catch (error) {
-      console.error("Error deleting account:", error);
-      alert("Failed to delete account. Please try again.");
-    }
-  };
-
-
-  if (!user) {
-    return <div className="loading">Loading...</div>;
-  }
 
   return (
     <div className="div29_user_dashboard">
@@ -262,7 +89,7 @@ const DashboardUser = () => {
       <div className="div33_left_profile">
         <div className="div41_photo_wrap">
           <img
-            src={user.profilePicture || "https://via.placeholder.com/150"}
+            src={user.profilePic}
             alt="profile"
             className="img7_profile_avatar"
           />
@@ -270,7 +97,7 @@ const DashboardUser = () => {
 
         <div className="div54_user_meta">
           <h2 className="h2_user_name">{user.name}</h2>
-          <span className="p_user_id">ID: {user.userId}</span>
+          <span className="p_user_id">ID: {user.id}</span>
         </div>
 
         {/* detail bars */}
@@ -281,88 +108,32 @@ const DashboardUser = () => {
           </div>
           <div className="div65_detail_bar">
             <span className="span18_label">Phone</span>
-            <span className="span19_value">{user.phone || "Not set"}</span>
+            <span className="span19_value">{user.phone}</span>
           </div>
           <div className="div65_detail_bar">
-            <span className="span18_label">Birthday</span>
-            <span className="span19_value">
-              {user.birthday ? new Date(user.birthday).toLocaleDateString() : "Not set"}
-            </span>
+            <span className="span18_label">Location</span>
+            <span className="span19_value">{user.location}</span>
           </div>
           <div className="div65_detail_bar">
-            <span className="span18_label">Age</span>
-            <span className="span19_value">{user.age || "Not set"}</span>
+            <span className="span18_label">Title</span>
+            <span className="span19_value">{user.title}</span>
           </div>
           <div className="div65_detail_bar">
-            <span className="span18_label">University</span>
-            <span className="span19_value">{user.university || "Not set"}</span>
+            <span className="span18_label">Since</span>
+            <span className="span19_value">{user.memberSince}</span>
           </div>
           <div className="div65_detail_bar">
-            <span className="span18_label">Background</span>
-            <span className="span19_value">{user.background || "Not set"}</span>
+            <span className="span18_label">Jobs saved</span>
+            <span className="span19_value">{user.savedJobsCount}</span>
           </div>
-          <div className="div65_detail_bar">
-            <span className="span18_label">Skills</span>
-            <span className="span19_value">
-              {Array.isArray(user.industrialPreference)
-                ? user.industrialPreference.join(", ")
-                : user.industrialPreference || "None"}
-            </span>
-          </div>
-          {user.portfolio && (
-            <div className="div65_detail_bar">
-              <span className="span18_label">Portfolio</span>
-              <a href={user.portfolio} target="_blank" rel="noopener noreferrer" className="span19_value link">
-                View Portfolio
-              </a>
-            </div>
-          )}
-          {user.github && (
-            <div className="div65_detail_bar">
-              <span className="span18_label">GitHub</span>
-              <a href={user.github} target="_blank" rel="noopener noreferrer" className="span19_value link">
-                GitHub Profile
-              </a>
-            </div>
-          )}
-          {user.linkedin && (
-            <div className="div65_detail_bar">
-              <span className="span18_label">LinkedIn</span>
-              <a href={user.linkedin} target="_blank" rel="noopener noreferrer" className="span19_value link">
-                LinkedIn Profile
-              </a>
-            </div>
-          )}
-          {user.cv && (
-            <div className="div65_detail_bar">
-              <span className="span18_label">CV</span>
-              <a href={user.cv} target="_blank" rel="noopener noreferrer" className="span19_value link">
-                View CV
-              </a>
-            </div>
-          )}
         </div>
 
-        <div className="button_group">
-          <button
-            className="button8_update_profile"
-            onClick={() => setShowModal(true)}
-          >
-            Update Profile
-          </button>
-          <button
-            className="button8_logout"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-          <button
-            className="button8_delete_account"
-            onClick={handleDeleteAccount}
-          >
-            Delete Account
-          </button>
-        </div>
+        <button
+          className="button8_update_profile"
+          onClick={() => setShowModal(true)}
+        >
+          ✎ Update profile
+        </button>
       </div>
 
       {/* RIGHT PANEL - four clickable cards */}
@@ -380,6 +151,9 @@ const DashboardUser = () => {
             <div className="recent_activity_item">
               <span>Yesterday</span> Applied to Frontend Dev
             </div>
+            <div className="recent_activity_item">
+              <span>2 days ago</span> Updated profile
+            </div>
           </div>
           <div className="view_all_link">View all activity →</div>
         </Link>
@@ -387,10 +161,14 @@ const DashboardUser = () => {
         {/* Recommended Card */}
         <Link to="/recommended" className="dashboard_card card_recommended">
           <h4 className="h4_section_title">⚡ Recommended for You</h4>
+          <p style={{ marginBottom: "1rem", color: "#2c3e6d" }}>
+            Based on your skills and interests:
+          </p>
           <div className="recommended_skills">
-            {(user.industrialPreference || ["React.js", "Node.js"]).map((skill, idx) => (
-              <span key={idx} className="skill_tag">{skill}</span>
-            ))}
+            <span className="skill_tag">React.js</span>
+            <span className="skill_tag">UI/UX Design</span>
+            <span className="skill_tag">TypeScript</span>
+            <span className="skill_tag">Node.js</span>
           </div>
           <div className="view_all_link">See all recommendations →</div>
         </Link>
@@ -401,14 +179,30 @@ const DashboardUser = () => {
           <div className="div113_progress_container">
             <div className="div114_progress_stat">
               <span>Profile completeness</span>
-              <span>{calculateProfileCompleteness(user)}%</span>
+              <span>{user.progress}%</span>
             </div>
             <div className="progress17_bar_full">
               <div
                 className="progress18_fill"
-                style={{ width: `${calculateProfileCompleteness(user)}%` }}
+                style={{ width: `${user.progress}%` }}
               ></div>
             </div>
+            <div className="div114_progress_stat">
+              <span>Applications</span>
+              <span>2/5 completed</span>
+            </div>
+            <div className="progress17_bar_full">
+              <div className="progress18_fill" style={{ width: "40%" }}></div>
+            </div>
+            <p
+              style={{
+                fontSize: "0.95rem",
+                marginTop: "1rem",
+                color: "#314d8c",
+              }}
+            >
+              Next milestone: Add portfolio
+            </p>
           </div>
           <div className="view_all_link">View detailed progress →</div>
         </Link>
@@ -419,7 +213,15 @@ const DashboardUser = () => {
           <ul className="ul22_saved_jobs">
             <li className="li23_job_item">
               <span className="span24_job_badge">Full-time</span>
-              Software Engineer
+              Senior React Dev · TechCorp
+            </li>
+            <li className="li23_job_item">
+              <span className="span24_job_badge">Remote</span>
+              Product Designer · DesignStudio
+            </li>
+            <li className="li23_job_item">
+              <span className="span24_job_badge">Intern</span>
+              Junior ML Engineer · AI Labs
             </li>
           </ul>
           <div className="view_all_link">View all saved jobs →</div>
@@ -429,7 +231,7 @@ const DashboardUser = () => {
       {/* Profile Update Modal */}
       {showModal && (
         <div className="modal_overlay">
-          <div className="modal_content modal_content_large">
+          <div className="modal_content">
             <div className="modal_header">
               <h2>Update Profile</h2>
               <button
@@ -446,7 +248,7 @@ const DashboardUser = () => {
                 <label>Profile Photo</label>
                 <div className="photo_upload_container">
                   <img
-                    src={previewImage || "https://via.placeholder.com/150"}
+                    src={previewImage}
                     alt="Preview"
                     className="photo_preview"
                   />
@@ -456,14 +258,14 @@ const DashboardUser = () => {
                     onChange={handleImageUpload}
                     className="photo_input"
                     id="photo-upload"
-                    disabled={uploading}
                   />
                   <label htmlFor="photo-upload" className="photo_upload_label">
-                    {uploading ? "Uploading..." : "Choose Image"}
+                    Choose Image
                   </label>
                 </div>
               </div>
 
+              {/* Form Fields - 2 column layout */}
               <div className="form_row">
                 <div className="form_group">
                   <label>Full Name *</label>
@@ -473,8 +275,10 @@ const DashboardUser = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
+                    placeholder="Enter your full name"
                   />
                 </div>
+
                 <div className="form_group">
                   <label>Email *</label>
                   <input
@@ -482,7 +286,8 @@ const DashboardUser = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    disabled
+                    required
+                    placeholder="Enter your email"
                   />
                 </div>
               </div>
@@ -495,57 +300,76 @@ const DashboardUser = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="+1 234 567 8900"
+                    placeholder="Enter phone number"
                   />
                 </div>
+
                 <div className="form_group">
-                  <label>Birthday</label>
+                  <label>Location</label>
                   <input
-                    type="date"
-                    name="birthday"
-                    value={formData.birthday}
+                    type="text"
+                    name="location"
+                    value={formData.location}
                     onChange={handleInputChange}
+                    placeholder="City, Country"
                   />
                 </div>
               </div>
 
               <div className="form_row">
                 <div className="form_group">
-                  <label>University</label>
+                  <label>Professional Title</label>
                   <input
                     type="text"
-                    name="university"
-                    value={formData.university}
+                    name="title"
+                    value={formData.title}
                     onChange={handleInputChange}
-                    placeholder="University of Colombo"
+                    placeholder="e.g., Senior Developer"
                   />
                 </div>
+
                 <div className="form_group">
-                  <label>Background/Field</label>
-                  <input
-                    type="text"
-                    name="background"
-                    value={formData.background}
+                  <label>Experience</label>
+                  <select
+                    name="experience"
+                    value={formData.experience}
                     onChange={handleInputChange}
-                    placeholder="Computer Science"
-                  />
+                  >
+                    <option value="0-2 years">0-2 years</option>
+                    <option value="3-5 years">3-5 years</option>
+                    <option value="5-8 years">5-8 years</option>
+                    <option value="8+ years">8+ years</option>
+                  </select>
                 </div>
               </div>
 
-              <div className="form_group full_width">
-                <label>Skills (comma separated)</label>
-                <input
-                  type="text"
-                  name="industrialPreference"
-                  value={formData.industrialPreference.join(", ")}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      industrialPreference: e.target.value.split(",").map((s) => s.trim()).filter(s => s),
-                    })
-                  }
-                  placeholder="React.js, Node.js, MongoDB"
-                />
+              <div className="form_row">
+                <div className="form_group">
+                  <label>Education</label>
+                  <input
+                    type="text"
+                    name="education"
+                    value={formData.education}
+                    onChange={handleInputChange}
+                    placeholder="Highest degree"
+                  />
+                </div>
+
+                <div className="form_group">
+                  <label>Skills (comma separated)</label>
+                  <input
+                    type="text"
+                    name="skills"
+                    value={formData.skills.join(", ")}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        skills: e.target.value.split(",").map((s) => s.trim()),
+                      })
+                    }
+                    placeholder="React, Node.js, Python"
+                  />
+                </div>
               </div>
 
               <div className="form_row">
@@ -559,6 +383,7 @@ const DashboardUser = () => {
                     placeholder="https://yourportfolio.com"
                   />
                 </div>
+
                 <div className="form_group">
                   <label>GitHub URL</label>
                   <input
@@ -572,7 +397,6 @@ const DashboardUser = () => {
               </div>
 
               <div className="form_row">
-                {/* LinkedIn Field */}
                 <div className="form_group">
                   <label>LinkedIn URL</label>
                   <input
@@ -584,9 +408,8 @@ const DashboardUser = () => {
                   />
                 </div>
 
-                {/* CV Upload Field - Now in the same row */}
                 <div className="form_group">
-                  <label>CV/Resume</label>
+                  <label>Upload CV (PDF)</label>
                   <div className="cv_upload_container">
                     <input
                       type="file"
@@ -594,18 +417,42 @@ const DashboardUser = () => {
                       onChange={handleCVUpload}
                       className="cv_input"
                       id="cv-upload"
-                      disabled={uploading}
                     />
                     <label htmlFor="cv-upload" className="cv_upload_label">
-                      {uploading ? "Uploading..." : " Upload CV"}
+                      <span className="cv_upload_icon">📄</span>
+                      Choose CV File
                     </label>
-                    {formData.cv && (
-                      <a href={formData.cv} target="_blank" rel="noopener noreferrer" className="view_cv_link">
-                        View
-                      </a>
+                    {formData.cvName && (
+                      <div className="cv_file_info">
+                        <span className="cv_file_name">{formData.cvName}</span>
+                        <button
+                          type="button"
+                          className="cv_remove_btn"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              cvFile: null,
+                              cvName: "",
+                            })
+                          }
+                        >
+                          ✕
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
+              </div>
+
+              <div className="form_group full_width">
+                <label>Bio</label>
+                <textarea
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleInputChange}
+                  rows="4"
+                  placeholder="Tell us about yourself..."
+                ></textarea>
               </div>
 
               <div className="modal_footer">
@@ -616,8 +463,8 @@ const DashboardUser = () => {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="save_btn" disabled={uploading}>
-                  {uploading ? "Uploading..." : "Save Changes"}
+                <button type="submit" className="save_btn">
+                  Save Changes
                 </button>
               </div>
             </form>
@@ -628,21 +475,6 @@ const DashboardUser = () => {
   );
 };
 
-// Helper function to calculate profile completeness
-const calculateProfileCompleteness = (user) => {
-  const fields = [
-    'profilePicture', 'phone', 'birthday', 'university', 'background',
-    'industrialPreference', 'portfolio', 'github', 'linkedin', 'cv'
-  ];
+export default UserDashboard;
 
-  const filledFields = fields.filter(field => {
-    const value = user[field];
-    if (!value) return false;
-    if (Array.isArray(value)) return value.length > 0;
-    return true;
-  });
-
-  return Math.round((filledFields.length / fields.length) * 100);
-};
-
-export default DashboardUser;
+//dashboard
