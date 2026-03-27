@@ -16,14 +16,14 @@ export const analyzeAndSaveSkills = async (req, res) => {
     try {
         // Check if this specific job analysis already exists for this user
         let existingSkillDoc = await SkillModel.findOne({ jobId, userId: userEmail });
-        if (existingSkillDoc) return res.status(200).json(existingSkillDoc);
+        if (existingSkillDoc) return res.status(200).json(ResponseGenerator.sendSuccess(existingSkillDoc, "Analysis already exists"));
 
         // FETCH FROM DATABASE instead of MOCK_JOBS
         // We look for the job in the SavedJobModel collection
         const selectedJob = await SavedJob.findOne({ jobId: jobId, username: userEmail });
         
         if (!selectedJob) {
-            return res.status(404).json({ message: "Job not found in your saved list" });
+            return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Job not found in your saved list", "Skill analysis failed"));
         }
 
         // Use the title from the DB to fetch ESCO skills
@@ -49,9 +49,9 @@ export const analyzeAndSaveSkills = async (req, res) => {
             ],
         });
        
-        res.status(201).json(newSkillDoc);
+        res.status(201).json(ResponseGenerator.sendSuccess(newSkillDoc, "Skill analysis completed and saved"));
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, error.message, "Analysis failed"));
     }
 };
 
@@ -64,9 +64,9 @@ export const getMySavedSkills = async (req, res) => {
     try {
         //Queries the DB for all skill documents associated with that userId
         const mySkills = await SkillModel.find({ userId }).sort({ updatedAt: -1 });
-        res.status(200).json(mySkills);
+        res.status(200).json(ResponseGenerator.sendSuccess(mySkills, "Saved skills retrieved successfully"));
     } catch (error) {
-        res.status(500).json({ error: "Fetch failed" });
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Fetch failed", error.message));
     }
 };
 
@@ -80,7 +80,7 @@ export const updateSkillDetails = async (req, res) => {
     const { userNote, importance, status, userId } = req.body;
 
     //checks if userId is provided in the request body
-    if (!userId) return res.status(400).json({ message: "userId is required" });
+    if (!userId) return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Update failed"));
 
     //Finds the specific skill within the skills array of the relevant document and updates it.
     try {
@@ -96,11 +96,11 @@ export const updateSkillDetails = async (req, res) => {
             { new: true }
         );
 
-        if (!updatedDoc) return res.status(404).json({ message: "Skill not found" });
+        if (!updatedDoc) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Skill not found", "Update failed"));
 
-        res.status(200).json(updatedDoc);
+        res.status(200).json(ResponseGenerator.sendSuccess(updatedDoc, "Skill details updated successfully"));
     } catch (error) {
-        res.status(500).json({ error: "Update failed", details: error.message });
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Update failed", error.message));
     }
 };
 
@@ -115,7 +115,7 @@ export const removeSkillFromList = async (req, res) => {
     const userId = req.query.userId;
 
     //checks if userId is provided in the query parameers
-    if (!userId) return res.status(400).json({ message: "userId is required" });
+    if (!userId) return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Delete failed"));
 
     //Finds the specific skill within the skills array and removes it 
     try {
@@ -126,10 +126,10 @@ export const removeSkillFromList = async (req, res) => {
         );
 
         //If the skill or document isn't found, it returns a 404 error. Otherwise, it returns the updated document with the skill removed.
-        if (!updatedDoc) return res.status(404).json({ message: "Skill not found" });
-        res.status(200).json(updatedDoc);
+        if (!updatedDoc) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Skill not found", "Delete failed"));
+        res.status(200).json(ResponseGenerator.sendSuccess(updatedDoc, "Skill removed successfully"));
     } catch (error) {
-        res.status(500).json({ error: "Delete skill failed" });
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Delete skill failed", error.message));
     }
 };
 
@@ -141,14 +141,14 @@ export const deleteFullAnalysis = async (req, res) => {
   const { jobId } = req.params;
   const userId = req.query.userId;
 
-    if (!userId) return res.status(400).json({ message: "userId is required" });
+    if (!userId) return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Delete failed"));
 
     try {
         const deletedDoc = await SkillModel.findOneAndDelete({ jobId, userId });
-        if (!deletedDoc) return res.status(404).json({ message: "Analysis not found" });
-        res.status(200).json({ message: "Analysis removed successfully" });
+        if (!deletedDoc) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Analysis not found", "Delete failed"));
+        res.status(200).json(ResponseGenerator.sendSuccess(null, "Analysis removed successfully"));
     } catch (error) {
-        res.status(500).json({ error: "Delete analysis failed" });
+        res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Delete analysis failed", error.message));
     }
 };
 

@@ -7,6 +7,7 @@ const router = Router();
 router.get("/search_resource/:skill", auth, skillSearch);
 router.get("/search_professional/:skill", auth, findProfessionalCourses);
 router.get("/roadmap/:skill", auth, generateRoadMap);
+
 router.get("/get-by-id/:userId", auth, getAllSavedCoursesById);
 router.post("/save-resource", auth, saveResource);
 router.put("/update-save-resource", auth, updateSaveResource);
