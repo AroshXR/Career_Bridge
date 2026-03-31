@@ -1,9 +1,21 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
 
 const Home = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const token = queryParams.get('token');
+
+        if (token) {
+            localStorage.setItem('token', token);
+            // After saving the token, remove it from the URL by replacing history state
+            navigate('/home', { replace: true });
+        }
+    }, [location, navigate]);
 
     const menuItems = [
         {
