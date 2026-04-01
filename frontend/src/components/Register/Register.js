@@ -49,15 +49,17 @@ const Register = () => {
 
             console.log("Registration response:", response.data);
 
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            
+            if (response.data.status === "00") {
+                localStorage.setItem('token', response.data.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.data.user));
+            }
+
             // Show success message
             alert('Registration successful! Please login.');
-            
+
             // Redirect to login page (not home)
             navigate('/login');
-            
+
         } catch (err) {
             console.error("Full error object:", err);
             console.error("Error response:", err.response);
@@ -75,10 +77,10 @@ const Register = () => {
                     <div className="form-row">
                         <div className="form-group">
                             <label>First Name</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 name="firstName"
-                                placeholder="John" 
+                                placeholder="John"
                                 value={formData.firstName}
                                 onChange={handleChange}
                                 required
@@ -86,10 +88,10 @@ const Register = () => {
                         </div>
                         <div className="form-group">
                             <label>Last Name</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 name="lastName"
-                                placeholder="Doe" 
+                                placeholder="Doe"
                                 value={formData.lastName}
                                 onChange={handleChange}
                                 required
@@ -98,10 +100,10 @@ const Register = () => {
                     </div>
                     <div className="form-group">
                         <label>Email Address</label>
-                        <input 
-                            type="email" 
+                        <input
+                            type="email"
                             name="email"
-                            placeholder="example@mail.com" 
+                            placeholder="example@mail.com"
                             value={formData.email}
                             onChange={handleChange}
                             required
@@ -109,10 +111,10 @@ const Register = () => {
                     </div>
                     <div className="form-group">
                         <label>Password</label>
-                        <input 
-                            type="password" 
+                        <input
+                            type="password"
                             name="password"
-                            placeholder="Create a password" 
+                            placeholder="Create a password"
                             value={formData.password}
                             onChange={handleChange}
                             required
@@ -121,10 +123,10 @@ const Register = () => {
                     </div>
                     <div className="form-group">
                         <label>Confirm Password</label>
-                        <input 
-                            type="password" 
+                        <input
+                            type="password"
                             name="confirmPassword"
-                            placeholder="Repeat your password" 
+                            placeholder="Repeat your password"
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             required

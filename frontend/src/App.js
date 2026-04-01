@@ -8,21 +8,27 @@ import TrendingJobAnalyzer from './components/TrendingJobAnalyzer/TrendingJobAna
 import SavedJobs from './components/SavedJobs/SavedJobs';
 import LearningResources from './components/Learning_Resources/learning_resources';
 import UserDashboard from './components/Dashboards/dashboardUser';
+import Navbar from './components/Common/Navbar';
+import Footer from './components/Common/Footer';
 
 function App() {
   return (
     <Router>
       <div className="App">
-        <Routes>
-          <Route path="/" element={<Splash />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/profile" element={<UserDashboard />} />
-          <Route path="/job-analyzer" element={<TrendingJobAnalyzer />} />
-          <Route path="/saved-jobs" element={<SavedJobs />} />
-          <Route path="/learning-resources" element={<LearningResources />} />
-        </Routes>
+        <Navbar />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Splash />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/profile" element={<UserDashboard />} />
+            <Route path="/job-analyzer" element={<TrendingJobAnalyzer />} />
+            <Route path="/saved-jobs" element={<SavedJobs />} />
+            <Route path="/learning-resources" element={<LearningResources />} />
+          </Routes>
+        </main>
+        <Footer />
       </div>
     </Router>
   );

@@ -26,7 +26,16 @@ const DashboardUser = () => {
   const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem("user"));
+    let savedUser = null;
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored && stored !== "undefined") {
+        savedUser = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error("Error parsing user from localStorage:", e);
+    }
+
     const token = localStorage.getItem("token");
     if (!savedUser || !token) {
       navigate("/login");
@@ -44,26 +53,27 @@ const DashboardUser = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (response.data) {
-        setUser(response.data);
+      if (response.data && response.data.status === "00") {
+        const userData = response.data.data;
+        setUser(userData);
         setFormData({
-          name: response.data.name || "",
-          email: response.data.email || "",
-          phone: response.data.phone || "",
-          birthday: response.data.birthday ? response.data.birthday.split("T")[0] : "",
-          age: response.data.age || "",
-          industrialPreference: Array.isArray(response.data.industrialPreference)
-            ? response.data.industrialPreference
-            : (response.data.industrialPreference ? response.data.industrialPreference.split(",").map(s => s.trim()) : []),
-          background: response.data.background || "",
-          university: response.data.university || "",
-          cv: response.data.cv || "",
-          profilePicture: response.data.profilePicture || "",
-          portfolio: response.data.portfolio || "",
-          github: response.data.github || "",
-          linkedin: response.data.linkedin || ""
+          name: userData.name || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
+          birthday: userData.birthday ? userData.birthday.split("T")[0] : "",
+          age: userData.age || "",
+          industrialPreference: Array.isArray(userData.industrialPreference)
+            ? userData.industrialPreference
+            : (userData.industrialPreference ? userData.industrialPreference.split(",").map(s => s.trim()) : []),
+          background: userData.background || "",
+          university: userData.university || "",
+          cv: userData.cv || "",
+          profilePicture: userData.profilePicture || "",
+          portfolio: userData.portfolio || "",
+          github: userData.github || "",
+          linkedin: userData.linkedin || ""
         });
-        setPreviewImage(response.data.profilePicture || "");
+        setPreviewImage(userData.profilePicture || "");
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -203,9 +213,10 @@ const DashboardUser = () => {
         }
       );
 
-      if (response.data) {
-        setUser(response.data);
-        localStorage.setItem("user", JSON.stringify(response.data));
+      if (response.data && response.data.status === "00") {
+        const userData = response.data.data;
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
         setShowModal(false);
         alert("Profile updated successfully!");
       }

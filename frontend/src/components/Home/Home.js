@@ -47,7 +47,7 @@ const Home = () => {
         <div className="home-container">
             <header className="home-header">
                 <div className="header-content">
-                    <h1>Skill Bridge Dashboard</h1>
+                    <h1>Career Bridge Dashboard</h1>
                     <p>Unlock your potential and bridge the gap to your dream career.</p>
                 </div>
                 <div className="user-profile">

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { log } from "node:console"
 import express from "express";
 import cors from "cors";
-import {configDotenv} from "dotenv";
+import { configDotenv } from "dotenv";
 
 configDotenv();
 import path from "path";
@@ -27,8 +27,8 @@ const app = express();
 
 //  middleware - bawa chnaged
 app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
+    origin: "http://localhost:3000",
+    credentials: true
 }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
@@ -50,11 +50,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // Swagger Configuration
-app.use('/skill-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/career-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Basic health check
 app.get("/", (req, res) => {
-    res.send("Skill Bridge Backend is running...");
+    res.send("Career Bridge Backend is running...");
 });
 
 const db_connect = async () => {

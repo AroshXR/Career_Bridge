@@ -8,7 +8,7 @@ const Splash = () => {
     return (
         <div className="splash-container">
             <div className="splash-content">
-                <h1>Skill Bridge</h1>
+                <h1>Career Bridge</h1>
                 <p>Bridge the gap between your skills and your dream career.</p>
                 <button
                     className="get-started-btn"
@@ -16,6 +16,11 @@ const Splash = () => {
                 >
                     Get Started
                 </button>
+            </div>
+            <span className="rule_splash"> <hr /> </span>
+            <div className="splash-content-2">
+                <h2>Career Bridge</h2>
+                <p>Bridge the gap between your skills and your dream career.</p>
             </div>
         </div>
     );
