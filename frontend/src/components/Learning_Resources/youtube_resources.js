@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './learning_resources.css';
+import './youtube_resources.css';
 import ResourcesSave from './resources_save';
 import ResourcesManage from './resources_manage';
 
-function LearningResources() {
+function YoutubeResources() {
+  const navigate = useNavigate();
   const [skill, setSkill] = useState('');
   const [loading, setLoading] = useState(false);
   const [youtubeVideos, setYoutubeVideos] = useState([]);
-  const [professionalCourses, setProfessionalCourses] = useState([]);
-  const [roadmap, setRoadmap] = useState([]);
-  const [activeTab, setActiveTab] = useState('youtube');
   const [error, setError] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [savingResource, setSavingResource] = useState(null);
@@ -37,18 +36,18 @@ function LearningResources() {
     setLoading(true);
     setError(null);
     try {
-      const [ytRes, profRes, roadmapRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/v1/resources/search_resource/${skill}`),
-        axios.get(`http://localhost:5000/api/v1/resources/search_professional/${skill}`),
-        axios.get(`http://localhost:5000/api/v1/resources/roadmap/${skill}`)
-      ]);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      };
 
-      setYoutubeVideos(ytRes.data);
-      setProfessionalCourses(profRes.data);
-      setRoadmap(roadmapRes.data.roadmap);
+      const ytRes = await axios.get(`http://localhost:5000/api/v1/resources/search_resource/${skill}`, config);
+      setYoutubeVideos(ytRes.data?.data || []);
     } catch (err) {
-      console.error("Error fetching resources:", err);
-      setError("Failed to fetch resources. Please try again.");
+      const apiErrorMsg = err.response?.data?.error?.errorDescription || err.response?.data?.message;
+      console.error("Error fetching resources:", err.response || err);
+      setError(apiErrorMsg ? `Failed to fetch: ${apiErrorMsg}` : `Failed to fetch resources: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -58,16 +57,17 @@ function LearningResources() {
     <div className="learning-container_learn">
       <div className="search-header_learn">
         <div className="header-top_learn">
-          <h1>Find Your Learning Path</h1>
-          <button className="manage-toggle_btn" onClick={() => setShowManage(true)}>
+          <h1>Find Your Learning Path - YouTube Resources</h1>
+          <button className="manage-toggle-btn_learn" onClick={() => setShowManage(true)}>
             My Saved Resources 🔖
           </button>
         </div>
-        <p>Search for any skill and we'll find the best resources for you.</p>
+        <p>Search for any skill to find the best YouTube tutorials for you.</p>
+        
         <form onSubmit={handleSearch} className="search-box_learn">
           <input
             type="text"
-            placeholder="What do you want to learn? (e.g. React, Python, UI Design)"
+            placeholder="What do you want to learn? (e.g. React, Python)"
             value={skill}
             onChange={(e) => setSkill(e.target.value)}
           />
@@ -75,6 +75,15 @@ function LearningResources() {
             {loading ? 'Processing...' : 'Search'}
           </button>
         </form>
+
+        <div className="nav-buttons-container_learn">
+            <button className="nav-btn_learn" onClick={() => navigate('/professional-courses')}>
+              Search Professional Courses
+            </button>
+            <button className="nav-btn_learn" onClick={() => navigate('/learning-roadmap')}>
+              Generate Roadmap
+            </button>
+        </div>
       </div>
 
       {error && <div className="error-message_learn">{error}</div>}
@@ -87,39 +96,15 @@ function LearningResources() {
               <div className="sphere-outer_learn"></div>
             </div>
             <div className="loading-text_learn">
-              <span className="text-line_learn">Analyzing your request...</span>
               <span className="text-line_learn">Finding the best learning paths...</span>
-              <span className="text-line_learn">Curating premium resources...</span>
             </div>
           </div>
         </div>
       )}
 
-      {!loading && (youtubeVideos.length > 0 || professionalCourses.length > 0 || roadmap.length > 0) && (
+      {!loading && youtubeVideos.length > 0 && (
         <div className="results-wrapper_learn">
-          <div className="tabs_learn">
-            <button
-              className={activeTab === 'youtube' ? 'tab_learn active_learn' : 'tab_learn'}
-              onClick={() => setActiveTab('youtube')}
-            >
-              YouTube Tutorials
-            </button>
-            <button
-              className={activeTab === 'professional' ? 'tab_learn active_learn' : 'tab_learn'}
-              onClick={() => setActiveTab('professional')}
-            >
-              Professional Courses
-            </button>
-            <button
-              className={activeTab === 'roadmap' ? 'tab_learn active_learn' : 'tab_learn'}
-              onClick={() => setActiveTab('roadmap')}
-            >
-              Learning Roadmap
-            </button>
-          </div>
-
           <div className="tab-content_learn">
-            {activeTab === 'youtube' && (
               <div className="resource-grid_learn">
                 {youtubeVideos.map((video) => (
                   <div key={video.videoId} className="resource-card_learn">
@@ -139,7 +124,7 @@ function LearningResources() {
                         </button>
                         <button
                           onClick={() => setSavingResource({ ...video, title: video.title })}
-                          className="save-btn_learn_inline"
+                          className="save-btn-inline_learn"
                         >
                           Save
                         </button>
@@ -148,55 +133,6 @@ function LearningResources() {
                   </div>
                 ))}
               </div>
-            )}
-
-            {activeTab === 'professional' && (
-              <div className="resource-grid_learn">
-                {professionalCourses.map((course, index) => (
-                  <div key={index} className="resource-card_learn">
-                    <div className="card-image_learn">
-                      <img src={course.thumbnail} alt={course.title} />
-                      <span className="platform-badge_learn prof_learn">{course.platform}</span>
-                    </div>
-                    <div className="card-info_learn">
-                      <h3>{course.title}</h3>
-                      <div className="course-meta_learn">
-                        <span>Duration: {course.duration}</span>
-                        <span className="price_learn">{course.price}</span>
-                      </div>
-                      <div className="card-actions_learn">
-                        <button
-                          onClick={() => window.open(course.videoUrl, '_blank', 'noopener,noreferrer')}
-                          className="view-btn_learn"
-                        >
-                          Go to Course
-                        </button>
-                        <button
-                          onClick={() => setSavingResource({ ...course })}
-                          className="save-btn_learn_inline"
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'roadmap' && (
-              <div className="roadmap-container_learn">
-                <div className="roadmap-line_learn"></div>
-                {roadmap.map((step, index) => (
-                  <div key={index} className="roadmap-item_learn">
-                    <div className="step-number_learn">{index + 1}</div>
-                    <div className="step-content_learn">
-                      <p>{step}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -230,4 +166,4 @@ function LearningResources() {
   );
 }
 
-export default LearningResources;
+export default YoutubeResources;

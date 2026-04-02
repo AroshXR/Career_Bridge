@@ -18,7 +18,7 @@ const Home = () => {
             title: 'Skill Courses',
             description: 'Enhance your expertise with curated courses tailored for you.',
             icon: '🎓',
-            path: '/courses'
+            path: '/learning-resources'
         },
         {
             id: 'job-search',
@@ -40,6 +40,13 @@ const Home = () => {
             description: 'Manage your skills, experience, and career preferences.',
             icon: '👤',
             path: '/profile'
+        },
+        {
+            id: 'economy',
+            title: 'Country Economy',
+            description: 'Analyze global economic trends and job market indicators.',
+            icon: '🌐',
+            path: '/economy'
         }
     ];
 

@@ -16,14 +16,14 @@ const Login = () => {
                 email,
                 password
             });
-            
+
             // Store both token and user data
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-            
+            localStorage.setItem('token', response.data.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.data.user));
+
             navigate('/home');
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            setError(err.response?.data?.error?.errorDescription || err.response?.data?.message || 'Login failed');
         }
     };
 
@@ -35,8 +35,8 @@ const Login = () => {
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
                         <label>Email Address</label>
-                        <input 
-                            type="email" 
+                        <input
+                            type="email"
                             placeholder="Enter your email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -45,8 +45,8 @@ const Login = () => {
                     </div>
                     <div className="form-group">
                         <label>Password</label>
-                        <input 
-                            type="password" 
+                        <input
+                            type="password"
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}

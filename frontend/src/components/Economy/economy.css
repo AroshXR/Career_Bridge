@@ -1,0 +1,363 @@
+:root {
+    --eco-bg: #0b0f19;
+    --eco-panel: rgba(15, 23, 42, 0.6);
+    --eco-primary: #00f2fe;
+    --eco-secondary: #4facfe;
+    --eco-accent: #10b981;
+    --eco-danger: #f43f5e;
+    --eco-border: rgba(255, 255, 255, 0.08);
+}
+
+.eco-hub_eco {
+    background: var(--eco-bg);
+    min-height: 100vh;
+    color: #f1f5f9;
+    font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+/* Intelligence Bar */
+.eco-nav-bar_eco {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11, 15, 25, 0.8);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--eco-border);
+    padding: 15px 30px;
+}
+
+.eco-nav-inner_eco {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eco-nav-brand_eco {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.eco-brand-glow_eco {
+    width: 12px;
+    height: 12px;
+    background: var(--eco-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--eco-primary);
+}
+
+.eco-brand-name_eco {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 0;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.eco-nav-form_eco {
+    display: flex;
+    gap: 12px;
+}
+
+.eco-select-wrapper_eco {
+    position: relative;
+    min-width: 200px;
+}
+
+.eco-nav-select_eco {
+    width: 100%;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--eco-border);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.eco-nav-select_eco:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.eco-nav-select_eco:focus {
+    border-color: var(--eco-primary);
+    box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.1);
+}
+
+.eco-nav-btn_eco {
+    background: linear-gradient(135deg, var(--eco-primary), var(--eco-secondary));
+    color: #0b0f19;
+    border: none;
+    padding: 0 25px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.eco-nav-btn_eco:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 242, 254, 0.3);
+}
+
+.eco-nav-btn_eco:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.eco-back-btn_eco {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid var(--eco-border);
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-left: 20px;
+}
+
+.eco-back-btn_eco:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Main Content area */
+.eco-main-stage_eco {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Welcome Stage */
+.eco-welcome-stage_eco {
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.eco-welcome-card_eco h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.eco-welcome-card_eco p {
+    color: #64748b;
+    font-size: 1.2rem;
+}
+
+/* Loader */
+.eco-hero-loader_eco {
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+.eco-orb-container_eco {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.eco-orb_eco {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top-color: var(--eco-primary);
+    border-radius: 50%;
+    animation: ecoRotate_eco 1.5s linear infinite;
+}
+
+.eco-orb-inner_eco {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    background: var(--eco-primary);
+    border-radius: 50%;
+    filter: blur(20px);
+    opacity: 0.5;
+    animation: ecoPulse_eco 2s infinite ease-in-out;
+}
+
+@keyframes ecoRotate_eco {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes ecoPulse_eco {
+    0%, 100% { transform: scale(0.8); opacity: 0.3; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.eco-loading-msg_eco {
+    color: var(--eco-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* View Container animations */
+.eco-view-container_eco {
+    animation: ecoSlideUp_eco 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ecoSlideUp_eco {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.eco-summary-header_eco {
+    margin-bottom: 30px;
+}
+
+.eco-stage-title_eco {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.eco-stage-year_eco {
+    color: #64748b;
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+/* Chart Glass Panel */
+.eco-chart-stage_eco {
+    margin-bottom: 40px;
+}
+
+.eco-chart-glass_eco {
+    background: var(--eco-panel);
+    border: 1px solid var(--eco-border);
+    border-radius: 24px;
+    padding: 40px 30px 20px;
+    backdrop-filter: blur(10px);
+}
+
+.eco-chart-header_eco {
+    color: #94a3b8;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+/* Insight Cards */
+.eco-insight-grid_eco {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.eco-insight-card_eco {
+    background: var(--eco-panel);
+    border: 1px solid var(--eco-border);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(10px);
+}
+
+.eco-insight-card_eco:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+}
+
+.eco-insight-icon_eco {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.eco-icon-green_eco { color: #10b981; box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.1); }
+.eco-icon-red_eco { color: #f43f5e; box-shadow: inset 0 0 15px rgba(244, 63, 94, 0.1); }
+.eco-icon-cyan_eco { color: #00f2fe; box-shadow: inset 0 0 15px rgba(0, 242, 254, 0.1); }
+.eco-icon-purple_eco { color: #8b5cf6; box-shadow: inset 0 0 15px rgba(139, 92, 246, 0.1); }
+
+.eco-insight-label_eco {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0 0 5px 0;
+}
+
+.eco-insight-value_eco {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+    color: #fff;
+}
+
+/* Toast/Error */
+.eco-toast-error_eco {
+    background: rgba(244, 63, 94, 0.1);
+    color: var(--eco-danger);
+    padding: 15px 25px;
+    border-radius: 12px;
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Custom Tooltip Styling Override for Recharts */
+.recharts-default-tooltip {
+    border-radius: 12px !important;
+}
+
+.recharts-legend-item {
+    font-weight: 600 !important;
+    font-size: 0.9rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .eco-nav-inner_eco {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .eco-nav-form_eco {
+        width: 100%;
+    }
+
+    .eco-select-wrapper_eco {
+        flex: 1;
+    }
+
+    .eco-welcome-card_eco h1 {
+        font-size: 2rem;
+    }
+
+    .eco-stage-title_eco {
+        font-size: 1.8rem;
+    }
+}
