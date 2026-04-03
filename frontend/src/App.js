@@ -10,8 +10,8 @@ import ProfessionalCourses from '../src/components/Learning_Resources/profession
 import LearningRoadmap from '../src/components/Learning_Resources/learning_roadmap';
 import UserDashboard from '../src/components/Dashboards/dashboardUser';
 import DashboardAdmin from '../src/components/Dashboards/dashboardAdmin';
-import CvGenerator from '../src/components/CV_Generator/CvGenerator';
-import Economy from '../src/components/Economy/Economy';
+import CvGenerator from '../src/components/CvGenerator/CvGenerator';
+import Economy from '../src/components/Economy/economy';
 
 function App() {
   return (
