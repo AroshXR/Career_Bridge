@@ -536,7 +536,7 @@
     margin-bottom: 5px;
 }
 
-.manage-toggle_btn {
+.manage-toggle-btn_learn {
     background: white;
     color: #4f7df3;
     border: 2px solid #4f7df3;
@@ -547,7 +547,7 @@
     transition: all 0.2s;
 }
 
-.manage-toggle_btn:hover {
+.manage-toggle-btn_learn:hover {
     background: #4f7df3;
     color: white;
 }
@@ -559,7 +559,7 @@
 }
 
 .view-btn_learn,
-.save-btn_learn_inline {
+.save-btn-inline_learn {
     flex: 1;
     padding: 10px;
     border-radius: 8px;
@@ -575,15 +575,38 @@
     border: none;
 }
 
-.save-btn_learn_inline {
+.save-btn-inline_learn {
     background: #f1f5f9;
     color: #475569;
     border: 1px solid #e2e8f0;
 }
 
-.save-btn_learn_inline:hover {
+.save-btn-inline_learn:hover {
     background: #e2e8f0;
     color: #1e293b;
+}
+
+.nav-buttons-container_learn {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.nav-btn_learn {
+    background: transparent;
+    color: var(--secondary-color);
+    border: 2px solid var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn_learn:hover {
+    background: var(--primary-color);
+    color: white;
 }
 
 @media (max-width: 768px) {
@@ -591,5 +614,10 @@
         flex-direction: column;
         gap: 15px;
         text-align: center;
+    }
+
+    .nav-buttons-container_learn {
+        flex-direction: column;
+        gap: 10px;
     }
 }
