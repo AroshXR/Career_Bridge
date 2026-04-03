@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./dashboardUser.css";
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ ...user });
-  const [previewImage, setPreviewImage] = useState(user.profilePic);
+  const [formData, setFormData] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [updating, setUpdating] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUser();
@@ -14,26 +18,60 @@ const UserDashboard = () => {
 
   const fetchUser = async () => {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      let userId;
+      const storedUserStr = localStorage.getItem("user");
+      if (storedUserStr) {
+        const storedUser = JSON.parse(storedUserStr);
+        userId = storedUser._id;
+      } else {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          userId = payload.id;
+        } catch {
+          console.error("Could not decode token payload");
+          return;
+        }
+      }
+
+      if (!userId) return;
+
       const response = await fetch(
-        "http://localhost:5000/api/users/:_id",
+        `http://localhost:5000/api/v1/users/${userId}`,
+        {
+          headers: { "Authorization": `Bearer ${token}` }
+        }
       );
       const data = await response.json();
-      setUser(data);
-      setFormData(data);
+
+      const userData = data.data || data;
+      setUser(userData);
+      setFormData(userData);
+      setPreviewImage(userData.profilePicture || "/default-avatar.png");
     } catch (error) {
       console.error("Error fetching user:", error);
     }
   };
 
+  if (!user) {
+    return <div style={{ padding: "2rem", textAlign: "center", fontSize: "1.2rem", fontWeight: "bold" }}>Loading profile...</div>;
+  }
+
   const handleCVUpload = (e) => {
     const file = e.target.files[0];
-
     if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        cvFile: file,
-        cvName: file.name,
-      }));
+      // Convert CV to base64 for storage
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          cv: reader.result,
+          cvName: file.name,
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -53,7 +91,7 @@ const UserDashboard = () => {
         setPreviewImage(reader.result);
         setFormData((prev) => ({
           ...prev,
-          profilePic: reader.result,
+          profilePicture: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -62,24 +100,118 @@ const UserDashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setUpdating(true);
+    setUpdateMessage(null);
 
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      // Prepare data to send
+      const dataToSend = {
+        phone: formData.phone || "",
+        education: formData.education || "",
+        experience: formData.experience || "",
+        location: formData.location || "",
+        title: formData.title || "",
+        bio: formData.bio || "",
+        portfolio: formData.portfolio || "",
+        github: formData.github || "",
+        linkedin: formData.linkedin || "",
+        profilePicture: formData.profilePicture || user.profilePicture || "",
+        cv: formData.cv || user.cv || "",
+      };
+
+      console.log("📤 Sending update data:", dataToSend);
+
       const response = await fetch(
-        `http://localhost:5000/api/users/${user._id}`,
+        `http://localhost:5000/api/v1/users/${user._id}`,
         {
           method: "PUT",
           headers: {
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(dataToSend),
         }
       );
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
       const updatedData = await response.json();
-      setUser(updatedData);
-      setShowModal(false);
+      const updatedUser = updatedData.data || updatedData;
+      
+      // Keep original name and email
+      updatedUser.name = user.name;
+      updatedUser.email = user.email;
+      
+      setUser(updatedUser);
+      setFormData(updatedUser);
+      
+      console.log("✅ Profile updated successfully!");
+      setUpdateMessage({ type: "success", text: "Profile updated successfully!" });
+      
+      setTimeout(() => {
+        setShowModal(false);
+        setUpdateMessage(null);
+      }, 1500);
+      
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("❌ Error updating user:", error);
+      setUpdateMessage({ type: "error", text: error.message || "Failed to update profile" });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    console.log("👋 User logged out");
+    navigate("/login");
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:5000/api/v1/users/${user._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete account");
+      }
+
+      console.log("🗑️ Account deleted successfully");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      navigate("/register");
+    } catch (error) {
+      console.error("❌ Error deleting account:", error);
+      alert("Failed to delete account. Please try again.");
+    }
+  };
+
+  const handleCVGenerator = () => {
+    navigate("/cv-generator");
+  };
+
+  const handleViewCV = () => {
+    if (user.cv) {
+      window.open(user.cv, '_blank');
+    } else {
+      alert("No CV uploaded yet. Please upload your CV in the update profile section.");
     }
   };
 
@@ -89,7 +221,7 @@ const UserDashboard = () => {
       <div className="div33_left_profile">
         <div className="div41_photo_wrap">
           <img
-            src={user.profilePic}
+            src={user.profilePicture || "/default-avatar.png"}
             alt="profile"
             className="img7_profile_avatar"
           />
@@ -97,34 +229,35 @@ const UserDashboard = () => {
 
         <div className="div54_user_meta">
           <h2 className="h2_user_name">{user.name}</h2>
-          <span className="p_user_id">ID: {user.id}</span>
+          <span className="p_user_id">ID: {user.userId || user._id}</span>
         </div>
 
-        {/* detail bars */}
         <div className="form12_details_bars">
           <div className="div65_detail_bar">
             <span className="span18_label">Email</span>
-            <span className="span19_value">{user.email}</span>
+            <span className="span19_value">{user.email || "Not provided"}</span>
           </div>
           <div className="div65_detail_bar">
             <span className="span18_label">Phone</span>
-            <span className="span19_value">{user.phone}</span>
+            <span className="span19_value">{user.phone || "Not provided"}</span>
           </div>
           <div className="div65_detail_bar">
-            <span className="span18_label">Location</span>
-            <span className="span19_value">{user.location}</span>
+            <span className="span18_label">Education</span>
+            <span className="span19_value">{user.education || "Not provided"}</span>
           </div>
           <div className="div65_detail_bar">
-            <span className="span18_label">Title</span>
-            <span className="span19_value">{user.title}</span>
+            <span className="span18_label">Experience</span>
+            <span className="span19_value">{user.experience || "Not provided"}</span>
           </div>
           <div className="div65_detail_bar">
-            <span className="span18_label">Since</span>
-            <span className="span19_value">{user.memberSince}</span>
-          </div>
-          <div className="div65_detail_bar">
-            <span className="span18_label">Jobs saved</span>
-            <span className="span19_value">{user.savedJobsCount}</span>
+            <span className="span18_label">CV / Resume</span>
+            <span 
+              className="span19_value" 
+              style={{ cursor: user.cv ? "pointer" : "default", color: user.cv ? "#007bff" : "#666" }}
+              onClick={handleViewCV}
+            >
+              {user.cv ? "📄 View CV" : "Not uploaded"}
+            </span>
           </div>
         </div>
 
@@ -134,11 +267,70 @@ const UserDashboard = () => {
         >
           ✎ Update profile
         </button>
+
+        {/* CV Generator Button */}
+        <button
+          className="button9_cv_generator"
+          onClick={handleCVGenerator}
+          style={{
+            marginTop: "10px",
+            padding: "12px",
+            backgroundColor: "#6c5ce7",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "bold",
+            width: "100%"
+          }}
+        >
+          📄 Generate CV
+        </button>
+
+        {/* Logout Button */}
+        <button
+          className="button10_logout"
+          onClick={handleLogout}
+          style={{
+            marginTop: "10px",
+            padding: "12px",
+            backgroundColor: "#e74c3c",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "bold",
+            width: "100%"
+          }}
+        >
+          🚪 Logout
+        </button>
+
+        {/* Delete Account Button */}
+        <button
+          className="button11_delete_account"
+          onClick={() => setShowDeleteConfirm(true)}
+          style={{
+            marginTop: "10px",
+            padding: "12px",
+            backgroundColor: "#c0392b",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "bold",
+            width: "100%"
+          }}
+        >
+          🗑️ Delete Account
+        </button>
       </div>
 
       {/* RIGHT PANEL - four clickable cards */}
       <div className="div90_right_grid">
-        {/* Recent Activity Card */}
         <Link
           to="/recent-activity"
           className="dashboard_card card_recent_activity"
@@ -158,7 +350,6 @@ const UserDashboard = () => {
           <div className="view_all_link">View all activity →</div>
         </Link>
 
-        {/* Recommended Card */}
         <Link to="/recommended" className="dashboard_card card_recommended">
           <h4 className="h4_section_title">⚡ Recommended for You</h4>
           <p style={{ marginBottom: "1rem", color: "#2c3e6d" }}>
@@ -173,18 +364,17 @@ const UserDashboard = () => {
           <div className="view_all_link">See all recommendations →</div>
         </Link>
 
-        {/* Progress Tracking Card */}
         <Link to="/progress" className="dashboard_card card_progress">
           <h4 className="h4_section_title">📊 Progress Tracking</h4>
           <div className="div113_progress_container">
             <div className="div114_progress_stat">
               <span>Profile completeness</span>
-              <span>{user.progress}%</span>
+              <span>{user.progress || 0}%</span>
             </div>
             <div className="progress17_bar_full">
               <div
                 className="progress18_fill"
-                style={{ width: `${user.progress}%` }}
+                style={{ width: `${user.progress || 0}%` }}
               ></div>
             </div>
             <div className="div114_progress_stat">
@@ -207,7 +397,6 @@ const UserDashboard = () => {
           <div className="view_all_link">View detailed progress →</div>
         </Link>
 
-        {/* Saved Jobs Card */}
         <Link to="/saved-jobs" className="dashboard_card card_saved_jobs">
           <h4 className="h4_section_title">🔖 Saved Jobs</h4>
           <ul className="ul22_saved_jobs">
@@ -228,8 +417,61 @@ const UserDashboard = () => {
         </Link>
       </div>
 
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="modal_overlay">
+          <div className="modal_content" style={{ maxWidth: "400px" }}>
+            <div className="modal_header">
+              <h2>Delete Account</h2>
+              <button
+                className="modal_close"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ padding: "20px", textAlign: "center" }}>
+              <p style={{ marginBottom: "20px", color: "#e74c3c", fontSize: "18px" }}>
+                ⚠️ Warning: This action cannot be undone!
+              </p>
+              <p style={{ marginBottom: "20px" }}>
+                Are you sure you want to permanently delete your account? All your data will be lost.
+              </p>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: "#95a5a6",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: "#e74c3c",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Yes, Delete My Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Profile Update Modal */}
-      {showModal && (
+      {showModal && formData && (
         <div className="modal_overlay">
           <div className="modal_content">
             <div className="modal_header">
@@ -242,13 +484,27 @@ const UserDashboard = () => {
               </button>
             </div>
 
+            {/* Success/Error Message */}
+            {updateMessage && (
+              <div className={`update-message ${updateMessage.type}`} style={{
+                padding: "10px",
+                marginBottom: "15px",
+                borderRadius: "4px",
+                backgroundColor: updateMessage.type === "success" ? "#d4edda" : "#f8d7da",
+                color: updateMessage.type === "success" ? "#155724" : "#721c24",
+                border: `1px solid ${updateMessage.type === "success" ? "#c3e6cb" : "#f5c6cb"}`
+              }}>
+                {updateMessage.text}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="profile_form">
               {/* Profile Picture Upload */}
               <div className="form_group photo_upload_group">
                 <label>Profile Photo</label>
                 <div className="photo_upload_container">
                   <img
-                    src={previewImage}
+                    src={previewImage || user.profilePicture || "/default-avatar.png"}
                     alt="Preview"
                     className="photo_preview"
                   />
@@ -265,42 +521,39 @@ const UserDashboard = () => {
                 </div>
               </div>
 
-              {/* Form Fields - 2 column layout */}
+              {/* Name and Email - Read Only */}
               <div className="form_row">
                 <div className="form_group">
-                  <label>Full Name *</label>
+                  <label>Full Name</label>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Enter your full name"
+                    value={user.name || ""}
+                    disabled
+                    style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
                   />
                 </div>
 
                 <div className="form_group">
-                  <label>Email *</label>
+                  <label>Email</label>
                   <input
                     type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Enter your email"
+                    value={user.email || ""}
+                    disabled
+                    style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
                   />
                 </div>
               </div>
 
+              {/* Phone and Location */}
               <div className="form_row">
                 <div className="form_group">
-                  <label>Phone</label>
+                  <label>Phone Number</label>
                   <input
                     type="tel"
                     name="phone"
-                    value={formData.phone}
+                    value={formData.phone || ""}
                     onChange={handleInputChange}
-                    placeholder="Enter phone number"
+                    placeholder="Enter your phone number"
                   />
                 </div>
 
@@ -309,22 +562,23 @@ const UserDashboard = () => {
                   <input
                     type="text"
                     name="location"
-                    value={formData.location}
+                    value={formData.location || ""}
                     onChange={handleInputChange}
                     placeholder="City, Country"
                   />
                 </div>
               </div>
 
+              {/* Education and Experience */}
               <div className="form_row">
                 <div className="form_group">
-                  <label>Professional Title</label>
+                  <label>Education</label>
                   <input
                     type="text"
-                    name="title"
-                    value={formData.title}
+                    name="education"
+                    value={formData.education || ""}
                     onChange={handleInputChange}
-                    placeholder="e.g., Senior Developer"
+                    placeholder="e.g., B.Sc. Computer Science"
                   />
                 </div>
 
@@ -332,9 +586,10 @@ const UserDashboard = () => {
                   <label>Experience</label>
                   <select
                     name="experience"
-                    value={formData.experience}
+                    value={formData.experience || ""}
                     onChange={handleInputChange}
                   >
+                    <option value="">Select experience level</option>
                     <option value="0-2 years">0-2 years</option>
                     <option value="3-5 years">3-5 years</option>
                     <option value="5-8 years">5-8 years</option>
@@ -343,15 +598,16 @@ const UserDashboard = () => {
                 </div>
               </div>
 
+              {/* Title and Skills */}
               <div className="form_row">
                 <div className="form_group">
-                  <label>Education</label>
+                  <label>Professional Title</label>
                   <input
                     type="text"
-                    name="education"
-                    value={formData.education}
+                    name="title"
+                    value={formData.title || ""}
                     onChange={handleInputChange}
-                    placeholder="Highest degree"
+                    placeholder="e.g., Senior Developer"
                   />
                 </div>
 
@@ -360,11 +616,11 @@ const UserDashboard = () => {
                   <input
                     type="text"
                     name="skills"
-                    value={formData.skills.join(", ")}
+                    value={(formData.industrialPreference || []).join(", ")}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        skills: e.target.value.split(",").map((s) => s.trim()),
+                        industrialPreference: e.target.value.split(",").map((s) => s.trim()).filter(s => s),
                       })
                     }
                     placeholder="React, Node.js, Python"
@@ -372,13 +628,14 @@ const UserDashboard = () => {
                 </div>
               </div>
 
+              {/* Social Links */}
               <div className="form_row">
                 <div className="form_group">
                   <label>Portfolio URL</label>
                   <input
                     type="url"
                     name="portfolio"
-                    value={formData.portfolio}
+                    value={formData.portfolio || ""}
                     onChange={handleInputChange}
                     placeholder="https://yourportfolio.com"
                   />
@@ -389,7 +646,7 @@ const UserDashboard = () => {
                   <input
                     type="url"
                     name="github"
-                    value={formData.github}
+                    value={formData.github || ""}
                     onChange={handleInputChange}
                     placeholder="https://github.com/username"
                   />
@@ -402,14 +659,14 @@ const UserDashboard = () => {
                   <input
                     type="url"
                     name="linkedin"
-                    value={formData.linkedin}
+                    value={formData.linkedin || ""}
                     onChange={handleInputChange}
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
 
                 <div className="form_group">
-                  <label>Upload CV (PDF)</label>
+                  <label>CV / Resume</label>
                   <div className="cv_upload_container">
                     <input
                       type="file"
@@ -420,23 +677,27 @@ const UserDashboard = () => {
                     />
                     <label htmlFor="cv-upload" className="cv_upload_label">
                       <span className="cv_upload_icon">📄</span>
-                      Choose CV File
+                      {formData.cv ? "Update CV" : "Upload CV"}
                     </label>
-                    {formData.cvName && (
+                    {formData.cv && (
                       <div className="cv_file_info">
-                        <span className="cv_file_name">{formData.cvName}</span>
+                        <span className="cv_file_name">✓ CV uploaded</span>
                         <button
                           type="button"
-                          className="cv_remove_btn"
-                          onClick={() =>
-                            setFormData({
-                              ...formData,
-                              cvFile: null,
-                              cvName: "",
-                            })
-                          }
+                          className="cv_view_btn"
+                          onClick={() => window.open(formData.cv, '_blank')}
+                          style={{
+                            marginLeft: "10px",
+                            padding: "2px 8px",
+                            backgroundColor: "#007bff",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "12px"
+                          }}
                         >
-                          ✕
+                          View
                         </button>
                       </div>
                     )}
@@ -444,14 +705,15 @@ const UserDashboard = () => {
                 </div>
               </div>
 
+              {/* Bio */}
               <div className="form_group full_width">
-                <label>Bio</label>
+                <label>Bio / About Me</label>
                 <textarea
                   name="bio"
-                  value={formData.bio}
+                  value={formData.bio || ""}
                   onChange={handleInputChange}
                   rows="4"
-                  placeholder="Tell us about yourself..."
+                  placeholder="Tell us about yourself, your experience, and career goals..."
                 ></textarea>
               </div>
 
@@ -460,11 +722,16 @@ const UserDashboard = () => {
                   type="button"
                   className="cancel_btn"
                   onClick={() => setShowModal(false)}
+                  disabled={updating}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="save_btn">
-                  Save Changes
+                <button 
+                  type="submit" 
+                  className="save_btn"
+                  disabled={updating}
+                >
+                  {updating ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </form>
@@ -476,5 +743,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-
-//dashboard

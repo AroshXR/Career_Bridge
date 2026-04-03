@@ -3,7 +3,7 @@ import User from "../Models/User.js";
 import ResponseGenerator from '../utils/ResponseGenerator.js';
 
 // Function to generate next userId (001, 002, 003, etc.)
-const generateNextUserId = async () => {
+export const generateNextUserId = async () => {
     try {
         // Get the highest userId
         const lastUser = await User.findOne().sort({ userId: -1 });
@@ -135,6 +135,8 @@ export const login = async (req, res) => {
                 userId: user.userId,
                 name: user.name,
                 email: user.email,
+                role: user.role,
+                status: user.status,
                 _id: user._id
             };
 

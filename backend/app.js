@@ -1,10 +1,18 @@
+// import dotenv from 'dotenv';
+// dotenv.config();
+import { configDotenv } from "dotenv";
+configDotenv();
+
 import mongoose from "mongoose";
 import { log } from "node:console"
 import express from "express";
 import cors from "cors";
-import { configDotenv } from "dotenv";
 
-configDotenv();
+import passport from "passport";
+import session from "express-session";
+import "./config/passport.js";
+
+
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -25,6 +33,18 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+
+// Session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 //  middleware - bawa chnaged
 app.use(cors({

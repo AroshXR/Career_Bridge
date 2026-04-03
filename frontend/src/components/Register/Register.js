@@ -49,8 +49,8 @@ const Register = () => {
 
             console.log("Registration response:", response.data);
 
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            localStorage.setItem('token', response.data.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.data.user));
 
             // Show success message
             alert('Registration successful! Please login.');
@@ -62,7 +62,7 @@ const Register = () => {
             console.error("Full error object:", err);
             console.error("Error response:", err.response);
             console.error("Error data:", err.response?.data);
-            setError(err.response?.data?.message || 'Registration failed');
+            setError(err.response?.data?.error?.errorDescription || err.response?.data?.description || 'Registration failed');
         }
     };
 
@@ -133,6 +133,20 @@ const Register = () => {
                     </div>
                     <button type="submit" className="register-btn">Register Now</button>
                 </form>
+
+                <div className="google-auth-separator" style={{ textAlign: "center", margin: "15px 0", fontSize: "14px", color: "#888" }}>
+                    <span>or</span>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+                    style={{ padding: "10px 20px", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "10px", backgroundColor: "#fff", color: "#333", border: "1px solid #ddd", borderRadius: "5px", cursor: "pointer", width: "100%", fontWeight: "bold", marginBottom: "15px" }}
+                >
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" width="20" height="20" />
+                    Continue with Google
+                </button>
+
                 <div className="auth-footer">
                     Already have an account? <Link to="/login">Login</Link>
                 </div>
