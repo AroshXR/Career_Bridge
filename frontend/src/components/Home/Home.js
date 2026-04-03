@@ -1,9 +1,21 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Home.css';
 
 const Home = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const token = queryParams.get('token');
+
+        if (token) {
+            localStorage.setItem('token', token);
+            // After saving the token, remove it from the URL by replacing history state
+            navigate('/home', { replace: true });
+        }
+    }, [location, navigate]);
 
     const menuItems = [
         {
@@ -18,7 +30,7 @@ const Home = () => {
             title: 'Skill Courses',
             description: 'Enhance your expertise with curated courses tailored for you.',
             icon: '🎓',
-            path: '/courses'
+            path: '/learning-resources'
         },
         {
             id: 'job-search',
@@ -40,6 +52,13 @@ const Home = () => {
             description: 'Manage your skills, experience, and career preferences.',
             icon: '👤',
             path: '/profile'
+        },
+        {
+            id: 'economy',
+            title: 'Country Economy',
+            description: 'Analyze global economic trends and job market indicators.',
+            icon: '🌐',
+            path: '/economy'
         }
     ];
 

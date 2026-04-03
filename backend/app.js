@@ -1,15 +1,23 @@
+// import dotenv from 'dotenv';
+// dotenv.config();
+import { configDotenv } from "dotenv";
+configDotenv();
+
 import mongoose from "mongoose";
 import { log } from "node:console"
 import express from "express";
 import cors from "cors";
-import { configDotenv } from "dotenv";
 
-configDotenv();
+import passport from "passport";
+import session from "express-session";
+import "./config/passport.js";
+
+
 import path from "path";
-import { fileURLToPath } from "url"; // ADD THIS IMPORT
+import { fileURLToPath } from "url";
 
 import userRoute from "./Routes/userRoute.js";
-import progress from "./Models/Progress.js";
+import progressRoutes from "./Routes/progressRoutes.js";
 import learning_resource from "./Routes/learning_resourse_Route.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocs from "./swagger_docs/swagger_spec.js";
@@ -17,6 +25,7 @@ import jobRoute from "./Routes/jobRoute.js";
 import skillRoute from "./Routes/skillRoute.js";
 import authRoutes from "./Routes/authRoutes.js";
 import uploadRoutes from "./Routes/uploadRoutes.js";
+import economy from "./Routes/economyDetailsRoute.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +33,18 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+
+// Session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 //  middleware - bawa chnaged
 app.use(cors({
@@ -42,12 +63,13 @@ app.use(cors());
 
 // Routes
 app.use("/api/v1/users", userRoute);
-app.use("/api/v1/progress", progress);
+app.use("/api/v1/progress", progressRoutes);
 app.use('/api/v1/trendingJobAnalyzer', jobRoute);
 app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/v1/economy", economy);
 
 // Swagger Configuration
 app.use('/career-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
