@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.post("/analyze/:jobId", auth, analyzeAndSaveSkills);
-router.get("/user/:userId", auth, getMySavedSkills);
+router.get("/user/me", auth, getMySavedSkills);
 router.patch("/:jobId/:skillId", auth, updateSkillDetails);
 router.delete("/:jobId/:skillId", auth, removeSkillFromList);
 router.delete("/:jobId", auth, deleteFullAnalysis);

@@ -12,6 +12,7 @@ import UserDashboard from '../src/components/Dashboards/dashboardUser';
 import DashboardAdmin from '../src/components/Dashboards/dashboardAdmin';
 import CvGenerator from '../src/components/CvGenerator/CvGenerator';
 import Economy from '../src/components/Economy/economy';
+import JobSkillAnalyzer from '../src/components/JobSkillAnalyzer/JobSkillAnalyzer';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/professional-courses" element={<ProfessionalCourses />} />
           <Route path="/learning-roadmap" element={<LearningRoadmap />} />
           <Route path="/economy" element={<Economy />} />
+          <Route path="/skill-analyzer" element={<JobSkillAnalyzer />} />
         </Routes>
       </div>
     </Router>

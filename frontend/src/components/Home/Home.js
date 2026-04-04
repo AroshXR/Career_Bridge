@@ -59,6 +59,13 @@ const Home = () => {
             description: 'Analyze global economic trends and job market indicators.',
             icon: '🌐',
             path: '/economy'
+        },
+        {
+            id: 'skill-analyzer',
+            title: 'Job Skill Analyzer',
+            description: 'Get an AI-powered skill roadmap for your saved jobs.',
+            icon: '🧠',
+            path: '/skill-analyzer'
         }
     ];
 
