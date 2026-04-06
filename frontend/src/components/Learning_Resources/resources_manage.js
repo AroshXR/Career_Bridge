@@ -6,13 +6,32 @@ const ResourcesManage = ({ onClose }) => {
   const [savedResources, setSavedResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const userId = '65d1234567890abcdef12345'; // Matching the dummy ID in ResourcesSave
+
+  // Get real user data from localStorage
+  const userString = localStorage.getItem('user');
+  const user = userString ? JSON.parse(userString) : null;
+  const userId = user?._id || user?.id || '';
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchSavedResources = async () => {
+      if (!userId || !token) {
+        setError("Please login to view saved resources.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/resources/get-by-id/${userId}`);
-        setSavedResources(response.data);
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        };
+
+        const response = await axios.get(`http://localhost:5000/api/v1/resources/get-by-id/${userId}`, config);
+        
+        // Handle ResponseGenerator envelope
+        setSavedResources(response.data.data || []);
       } catch (err) {
         console.error("Fetch Error:", err);
         if (err.response?.status === 404) {
@@ -26,13 +45,20 @@ const ResourcesManage = ({ onClose }) => {
     };
 
     fetchSavedResources();
-  }, [userId]);
+  }, [userId, token]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to remove this resource?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/v1/resources/delete-resource/${id}`);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+
+      // Corrected delete path from '/delete-resource/' to '/resource-delete/'
+      await axios.delete(`http://localhost:5000/api/v1/resources/resource-delete/${id}`, config);
       setSavedResources(prev => prev.filter(res => res._id !== id));
     } catch (err) {
       console.error("Delete Error:", err);
