@@ -3,9 +3,13 @@ import axios from 'axios';
 import './resources_save.css';
 
 const ResourcesSave = ({ resource, onClose, skillName }) => {
+  // Get real user data from localStorage
+  const userString = localStorage.getItem('user');
+  const user = userString ? JSON.parse(userString) : null;
+
   const [formData, setFormData] = useState({
-    userId: '65d1234567890abcdef12345', // Dummy MongoDB ObjectId for now
-    userEmail: 'user@example.com',
+    userId: user?._id || user?.id || '', 
+    userEmail: user?.email || '',
     scheduledTime: '',
     priority: 'Medium',
     notes: ''
@@ -23,9 +27,12 @@ const ResourcesSave = ({ resource, onClose, skillName }) => {
     setLoading(true);
     setMessage(null);
 
+    const token = localStorage.getItem('token');
+
+    // Ensure the payload matches what the backend expects
     const payload = {
       ...formData,
-      skillId: '65dabcdef123456789012345', // Dummy skillId
+      skillId: '65dabcdef123456789012345', // Dummy skillId as per backend requirement
       skillName: skillName || 'Skill',
       videoTitle: resource.title,
       videoUrl: resource.videoUrl,
@@ -33,14 +40,23 @@ const ResourcesSave = ({ resource, onClose, skillName }) => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/v1/resources/save-resource', payload);
-      setMessage({ type: 'success', text: response.data.message });
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      
+      const response = await axios.post('http://localhost:5000/api/v1/resources/save-resource', payload, config);
+      
+      // ResponseGenerator payload is in response.data.message or response.data.data
+      setMessage({ type: 'success', text: response.data.message || 'Resource saved successfully!' });
       setTimeout(() => {
         onClose();
       }, 2000);
     } catch (error) {
       console.error("Save Error:", error);
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to save resource' });
+      const errorMsg = error.response?.data?.error?.errorDescription || error.response?.data?.message || 'Failed to save resource';
+      setMessage({ type: 'error', text: errorMsg });
     } finally {
       setLoading(false);
     }
