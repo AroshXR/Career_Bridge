@@ -16,7 +16,7 @@ export const createUser = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
 
-    
+
     const users = await User.find();
     res.status(200).json(ResponseGenerator.sendSuccess(users, "Users retrieved successfully"));
   } catch (error) {
@@ -43,12 +43,12 @@ export const getUserById = async (req, res) => {
 // Update User 
 export const updateUser = async (req, res) => {
   try {
-    
+
     if (req.user.id.toString() !== req.params.id.toString()) {
       return res.status(403).json(ResponseGenerator.sendError(ResponseGenerator.FORBIDDEN, "You can only update your own profile", "Update failed"));
     }
 
-    
+
     const updateData = { ...req.body };
     delete updateData._id;
     delete updateData.userId;
@@ -70,11 +70,43 @@ export const updateUser = async (req, res) => {
 // Delete User
 export const deleteUser = async (req, res) => {
   try {
-    
+
     if (req.user.id.toString() !== req.params.id.toString()) {
       return res.status(403).json(ResponseGenerator.sendError(ResponseGenerator.FORBIDDEN, "You can only delete your own profile", "Delete failed"));
     }
 
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "User not found", "Delete failed"));
+    res.status(200).json(ResponseGenerator.sendSuccess(null, "User deleted successfully"));
+  } catch (error) {
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Delete failed", error.message));
+  }
+};
+
+// Update User Status (Admin only)
+export const updateUserStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['active', 'blocked', 'pending'].includes(status)) {
+      return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "Invalid status value", "Update failed"));
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { returnDocument: "after", runValidators: true }
+    );
+
+    if (!updatedUser) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "User not found", "Update failed"));
+    res.status(200).json(ResponseGenerator.sendSuccess(updatedUser, "User status updated successfully"));
+  } catch (error) {
+    res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Update failed", error.message));
+  }
+};
+
+// Delete User (Admin Override)
+export const deleteUserAsAdmin = async (req, res) => {
+  try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "User not found", "Delete failed"));
     res.status(200).json(ResponseGenerator.sendSuccess(null, "User deleted successfully"));

@@ -12,8 +12,15 @@ const TrendingJobAnalyzer = () => {
     const [error, setError] = useState(null);
     const [currentCategory, setCurrentCategory] = useState("Information Technology");
     const [user, setUser] = useState(() => {
-        const savedUser = localStorage.getItem('user');
-        return savedUser ? JSON.parse(savedUser) : { name: 'Professional' };
+        try {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser && savedUser !== "undefined") {
+                return JSON.parse(savedUser);
+            }
+        } catch (e) {
+            console.error("Error parsing user from localStorage:", e);
+        }
+        return { name: 'Professional' };
     });
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -78,7 +85,7 @@ const TrendingJobAnalyzer = () => {
         try {
             setLoading(true);
             setError(null);
-            
+
             const token = localStorage.getItem('token');
             const response = await axios.get(
                 `http://localhost:5000/api/v1/trendingJobAnalyzer/getTrendingJobs?category=${encodeURIComponent(currentCategory)}`,

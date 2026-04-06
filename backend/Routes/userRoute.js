@@ -5,6 +5,8 @@ import {
     getUserById,
     updateUser,
     deleteUser,
+    updateUserStatus,
+    deleteUserAsAdmin
 } from "../Controllers/userController.js";
 import { analyzeUserProgress } from "../Controllers/userProgressAnalyzer.js";
 
@@ -19,15 +21,20 @@ import {
 
 
 import authMiddleware from "../middleware/auth.js";
+import adminAuthMiddleware from "../middleware/adminAuth.js";
 
 const router = express.Router();
 
 // Standard CRUD 
 router.post("/", createUser);
-router.get("/", authMiddleware, getUsers);           
-router.get("/:id", authMiddleware, getUserById);     
-router.put("/:id", authMiddleware, updateUser);      
-router.delete("/:id", authMiddleware, deleteUser);   
+router.get("/", adminAuthMiddleware, getUsers);
+router.get("/:id", authMiddleware, getUserById);
+router.put("/:id", authMiddleware, updateUser);
+router.delete("/:id", authMiddleware, deleteUser);
+
+// Admin Override and Status Management
+router.put("/:id/status", adminAuthMiddleware, updateUserStatus);
+router.delete("/admin/:id", adminAuthMiddleware, deleteUserAsAdmin);
 
 
 // Progress Analysis

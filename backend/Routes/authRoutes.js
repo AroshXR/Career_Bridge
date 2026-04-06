@@ -1,3 +1,6 @@
+import passport from "passport";
+import jwt from "jsonwebtoken";
+
 import express from "express";
 import {
   checkEnv,
@@ -19,5 +22,28 @@ router.post("/register", register);
 
 // Route for user login
 router.post("/login", login);
+
+// Google Login
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Google callback
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    // Generate JWT for your existing middleware
+    const token = jwt.sign(
+      { id: req.user._id, email: req.user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    // Redirect to frontend with token
+    res.redirect(`http://localhost:3000/home?token=${token}`);
+  }
+);
 
 export default router;
