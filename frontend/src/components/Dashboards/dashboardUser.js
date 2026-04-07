@@ -10,6 +10,15 @@ const UserDashboard = () => {
   const [updating, setUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Dynamic dashboard states
+  const [progressData, setProgressData] = useState([]);
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [recentActivities, setRecentActivities] = useState([
+    { id: 1, time: "Today", text: "Logged into dashboard" },
+    { id: 2, time: "Yesterday", text: "Updated profile details" }
+  ]);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +61,41 @@ const UserDashboard = () => {
       setPreviewImage(userData.profilePicture || "/default-avatar.png");
     } catch (error) {
       console.error("Error fetching user:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (user && user._id) {
+      fetchDashboardData(user._id);
+    }
+  }, [user]);
+
+  const fetchDashboardData = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      // Fetch Progress
+      const progressRes = await fetch(`http://localhost:5000/api/v1/progress/user/${userId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (progressRes.ok) {
+        const pData = await progressRes.json();
+        setProgressData(pData.data || []);
+      }
+
+      // Fetch Saved Jobs
+      const jobsRes = await fetch(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (jobsRes.ok) {
+        const jData = await jobsRes.json();
+        // Backend returns { jobs: [...], count: ... } for getSavedJobs
+        const jobsArray = jData.data?.jobs || jData.data || [];
+        setSavedJobs(Array.isArray(jobsArray) ? jobsArray : []);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
     }
   };
 
@@ -337,29 +381,24 @@ const UserDashboard = () => {
         >
           <h4 className="h4_section_title">📋 Recent Activity</h4>
           <div className="recent_activity_list">
-            <div className="recent_activity_item">
-              <span>Today</span> Viewed 3 jobs
-            </div>
-            <div className="recent_activity_item">
-              <span>Yesterday</span> Applied to Frontend Dev
-            </div>
-            <div className="recent_activity_item">
-              <span>2 days ago</span> Updated profile
-            </div>
+            {recentActivities.map(activity => (
+              <div key={activity.id} className="recent_activity_item">
+                <span>{activity.time}</span> {activity.text}
+              </div>
+            ))}
           </div>
           <div className="view_all_link">View all activity →</div>
         </Link>
 
         <Link to="/recommended" className="dashboard_card card_recommended">
-          <h4 className="h4_section_title">⚡ Recommended for You</h4>
+          <h4 className="h4_section_title">✨ Recommended for You</h4>
           <p style={{ marginBottom: "1rem", color: "#2c3e6d" }}>
-            Based on your skills and interests:
+            Based on your skills:
           </p>
           <div className="recommended_skills">
-            <span className="skill_tag">React.js</span>
-            <span className="skill_tag">UI/UX Design</span>
-            <span className="skill_tag">TypeScript</span>
-            <span className="skill_tag">Node.js</span>
+            <span className="skill_tag">Meta Front-End Developer</span>
+            <span className="skill_tag">Complete Python Bootcamp</span>
+            <span className="skill_tag">AWS Cloud Practitioner</span>
           </div>
           <div className="view_all_link">See all recommendations →</div>
         </Link>
@@ -367,32 +406,26 @@ const UserDashboard = () => {
         <Link to="/progress" className="dashboard_card card_progress">
           <h4 className="h4_section_title">📊 Progress Tracking</h4>
           <div className="div113_progress_container">
-            <div className="div114_progress_stat">
-              <span>Profile completeness</span>
-              <span>{user.progress || 0}%</span>
-            </div>
-            <div className="progress17_bar_full">
-              <div
-                className="progress18_fill"
-                style={{ width: `${user.progress || 0}%` }}
-              ></div>
-            </div>
-            <div className="div114_progress_stat">
-              <span>Applications</span>
-              <span>2/5 completed</span>
-            </div>
-            <div className="progress17_bar_full">
-              <div className="progress18_fill" style={{ width: "40%" }}></div>
-            </div>
-            <p
-              style={{
-                fontSize: "0.95rem",
-                marginTop: "1rem",
-                color: "#314d8c",
-              }}
-            >
-              Next milestone: Add portfolio
-            </p>
+            {progressData.length > 0 ? (
+              progressData.slice(0, 3).map((prog, idx) => (
+                <div key={prog._id || idx} style={{ marginBottom: "1rem" }}>
+                  <div className="div114_progress_stat">
+                    <span>{prog.skillName}</span>
+                    <span>{prog.progressPercentage || 0}%</span>
+                  </div>
+                  <div className="progress17_bar_full">
+                    <div
+                      className="progress18_fill"
+                      style={{ width: `${prog.progressPercentage || 0}%`, background: prog.progressPercentage === 100 ? '#27ae60' : '#6c5ce7' }}
+                    ></div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ padding: "20px 0", color: "#666", textAlign: "center" }}>
+                <span>No follow up courses yet</span>
+              </div>
+            )}
           </div>
           <div className="view_all_link">View detailed progress →</div>
         </Link>
@@ -400,18 +433,18 @@ const UserDashboard = () => {
         <Link to="/saved-jobs" className="dashboard_card card_saved_jobs">
           <h4 className="h4_section_title">🔖 Saved Jobs</h4>
           <ul className="ul22_saved_jobs">
-            <li className="li23_job_item">
-              <span className="span24_job_badge">Full-time</span>
-              Senior React Dev · TechCorp
-            </li>
-            <li className="li23_job_item">
-              <span className="span24_job_badge">Remote</span>
-              Product Designer · DesignStudio
-            </li>
-            <li className="li23_job_item">
-              <span className="span24_job_badge">Intern</span>
-              Junior ML Engineer · AI Labs
-            </li>
+            {savedJobs.length > 0 ? (
+              savedJobs.slice(0, 3).map((job, idx) => (
+                <li key={job.jobId || idx} className="li23_job_item" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span className="span24_job_badge">{job.workMode || job.location || "Job"}</span>
+                  {job.title || job.jobTitle} · {job.company || job.companyName}
+                </li>
+              ))
+            ) : (
+              <div style={{ padding: "20px 0", color: "#666", textAlign: "center" }}>
+                <span>No saved jobs</span>
+              </div>
+            )}
           </ul>
           <div className="view_all_link">View all saved jobs →</div>
         </Link>

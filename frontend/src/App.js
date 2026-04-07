@@ -12,6 +12,8 @@ import UserDashboard from '../src/components/Dashboards/dashboardUser';
 import DashboardAdmin from '../src/components/Dashboards/dashboardAdmin';
 import CvGenerator from '../src/components/CvGenerator/CvGenerator';
 import Economy from '../src/components/Economy/economy';
+import ProgressPage from '../src/components/Progress/progress_page';
+import RecommendedCourses from '../src/components/Dashboards/RecommendedCourses';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
           <Route path="/professional-courses" element={<ProfessionalCourses />} />
           <Route path="/learning-roadmap" element={<LearningRoadmap />} />
           <Route path="/economy" element={<Economy />} />
+          <Route path="/progress" element={<ProgressPage />} />
+          <Route path="/recommended" element={<RecommendedCourses />} />
         </Routes>
       </div>
     </Router>
