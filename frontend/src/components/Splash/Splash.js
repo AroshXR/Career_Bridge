@@ -4,6 +4,8 @@ import './Splash.css';
 import analyzerImg from './analyzer_home.png';
 import coursesImg from './courses_home.png';
 import economyImg from './economy_home.png';
+import dataAi3d from './data_ai_3d.png';
+import collaboration3d from './collaboration_3d.png';
 import Footer from '../Common/Footer';
 
 const Splash = () => {
@@ -33,6 +35,39 @@ const Splash = () => {
                     <button className="get-started-btn_splash" onClick={() => navigate('/login')}>
                         Get Started Now
                     </button>
+                </div>
+            </section>
+
+
+            {/* 3D IMAGE MOVING SECTION */}
+            <section className="three-d-section_splash">
+                <div className="three-d-container_splash">
+                    <div className="three-d-gallery_splash">
+                        <div className="three-d-item_splash">
+                            <img src="https://th.bing.com/th?q=Career+Growth+for+Business+Student&w=120&h=120&c=1&rs=1&qlt=70&o=7&cb=1&dpr=1.6&pid=InlineBlock&rm=3&mkt=en-US&cc=US&setlang=en&adlt=moderate&t=1&mw=247" alt="Career Growth" />
+                            <div className="three-d-label_splash">Growth</div>
+                        </div>
+                        <div className="three-d-item_splash">
+                            <img src={analyzerImg} alt="Analyzing" />
+                            <div className="three-d-label_splash">Job Analyzer</div>
+                        </div>
+                        <div className="three-d-item_splash">
+                            <img src={dataAi3d} alt="Data & AI" />
+                            <div className="three-d-label_splash">Intelligence</div>
+                        </div>
+                        <div className="three-d-item_splash">
+                            <img src={collaboration3d} alt="Collaboration" />
+                            <div className="three-d-label_splash">Unison</div>
+                        </div>
+                        <div className="three-d-item_splash">
+                            <img src={economyImg} alt="Economy" />
+                            <div className="three-d-label_splash">Economy Insights</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="three-d-content_splash">
+                    <h2>Step into the Future</h2>
+                    <p>Join us. Build your skills. Grow yourself. Grow the economy.</p>
                 </div>
             </section>
 
