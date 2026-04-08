@@ -26,20 +26,12 @@ const Register = () => {
         e.preventDefault();
         setError('');
 
-        // Check if passwords match
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             return;
         }
 
         try {
-            console.log("Sending registration data:", {
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                email: formData.email,
-                password: formData.password
-            });
-
             const response = await axios.post('http://localhost:5000/api/auth/register', {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
@@ -47,108 +39,188 @@ const Register = () => {
                 password: formData.password
             });
 
-            console.log("Registration response:", response.data);
-
             localStorage.setItem('token', response.data.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.data.user));
 
-            // Show success message
             alert('Registration successful! Please login.');
-
-            // Redirect to login page (not home)
             navigate('/login');
 
         } catch (err) {
-            console.error("Full error object:", err);
-            console.error("Error response:", err.response);
-            console.error("Error data:", err.response?.data);
             setError(err.response?.data?.error?.errorDescription || err.response?.data?.description || 'Registration failed');
         }
     };
 
     return (
-        <div className="register-container">
-            <div className="register-card">
-                <h2>Create Account</h2>
-                {error && <div className="error-message">{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>First Name</label>
-                            <input
-                                type="text"
-                                name="firstName"
-                                placeholder="John"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Last Name</label>
-                            <input
-                                type="text"
-                                name="lastName"
-                                placeholder="Doe"
-                                value={formData.lastName}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label>Email Address</label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="example@mail.com"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Create a password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            minLength="6"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Confirm Password</label>
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="Repeat your password"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            minLength="6"
-                        />
-                    </div>
-                    <button type="submit" className="register-btn">Register Now</button>
-                </form>
+        <div className="page-wrapper_reg">
 
-                <div className="google-auth-separator" style={{ textAlign: "center", margin: "15px 0", fontSize: "14px", color: "#888" }}>
-                    <span>or</span>
+            {/* ── LEFT HERO PANEL ── */}
+            <div className="hero-panel_reg">
+
+                {/* Brand Logo */}
+                <div className="panel-logo_reg">
+                    <Link to="/" className="logo-link_reg">
+                        <span className="logo-accent_reg">Career</span>Bridge
+                    </Link>
                 </div>
 
-                <button
-                    type="button"
-                    onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
-                    style={{ padding: "10px 20px", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "10px", backgroundColor: "#fff", color: "#333", border: "1px solid #ddd", borderRadius: "5px", cursor: "pointer", width: "100%", fontWeight: "bold", marginBottom: "15px" }}
-                >
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" width="20" height="20" />
-                    Continue with Google
-                </button>
+                {/* Hero Text */}
+                <div className="panel-content_reg">
+                    <span className="panel-eyebrow_reg">Future Career Ready</span>
+                    <h2>Bridge the<br />Gap to Your<br />Dream Career</h2>
+                    <p>
+                        Connecting your current skills to the world's most sought-after
+                        opportunities with data-driven insights and curated learning.
+                    </p>
+                </div>
 
-                <div className="auth-footer">
-                    Already have an account? <Link to="/login">Login</Link>
+                {/* Stats Strip */}
+                <div className="panel-stats_reg">
+                    <div className="stat-item_reg">
+                        <span className="stat-number_reg">12K+</span>
+                        <span className="stat-label_reg">Active Learners</span>
+                    </div>
+                    <div className="stat-item_reg">
+                        <span className="stat-number_reg">500+</span>
+                        <span className="stat-label_reg">Skill Courses</span>
+                    </div>
+                    <div className="stat-item_reg">
+                        <span className="stat-number_reg">98%</span>
+                        <span className="stat-label_reg">Career Growth</span>
+                    </div>
+                </div>
+
+                {/* Floating Glassmorphism Card */}
+                <div className="floating-card_reg">
+                    <div className="card-icon_reg">🚀</div>
+                    <div className="card-title_reg">Top Skill Today</div>
+                    <div className="card-value_reg">AI & Machine Learning</div>
+                </div>
+            </div>
+
+            {/* ── RIGHT FORM PANEL ── */}
+            <div className="form-panel_reg">
+                <div className="register-card_reg">
+
+                    {/* Back link */}
+                    <Link to="/" className="back-link_reg">
+                        ← Back to Home
+                    </Link>
+
+                    {/* Accent bar + heading */}
+                    <div className="accent-bar_reg"></div>
+                    <h1 className="register-heading_reg">Create<br />Account</h1>
+                    <p className="register-subtext_reg">
+                        Join thousands of professionals growing their careers.
+                    </p>
+
+                    {/* Error */}
+                    {error && <div className="error-message_reg">{error}</div>}
+
+                    {/* Form */}
+                    <form className="register-form_reg" onSubmit={handleSubmit}>
+
+                        {/* Name Row */}
+                        <div className="form-row_reg">
+                            <div className="form-group_reg">
+                                <label htmlFor="firstName_reg">First Name</label>
+                                <input
+                                    id="firstName_reg"
+                                    type="text"
+                                    name="firstName"
+                                    placeholder="John"
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group_reg">
+                                <label htmlFor="lastName_reg">Last Name</label>
+                                <input
+                                    id="lastName_reg"
+                                    type="text"
+                                    name="lastName"
+                                    placeholder="Doe"
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Email */}
+                        <div className="form-group_reg">
+                            <label htmlFor="email_reg">Email Address</label>
+                            <input
+                                id="email_reg"
+                                type="email"
+                                name="email"
+                                placeholder="example@mail.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div className="form-group_reg">
+                            <label htmlFor="password_reg">Password</label>
+                            <input
+                                id="password_reg"
+                                type="password"
+                                name="password"
+                                placeholder="Create a strong password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                minLength="6"
+                            />
+                        </div>
+
+                        {/* Confirm Password */}
+                        <div className="form-group_reg">
+                            <label htmlFor="confirmPassword_reg">Confirm Password</label>
+                            <input
+                                id="confirmPassword_reg"
+                                type="password"
+                                name="confirmPassword"
+                                placeholder="Repeat your password"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                required
+                                minLength="6"
+                            />
+                        </div>
+
+                        {/* Submit */}
+                        <button type="submit" id="submit-register_reg" className="submit-btn_reg">
+                            Register Now
+                        </button>
+                    </form>
+
+                    {/* OR Divider */}
+                    <div className="divider_reg">
+                        <span>or</span>
+                    </div>
+
+                    {/* Google Sign-In */}
+                    <button
+                        id="google-signin_reg"
+                        type="button"
+                        className="google-btn_reg"
+                        onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+                    >
+                        <img
+                            className="google-logo_reg"
+                            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+                            alt="Google Logo"
+                        />
+                        Continue with Google
+                    </button>
+
+                    {/* Footer */}
+                    <div className="auth-footer_reg">
+                        Already have an account?&nbsp;<Link to="/login">Login</Link>
+                    </div>
                 </div>
             </div>
         </div>

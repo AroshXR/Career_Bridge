@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './learning_roadmap.css';
 import ResourcesManage from './resources_manage';
+import NavBar from '../Common/Navbar';
+import Footer from '../Common/Footer';
 
 function LearningRoadmap() {
   const navigate = useNavigate();
@@ -19,21 +21,14 @@ function LearningRoadmap() {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!skill.trim()) return;
-
     setLoading(true);
     setError(null);
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      };
-
+      const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
       const roadmapRes = await axios.get(`http://localhost:5000/api/v1/resources/roadmap/${skill}`, config);
       setRoadmap(roadmapRes.data?.data?.roadmap || []);
     } catch (err) {
       const apiErrorMsg = err.response?.data?.error?.errorDescription || err.response?.data?.message;
-      console.error("Error fetching resources:", err.response || err);
       setError(apiErrorMsg ? `Failed to fetch: ${apiErrorMsg}` : `Failed to fetch resources: ${err.message}`);
     } finally {
       setLoading(false);
@@ -41,71 +36,89 @@ function LearningRoadmap() {
   };
 
   return (
-    <div className="learning-container_learn">
-      <div className="search-header_learn">
-        <div className="header-top_learn">
-          <h1>Find Your Learning Path - Learning Roadmap</h1>
-          <button className="manage-toggle-btn_learn" onClick={() => setShowManage(true)}>
-            My Saved Resources 🔖
-          </button>
-        </div>
-        <p>Search for any skill to generate an AI personalized 10-step roadmap.</p>
-        
-        <form onSubmit={handleSearch} className="search-box_learn">
-          <input
-            type="text"
-            placeholder="What do you want to learn? (e.g. React, Python)"
-            value={skill}
-            onChange={(e) => setSkill(e.target.value)}
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Processing...' : 'Search'}
-          </button>
-        </form>
+    <div>
+      <NavBar />
+      <div className="page-wrapper_roadmap">
 
-        <div className="nav-buttons-container_learn">
-            <button className="nav-btn_learn" onClick={() => navigate('/learning-resources')}>
-              Search YouTube Courses
-            </button>
-            <button className="nav-btn_learn" onClick={() => navigate('/professional-courses')}>
-              Search Professional Courses
-            </button>
-        </div>
-      </div>
-
-      {error && <div className="error-message_learn">{error}</div>}
-
-      {loading && (
-        <div className="loading-wrapper_learn">
-          <div className="loading-content_learn">
-            <div className="loader-sphere_learn">
-              <div className="sphere-inner_learn"></div>
-              <div className="sphere-outer_learn"></div>
+        {/* ── HERO ── */}
+        <section className="hero_roadmap">
+          <div className="header-actions_roadmap">
+            <div>
+              <span className="hero-eyebrow_roadmap">AI-Powered Learning</span>
+              <h1>Learning Roadmap</h1>
+              <p>Search for any skill to generate an AI-personalised 10-step learning roadmap.</p>
             </div>
-            <div className="loading-text_learn">
-              <span className="text-line_learn">Analyzing your request...</span>
-            </div>
+            <button className="saved-btn_roadmap" onClick={() => setShowManage(true)}>
+              <span className="material-icons-round">bookmark</span>
+              My Saved Resources
+            </button>
           </div>
-        </div>
-      )}
+        </section>
 
-      {!loading && roadmap.length > 0 && (
-        <div className="results-wrapper_learn">
-          <div className="tab-content_learn">
-              <div className="roadmap-container_learn">
-                <div className="roadmap-line_learn"></div>
-                {roadmap.map((step, index) => (
-                  <div key={index} className="roadmap-item_learn">
-                    <div className="step-number_learn">{index + 1}</div>
-                    <div className="step-content_learn">
-                      <p>{step}</p>
-                    </div>
+        {/* ── SEARCH ── */}
+        <div className="search-section_roadmap">
+          <form onSubmit={handleSearch} className="search-form_roadmap">
+            <input
+              id="roadmap-search-input_roadmap"
+              type="text"
+              placeholder="What skill do you want to master? (e.g. React, Python, AWS)"
+              value={skill}
+              onChange={(e) => setSkill(e.target.value)}
+            />
+            <button type="submit" className="search-btn_roadmap" disabled={loading}>
+              <span className="material-icons-round">{loading ? 'hourglass_top' : 'map'}</span>
+              {loading ? 'Processing...' : 'Generate'}
+            </button>
+          </form>
+        </div>
+
+        {/* ── NAV TABS ── */}
+        <div className="nav-tabs_roadmap">
+          <button className="nav-tab_roadmap" onClick={() => navigate('/learning-resources')}>
+            <span className="material-icons-round">smart_display</span>
+            YouTube Courses
+          </button>
+          <button className="nav-tab_roadmap" onClick={() => navigate('/professional-courses')}>
+            <span className="material-icons-round">school</span>
+            Professional Courses
+          </button>
+        </div>
+
+        {/* ── ERROR ── */}
+        {error && (
+          <div className="error-bar_roadmap">
+            <span className="material-icons-round">error_outline</span>
+            {error}
+          </div>
+        )}
+
+        {/* ── LOADING ── */}
+        {loading && (
+          <div className="loading-area_roadmap">
+            <div className="loader-ring_roadmap"></div>
+            <span className="loading-text_roadmap">Analysing your request...</span>
+          </div>
+        )}
+
+        {/* ── ROADMAP RESULTS ── */}
+        {!loading && roadmap.length > 0 && (
+          <div className="results-area_roadmap">
+            <span className="results-label_roadmap">Your personalised plan</span>
+            <h2>Roadmap for "{skill}"</h2>
+            <div className="roadmap-timeline_roadmap">
+              {roadmap.map((step, index) => (
+                <div key={index} className="roadmap-step_roadmap" style={{ '--i': index }}>
+                  <div className="step-dot_roadmap">{index + 1}</div>
+                  <div className="step-card_roadmap">
+                    <p>{step}</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      <Footer />
     </div>
   );
 }
