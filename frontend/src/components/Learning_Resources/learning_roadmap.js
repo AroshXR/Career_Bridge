@@ -11,6 +11,7 @@ function LearningRoadmap() {
   const [roadmap, setRoadmap] = useState([]);
   const [error, setError] = useState(null);
   const [showManage, setShowManage] = useState(false);
+  const [followUpStatus, setFollowUpStatus] = useState(null); // null | 'saving' | 'success' | 'duplicate' | 'error'
 
   if (showManage) {
     return <ResourcesManage onClose={() => setShowManage(false)} />;
@@ -22,6 +23,7 @@ function LearningRoadmap() {
 
     setLoading(true);
     setError(null);
+    setFollowUpStatus(null);
     try {
       const config = {
         headers: {
@@ -38,6 +40,44 @@ function LearningRoadmap() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFollowUp = async () => {
+    setFollowUpStatus('saving');
+    try {
+      const token = localStorage.getItem('token');
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = storedUser._id;
+
+      if (!userId) {
+        setFollowUpStatus('error');
+        return;
+      }
+
+      const tasks = roadmap.map(step => ({ title: step, completed: false }));
+
+      await axios.post(
+        'http://localhost:5000/api/v1/progress',
+        { userId, skillName: skill, tasks },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setFollowUpStatus('success');
+    } catch (err) {
+      const msg = err.response?.data?.error?.errorDescription || err.response?.data?.message || '';
+      if (err.response?.status === 400 && msg.toLowerCase().includes('already')) {
+        setFollowUpStatus('duplicate');
+      } else {
+        setFollowUpStatus('error');
+      }
+    }
+  };
+
+  const followUpMessages = {
+    saving:    { text: '⏳ Saving to your progress...',          color: '#f39c12' },
+    success:   { text: '✅ Added to your Progress Page!',        color: '#27ae60' },
+    duplicate: { text: '⚠️ You are already following this roadmap.', color: '#e67e22' },
+    error:     { text: '❌ Could not save. Please try again.',  color: '#e74c3c' },
   };
 
   return (
@@ -102,6 +142,54 @@ function LearningRoadmap() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Follow Up Button */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '24px 0 8px' }}>
+                <button
+                  onClick={handleFollowUp}
+                  disabled={followUpStatus === 'saving' || followUpStatus === 'success'}
+                  style={{
+                    padding: '12px 36px',
+                    background: followUpStatus === 'success' ? '#27ae60' : 'linear-gradient(135deg, #6c5ce7, #a29bfe)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '30px',
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    cursor: followUpStatus === 'saving' || followUpStatus === 'success' ? 'default' : 'pointer',
+                    boxShadow: '0 4px 15px rgba(108,92,231,0.4)',
+                    transition: 'all 0.3s ease',
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  {followUpStatus === 'saving' ? '⏳ Saving...' : followUpStatus === 'success' ? '✅ Following!' : '🚀 Follow Up'}
+                </button>
+
+                {followUpStatus && followUpMessages[followUpStatus] && (
+                  <p style={{ marginTop: '10px', color: followUpMessages[followUpStatus].color, fontWeight: '600', fontSize: '14px' }}>
+                    {followUpMessages[followUpStatus].text}
+                  </p>
+                )}
+
+                {followUpStatus === 'success' && (
+                  <button
+                    onClick={() => navigate('/progress')}
+                    style={{
+                      marginTop: '8px',
+                      padding: '8px 22px',
+                      background: 'transparent',
+                      color: '#6c5ce7',
+                      border: '2px solid #6c5ce7',
+                      borderRadius: '20px',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    View Progress Page →
+                  </button>
+                )}
               </div>
           </div>
         </div>

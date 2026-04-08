@@ -1,22 +1,27 @@
-import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
 export const sendEmail = async (to, subject, text, html) => {
   try {
-    await sgMail.send({
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.FROM_EMAIL,
+        pass: process.env.EMAIL_HOST_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Skill Bridge" <${process.env.FROM_EMAIL}>`,
       to,
-      from: process.env.FROM_EMAIL,
       subject,
       text,
       html,
     });
-    console.log("Email sent to", to);
+    
+    console.log("✅ Email sent successfully via Nodemailer to", to);
   } catch (error) {
-    console.error(error);
+    console.error("❌ Nodemailer Failed to send email:", error.message);
   }
 };
-
-//send emails

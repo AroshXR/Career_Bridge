@@ -221,11 +221,10 @@ body {
   padding: 2rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, minmax(180px, auto));
-  gap: 1.2rem;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5rem;
   height: 100vh;
   overflow-y: auto;
-  align-content: start;
 }
 
 /* ── Dashboard cards ── */

@@ -11,7 +11,7 @@ const progressSchema = new mongoose.Schema(
     skillId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Skill",
-      required: true,
+      required: false, // Optional — AI-generated roadmaps don't have a Skill document
     },
 
     skillName: {

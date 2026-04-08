@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import './Splash.css';
-import analyzerImg from './analyzer_home.png';
-import coursesImg from './courses_home.png';
-import economyImg from './economy_home.png';
-import dataAi3d from './data_ai_3d.png';
-import collaboration3d from './collaboration_3d.png';
+import analyzerImg from '../Splash/analyzer_home.png';
+import coursesImg from '../Splash/courses_home.png';
+import economyImg from '../Splash/economy_home.png';
+import dataAi3d from '../Splash/data_ai_3d.png';
+import collaboration3d from '../Splash/collaboration_3d.png';
 import Footer from '../Common/Footer';
 
 const Splash = () => {

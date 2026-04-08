@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./dashboardUser.css";
+import Footer from "../Common/Footer";
+import Header from "../Common/Navbar";
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
@@ -10,6 +12,15 @@ const UserDashboard = () => {
   const [updating, setUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Dynamic dashboard states
+  const [progressData, setProgressData] = useState([]);
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [recentActivities, setRecentActivities] = useState([
+    { id: 1, time: "Today", text: "Logged into dashboard" },
+    { id: 2, time: "Yesterday", text: "Updated profile details" }
+  ]);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +63,41 @@ const UserDashboard = () => {
       setPreviewImage(userData.profilePicture || "/default-avatar.png");
     } catch (error) {
       console.error("Error fetching user:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (user && user._id) {
+      fetchDashboardData(user._id);
+    }
+  }, [user]);
+
+  const fetchDashboardData = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      // Fetch Progress
+      const progressRes = await fetch(`http://localhost:5000/api/v1/progress/user/${userId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (progressRes.ok) {
+        const pData = await progressRes.json();
+        setProgressData(pData.data || []);
+      }
+
+      // Fetch Saved Jobs
+      const jobsRes = await fetch(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (jobsRes.ok) {
+        const jData = await jobsRes.json();
+        // Backend returns { jobs: [...], count: ... } for getSavedJobs
+        const jobsArray = jData.data?.jobs || jData.data || [];
+        setSavedJobs(Array.isArray(jobsArray) ? jobsArray : []);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
     }
   };
 
@@ -216,528 +262,525 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="div29_user_dashboard">
-      {/* LEFT PANEL - profile + details */}
-      <div className="div33_left_profile">
-        <div className="div41_photo_wrap">
-          <img
-            src={user.profilePicture || "/default-avatar.png"}
-            alt="profile"
-            className="img7_profile_avatar"
-          />
+      <div>
+        {/* <Header/> */}
+
+        <div className="div29_user_dashboard">
+        {/* LEFT PANEL - profile + details */}
+        <div className="div33_left_profile">
+          <div className="div41_photo_wrap">
+            <img
+              src={user.profilePicture || "/default-avatar.png"}
+              alt="profile"
+              className="img7_profile_avatar"
+            />
+          </div>
+
+          <div className="div54_user_meta">
+            <h2 className="h2_user_name">{user.name}</h2>
+            <span className="p_user_id">ID: {user.userId || user._id}</span>
+          </div>
+
+          <div className="form12_details_bars">
+            <div className="div65_detail_bar">
+              <span className="span18_label">Email</span>
+              <span className="span19_value">{user.email || "Not provided"}</span>
+            </div>
+            <div className="div65_detail_bar">
+              <span className="span18_label">Phone</span>
+              <span className="span19_value">{user.phone || "Not provided"}</span>
+            </div>
+            <div className="div65_detail_bar">
+              <span className="span18_label">Education</span>
+              <span className="span19_value">{user.education || "Not provided"}</span>
+            </div>
+            <div className="div65_detail_bar">
+              <span className="span18_label">Experience</span>
+              <span className="span19_value">{user.experience || "Not provided"}</span>
+            </div>
+            <div className="div65_detail_bar">
+              <span className="span18_label">CV / Resume</span>
+              <span 
+                className="span19_value" 
+                style={{ cursor: user.cv ? "pointer" : "default", color: user.cv ? "#007bff" : "#666" }}
+                onClick={handleViewCV}
+              >
+                {user.cv ? "📄 View CV" : "Not uploaded"}
+              </span>
+            </div>
+          </div>
+
+          <button
+            className="button8_update_profile"
+            onClick={() => setShowModal(true)}
+          >
+            ✎ Update profile
+          </button>
+
+          {/* CV Generator Button */}
+          <button
+            className="button9_cv_generator"
+            onClick={handleCVGenerator}
+            style={{
+              marginTop: "10px",
+              padding: "12px",
+              backgroundColor: "#6c5ce7",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold",
+              width: "100%"
+            }}
+          >
+            📄 Generate CV
+          </button>
+
+          {/* Logout Button */}
+          <button
+            className="button10_logout"
+            onClick={handleLogout}
+            style={{
+              marginTop: "10px",
+              padding: "12px",
+              backgroundColor: "#e74c3c",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold",
+              width: "100%"
+            }}
+          >
+            🚪 Logout
+          </button>
+
+          {/* Delete Account Button */}
+          <button
+            className="button11_delete_account"
+            onClick={() => setShowDeleteConfirm(true)}
+            style={{
+              marginTop: "10px",
+              padding: "12px",
+              backgroundColor: "#c0392b",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold",
+              width: "100%"
+            }}
+          >
+            🗑️ Delete Account
+          </button>
         </div>
 
-        <div className="div54_user_meta">
-          <h2 className="h2_user_name">{user.name}</h2>
-          <span className="p_user_id">ID: {user.userId || user._id}</span>
-        </div>
-
-        <div className="form12_details_bars">
-          <div className="div65_detail_bar">
-            <span className="span18_label">Email</span>
-            <span className="span19_value">{user.email || "Not provided"}</span>
-          </div>
-          <div className="div65_detail_bar">
-            <span className="span18_label">Phone</span>
-            <span className="span19_value">{user.phone || "Not provided"}</span>
-          </div>
-          <div className="div65_detail_bar">
-            <span className="span18_label">Education</span>
-            <span className="span19_value">{user.education || "Not provided"}</span>
-          </div>
-          <div className="div65_detail_bar">
-            <span className="span18_label">Experience</span>
-            <span className="span19_value">{user.experience || "Not provided"}</span>
-          </div>
-          <div className="div65_detail_bar">
-            <span className="span18_label">CV / Resume</span>
-            <span 
-              className="span19_value" 
-              style={{ cursor: user.cv ? "pointer" : "default", color: user.cv ? "#007bff" : "#666" }}
-              onClick={handleViewCV}
-            >
-              {user.cv ? "📄 View CV" : "Not uploaded"}
-            </span>
-          </div>
-        </div>
-
-        <button
-          className="button8_update_profile"
-          onClick={() => setShowModal(true)}
-        >
-          ✎ Update profile
-        </button>
-
-        {/* CV Generator Button */}
-        <button
-          className="button9_cv_generator"
-          onClick={handleCVGenerator}
-          style={{
-            marginTop: "10px",
-            padding: "12px",
-            backgroundColor: "#6c5ce7",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: "bold",
-            width: "100%"
-          }}
-        >
-          📄 Generate CV
-        </button>
-
-        {/* Logout Button */}
-        <button
-          className="button10_logout"
-          onClick={handleLogout}
-          style={{
-            marginTop: "10px",
-            padding: "12px",
-            backgroundColor: "#e74c3c",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: "bold",
-            width: "100%"
-          }}
-        >
-          🚪 Logout
-        </button>
-
-        {/* Delete Account Button */}
-        <button
-          className="button11_delete_account"
-          onClick={() => setShowDeleteConfirm(true)}
-          style={{
-            marginTop: "10px",
-            padding: "12px",
-            backgroundColor: "#c0392b",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: "bold",
-            width: "100%"
-          }}
-        >
-          🗑️ Delete Account
-        </button>
-      </div>
-
-      {/* RIGHT PANEL - four clickable cards */}
-      <div className="div90_right_grid">
-        <Link
-          to="/recent-activity"
-          className="dashboard_card card_recent_activity"
-        >
-          <h4 className="h4_section_title">📋 Recent Activity</h4>
-          <div className="recent_activity_list">
-            <div className="recent_activity_item">
-              <span>Today</span> Viewed 3 jobs
+        {/* RIGHT PANEL - four clickable cards */}
+        <div className="div90_right_grid">
+          <Link
+            to="/recent-activity"
+            className="dashboard_card card_recent_activity"
+          >
+            <h4 className="h4_section_title">📋 Recent Activity</h4>
+            <div className="recent_activity_list">
+              {recentActivities.map(activity => (
+                <div key={activity.id} className="recent_activity_item">
+                  <span>{activity.time}</span> {activity.text}
+                </div>
+              ))}
             </div>
-            <div className="recent_activity_item">
-              <span>Yesterday</span> Applied to Frontend Dev
-            </div>
-            <div className="recent_activity_item">
-              <span>2 days ago</span> Updated profile
-            </div>
-          </div>
-          <div className="view_all_link">View all activity →</div>
-        </Link>
+            <div className="view_all_link">View all activity →</div>
+          </Link>
 
-        <Link to="/recommended" className="dashboard_card card_recommended">
-          <h4 className="h4_section_title">⚡ Recommended for You</h4>
-          <p style={{ marginBottom: "1rem", color: "#2c3e6d" }}>
-            Based on your skills and interests:
-          </p>
-          <div className="recommended_skills">
-            <span className="skill_tag">React.js</span>
-            <span className="skill_tag">UI/UX Design</span>
-            <span className="skill_tag">TypeScript</span>
-            <span className="skill_tag">Node.js</span>
-          </div>
-          <div className="view_all_link">See all recommendations →</div>
-        </Link>
-
-        <Link to="/progress" className="dashboard_card card_progress">
-          <h4 className="h4_section_title">📊 Progress Tracking</h4>
-          <div className="div113_progress_container">
-            <div className="div114_progress_stat">
-              <span>Profile completeness</span>
-              <span>{user.progress || 0}%</span>
-            </div>
-            <div className="progress17_bar_full">
-              <div
-                className="progress18_fill"
-                style={{ width: `${user.progress || 0}%` }}
-              ></div>
-            </div>
-            <div className="div114_progress_stat">
-              <span>Applications</span>
-              <span>2/5 completed</span>
-            </div>
-            <div className="progress17_bar_full">
-              <div className="progress18_fill" style={{ width: "40%" }}></div>
-            </div>
-            <p
-              style={{
-                fontSize: "0.95rem",
-                marginTop: "1rem",
-                color: "#314d8c",
-              }}
-            >
-              Next milestone: Add portfolio
+          <Link to="/recommended" className="dashboard_card card_recommended">
+            <h4 className="h4_section_title">✨ Recommended for You</h4>
+            <p style={{ marginBottom: "1rem", color: "#2c3e6d" }}>
+              Based on your skills:
             </p>
-          </div>
-          <div className="view_all_link">View detailed progress →</div>
-        </Link>
-
-        <Link to="/saved-jobs" className="dashboard_card card_saved_jobs">
-          <h4 className="h4_section_title">🔖 Saved Jobs</h4>
-          <ul className="ul22_saved_jobs">
-            <li className="li23_job_item">
-              <span className="span24_job_badge">Full-time</span>
-              Senior React Dev · TechCorp
-            </li>
-            <li className="li23_job_item">
-              <span className="span24_job_badge">Remote</span>
-              Product Designer · DesignStudio
-            </li>
-            <li className="li23_job_item">
-              <span className="span24_job_badge">Intern</span>
-              Junior ML Engineer · AI Labs
-            </li>
-          </ul>
-          <div className="view_all_link">View all saved jobs →</div>
-        </Link>
-      </div>
-
-      {/* Delete Account Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="modal_overlay">
-          <div className="modal_content" style={{ maxWidth: "400px" }}>
-            <div className="modal_header">
-              <h2>Delete Account</h2>
-              <button
-                className="modal_close"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                ×
-              </button>
+            <div className="recommended_skills">
+              <span className="skill_tag">Meta Front-End Developer</span>
+              <span className="skill_tag">Complete Python Bootcamp</span>
+              <span className="skill_tag">AWS Cloud Practitioner</span>
             </div>
-            <div style={{ padding: "20px", textAlign: "center" }}>
-              <p style={{ marginBottom: "20px", color: "#e74c3c", fontSize: "18px" }}>
-                ⚠️ Warning: This action cannot be undone!
-              </p>
-              <p style={{ marginBottom: "20px" }}>
-                Are you sure you want to permanently delete your account? All your data will be lost.
-              </p>
-              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#95a5a6",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer"
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteAccount}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#e74c3c",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer"
-                  }}
-                >
-                  Yes, Delete My Account
-                </button>
-              </div>
+            <div className="view_all_link">See all recommendations →</div>
+          </Link>
+
+          <Link to="/progress" className="dashboard_card card_progress">
+            <h4 className="h4_section_title">📊 Progress Tracking</h4>
+            <div className="div113_progress_container">
+              {progressData.length > 0 ? (
+                progressData.slice(0, 3).map((prog, idx) => (
+                  <div key={prog._id || idx} style={{ marginBottom: "1rem" }}>
+                    <div className="div114_progress_stat">
+                      <span>{prog.skillName}</span>
+                      <span>{prog.progressPercentage || 0}%</span>
+                    </div>
+                    <div className="progress17_bar_full">
+                      <div
+                        className="progress18_fill"
+                        style={{ width: `${prog.progressPercentage || 0}%`, background: prog.progressPercentage === 100 ? '#27ae60' : '#6c5ce7' }}
+                      ></div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: "20px 0", color: "#666", textAlign: "center" }}>
+                  <span>No follow up courses yet</span>
+                </div>
+              )}
             </div>
-          </div>
+            <div className="view_all_link">View detailed progress →</div>
+          </Link>
+
+          <Link to="/saved-jobs" className="dashboard_card card_saved_jobs">
+            <h4 className="h4_section_title">🔖 Saved Jobs</h4>
+            <ul className="ul22_saved_jobs">
+              {savedJobs.length > 0 ? (
+                savedJobs.slice(0, 3).map((job, idx) => (
+                  <li key={job.jobId || idx} className="li23_job_item" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <span className="span24_job_badge">{job.workMode || job.location || "Job"}</span>
+                    {job.title || job.jobTitle} · {job.company || job.companyName}
+                  </li>
+                ))
+              ) : (
+                <div style={{ padding: "20px 0", color: "#666", textAlign: "center" }}>
+                  <span>No saved jobs</span>
+                </div>
+              )}
+            </ul>
+            <div className="view_all_link">View all saved jobs →</div>
+          </Link>
         </div>
-      )}
 
-      {/* Profile Update Modal */}
-      {showModal && formData && (
-        <div className="modal_overlay">
-          <div className="modal_content">
-            <div className="modal_header">
-              <h2>Update Profile</h2>
-              <button
-                className="modal_close"
-                onClick={() => setShowModal(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Success/Error Message */}
-            {updateMessage && (
-              <div className={`update-message ${updateMessage.type}`} style={{
-                padding: "10px",
-                marginBottom: "15px",
-                borderRadius: "4px",
-                backgroundColor: updateMessage.type === "success" ? "#d4edda" : "#f8d7da",
-                color: updateMessage.type === "success" ? "#155724" : "#721c24",
-                border: `1px solid ${updateMessage.type === "success" ? "#c3e6cb" : "#f5c6cb"}`
-              }}>
-                {updateMessage.text}
+        {/* Delete Account Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div className="modal_overlay">
+            <div className="modal_content" style={{ maxWidth: "400px" }}>
+              <div className="modal_header">
+                <h2>Delete Account</h2>
+                <button
+                  className="modal_close"
+                  onClick={() => setShowDeleteConfirm(false)}
+                >
+                  ×
+                </button>
               </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="profile_form">
-              {/* Profile Picture Upload */}
-              <div className="form_group photo_upload_group">
-                <label>Profile Photo</label>
-                <div className="photo_upload_container">
-                  <img
-                    src={previewImage || user.profilePicture || "/default-avatar.png"}
-                    alt="Preview"
-                    className="photo_preview"
-                  />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="photo_input"
-                    id="photo-upload"
-                  />
-                  <label htmlFor="photo-upload" className="photo_upload_label">
-                    Choose Image
-                  </label>
-                </div>
-              </div>
-
-              {/* Name and Email - Read Only */}
-              <div className="form_row">
-                <div className="form_group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    value={user.name || ""}
-                    disabled
-                    style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
-                  />
-                </div>
-
-                <div className="form_group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    value={user.email || ""}
-                    disabled
-                    style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
-                  />
-                </div>
-              </div>
-
-              {/* Phone and Location */}
-              <div className="form_row">
-                <div className="form_group">
-                  <label>Phone Number</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone || ""}
-                    onChange={handleInputChange}
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-
-                <div className="form_group">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location || ""}
-                    onChange={handleInputChange}
-                    placeholder="City, Country"
-                  />
-                </div>
-              </div>
-
-              {/* Education and Experience */}
-              <div className="form_row">
-                <div className="form_group">
-                  <label>Education</label>
-                  <input
-                    type="text"
-                    name="education"
-                    value={formData.education || ""}
-                    onChange={handleInputChange}
-                    placeholder="e.g., B.Sc. Computer Science"
-                  />
-                </div>
-
-                <div className="form_group">
-                  <label>Experience</label>
-                  <select
-                    name="experience"
-                    value={formData.experience || ""}
-                    onChange={handleInputChange}
+              <div style={{ padding: "20px", textAlign: "center" }}>
+                <p style={{ marginBottom: "20px", color: "#e74c3c", fontSize: "18px" }}>
+                  ⚠️ Warning: This action cannot be undone!
+                </p>
+                <p style={{ marginBottom: "20px" }}>
+                  Are you sure you want to permanently delete your account? All your data will be lost.
+                </p>
+                <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    style={{
+                      padding: "10px 20px",
+                      backgroundColor: "#95a5a6",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer"
+                    }}
                   >
-                    <option value="">Select experience level</option>
-                    <option value="0-2 years">0-2 years</option>
-                    <option value="3-5 years">3-5 years</option>
-                    <option value="5-8 years">5-8 years</option>
-                    <option value="8+ years">8+ years</option>
-                  </select>
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteAccount}
+                    style={{
+                      padding: "10px 20px",
+                      backgroundColor: "#e74c3c",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Yes, Delete My Account
+                  </button>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
 
-              {/* Title and Skills */}
-              <div className="form_row">
-                <div className="form_group">
-                  <label>Professional Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title || ""}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Senior Developer"
-                  />
-                </div>
-
-                <div className="form_group">
-                  <label>Skills (comma separated)</label>
-                  <input
-                    type="text"
-                    name="skills"
-                    value={(formData.industrialPreference || []).join(", ")}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        industrialPreference: e.target.value.split(",").map((s) => s.trim()).filter(s => s),
-                      })
-                    }
-                    placeholder="React, Node.js, Python"
-                  />
-                </div>
+        {/* Profile Update Modal */}
+        {showModal && formData && (
+          <div className="modal_overlay">
+            <div className="modal_content">
+              <div className="modal_header">
+                <h2>Update Profile</h2>
+                <button
+                  className="modal_close"
+                  onClick={() => setShowModal(false)}
+                >
+                  ×
+                </button>
               </div>
 
-              {/* Social Links */}
-              <div className="form_row">
-                <div className="form_group">
-                  <label>Portfolio URL</label>
-                  <input
-                    type="url"
-                    name="portfolio"
-                    value={formData.portfolio || ""}
-                    onChange={handleInputChange}
-                    placeholder="https://yourportfolio.com"
-                  />
+              {/* Success/Error Message */}
+              {updateMessage && (
+                <div className={`update-message ${updateMessage.type}`} style={{
+                  padding: "10px",
+                  marginBottom: "15px",
+                  borderRadius: "4px",
+                  backgroundColor: updateMessage.type === "success" ? "#d4edda" : "#f8d7da",
+                  color: updateMessage.type === "success" ? "#155724" : "#721c24",
+                  border: `1px solid ${updateMessage.type === "success" ? "#c3e6cb" : "#f5c6cb"}`
+                }}>
+                  {updateMessage.text}
                 </div>
+              )}
 
-                <div className="form_group">
-                  <label>GitHub URL</label>
-                  <input
-                    type="url"
-                    name="github"
-                    value={formData.github || ""}
-                    onChange={handleInputChange}
-                    placeholder="https://github.com/username"
-                  />
-                </div>
-              </div>
-
-              <div className="form_row">
-                <div className="form_group">
-                  <label>LinkedIn URL</label>
-                  <input
-                    type="url"
-                    name="linkedin"
-                    value={formData.linkedin || ""}
-                    onChange={handleInputChange}
-                    placeholder="https://linkedin.com/in/username"
-                  />
-                </div>
-
-                <div className="form_group">
-                  <label>CV / Resume</label>
-                  <div className="cv_upload_container">
+              <form onSubmit={handleSubmit} className="profile_form">
+                {/* Profile Picture Upload */}
+                <div className="form_group photo_upload_group">
+                  <label>Profile Photo</label>
+                  <div className="photo_upload_container">
+                    <img
+                      src={previewImage || user.profilePicture || "/default-avatar.png"}
+                      alt="Preview"
+                      className="photo_preview"
+                    />
                     <input
                       type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleCVUpload}
-                      className="cv_input"
-                      id="cv-upload"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="photo_input"
+                      id="photo-upload"
                     />
-                    <label htmlFor="cv-upload" className="cv_upload_label">
-                      <span className="cv_upload_icon">📄</span>
-                      {formData.cv ? "Update CV" : "Upload CV"}
+                    <label htmlFor="photo-upload" className="photo_upload_label">
+                      Choose Image
                     </label>
-                    {formData.cv && (
-                      <div className="cv_file_info">
-                        <span className="cv_file_name">✓ CV uploaded</span>
-                        <button
-                          type="button"
-                          className="cv_view_btn"
-                          onClick={() => window.open(formData.cv, '_blank')}
-                          style={{
-                            marginLeft: "10px",
-                            padding: "2px 8px",
-                            backgroundColor: "#007bff",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "12px"
-                          }}
-                        >
-                          View
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
-              </div>
 
-              {/* Bio */}
-              <div className="form_group full_width">
-                <label>Bio / About Me</label>
-                <textarea
-                  name="bio"
-                  value={formData.bio || ""}
-                  onChange={handleInputChange}
-                  rows="4"
-                  placeholder="Tell us about yourself, your experience, and career goals..."
-                ></textarea>
-              </div>
+                {/* Name and Email - Read Only */}
+                <div className="form_row">
+                  <div className="form_group">
+                    <label>Full Name</label>
+                    <input
+                      type="text"
+                      value={user.name || ""}
+                      disabled
+                      style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+                    />
+                  </div>
 
-              <div className="modal_footer">
-                <button
-                  type="button"
-                  className="cancel_btn"
-                  onClick={() => setShowModal(false)}
-                  disabled={updating}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="save_btn"
-                  disabled={updating}
-                >
-                  {updating ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
+                  <div className="form_group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={user.email || ""}
+                      disabled
+                      style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Phone and Location */}
+                <div className="form_row">
+                  <div className="form_group">
+                    <label>Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone || ""}
+                      onChange={handleInputChange}
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>Location</label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={formData.location || ""}
+                      onChange={handleInputChange}
+                      placeholder="City, Country"
+                    />
+                  </div>
+                </div>
+
+                {/* Education and Experience */}
+                <div className="form_row">
+                  <div className="form_group">
+                    <label>Education</label>
+                    <input
+                      type="text"
+                      name="education"
+                      value={formData.education || ""}
+                      onChange={handleInputChange}
+                      placeholder="e.g., B.Sc. Computer Science"
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>Experience</label>
+                    <select
+                      name="experience"
+                      value={formData.experience || ""}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select experience level</option>
+                      <option value="0-2 years">0-2 years</option>
+                      <option value="3-5 years">3-5 years</option>
+                      <option value="5-8 years">5-8 years</option>
+                      <option value="8+ years">8+ years</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Title and Skills */}
+                <div className="form_row">
+                  <div className="form_group">
+                    <label>Professional Title</label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title || ""}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Senior Developer"
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>Skills (comma separated)</label>
+                    <input
+                      type="text"
+                      name="skills"
+                      value={(formData.industrialPreference || []).join(", ")}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          industrialPreference: e.target.value.split(",").map((s) => s.trim()).filter(s => s),
+                        })
+                      }
+                      placeholder="React, Node.js, Python"
+                    />
+                  </div>
+                </div>
+
+                {/* Social Links */}
+                <div className="form_row">
+                  <div className="form_group">
+                    <label>Portfolio URL</label>
+                    <input
+                      type="url"
+                      name="portfolio"
+                      value={formData.portfolio || ""}
+                      onChange={handleInputChange}
+                      placeholder="https://yourportfolio.com"
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>GitHub URL</label>
+                    <input
+                      type="url"
+                      name="github"
+                      value={formData.github || ""}
+                      onChange={handleInputChange}
+                      placeholder="https://github.com/username"
+                    />
+                  </div>
+                </div>
+
+                <div className="form_row">
+                  <div className="form_group">
+                    <label>LinkedIn URL</label>
+                    <input
+                      type="url"
+                      name="linkedin"
+                      value={formData.linkedin || ""}
+                      onChange={handleInputChange}
+                      placeholder="https://linkedin.com/in/username"
+                    />
+                  </div>
+
+                  <div className="form_group">
+                    <label>CV / Resume</label>
+                    <div className="cv_upload_container">
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleCVUpload}
+                        className="cv_input"
+                        id="cv-upload"
+                      />
+                      <label htmlFor="cv-upload" className="cv_upload_label">
+                        <span className="cv_upload_icon">📄</span>
+                        {formData.cv ? "Update CV" : "Upload CV"}
+                      </label>
+                      {formData.cv && (
+                        <div className="cv_file_info">
+                          <span className="cv_file_name">✓ CV uploaded</span>
+                          <button
+                            type="button"
+                            className="cv_view_btn"
+                            onClick={() => window.open(formData.cv, '_blank')}
+                            style={{
+                              marginLeft: "10px",
+                              padding: "2px 8px",
+                              backgroundColor: "#007bff",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "12px"
+                            }}
+                          >
+                            View
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bio */}
+                <div className="form_group full_width">
+                  <label>Bio / About Me</label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio || ""}
+                    onChange={handleInputChange}
+                    rows="4"
+                    placeholder="Tell us about yourself, your experience, and career goals..."
+                  ></textarea>
+                </div>
+
+                <div className="modal_footer">
+                  <button
+                    type="button"
+                    className="cancel_btn"
+                    onClick={() => setShowModal(false)}
+                    disabled={updating}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="save_btn"
+                    disabled={updating}
+                  >
+                    {updating ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+      </div>
+
+      {/* <Footer/> */}
+
     </div>
   );
 };
