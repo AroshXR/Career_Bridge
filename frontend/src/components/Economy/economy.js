@@ -11,6 +11,8 @@ import {
   Legend
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../Common/Navbar';
+import Footer from '../Common/Footer';
 import './economy.css';
 
 const COUNTRIES = [
@@ -46,22 +48,15 @@ const Economy = () => {
   const fetchEconomyData = async (e) => {
     e.preventDefault();
     if (!countryCode) return;
-
     setLoading(true);
     setError('');
-
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      };
-
-      const response = await axios.get(`http://localhost:5000/api/v1/economy/economyDetails/${countryCode}`, config);
-
-      // Expected data structure: { country, year, latest: { economy, job_market }, trends: [] }
+      const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
+      const response = await axios.get(
+        `http://localhost:5000/api/v1/economy/economyDetails/${countryCode}`,
+        config
+      );
       setEconomyData(response.data.data);
-
     } catch (err) {
       const apiErrorMsg = err.response?.data?.error?.errorDescription || err.response?.data?.message;
       setError(apiErrorMsg ? `Failed to fetch: ${apiErrorMsg}` : 'Failed to fetch economy trends.');
@@ -71,101 +66,186 @@ const Economy = () => {
     }
   };
 
-  const formatMetrics = (value) => {
-    if (value === null || value === undefined) return "N/A";
+  const fmt = (value) => {
+    if (value === null || value === undefined) return 'N/A';
     return `${Number(value).toFixed(2)}%`;
   };
 
+  const metrics = economyData ? [
+    {
+      label: 'GDP Growth',
+      value: fmt(economyData.latest.economy?.gdp_growth),
+      icon: 'trending_up',
+      color: 'green_eco'
+    },
+    {
+      label: 'Unemployment',
+      value: fmt(economyData.latest.job_market?.unemployment),
+      icon: 'trending_down',
+      color: 'red_eco'
+    },
+    {
+      label: 'Labor Force',
+      value: fmt(economyData.latest.job_market?.labor_force),
+      icon: 'groups',
+      color: 'cyan_eco'
+    },
+    {
+      label: 'Employment Ratio',
+      value: fmt(economyData.latest.job_market?.employment_ratio),
+      icon: 'work',
+      color: 'purple_eco'
+    }
+  ] : [];
+
   return (
-    <div className="eco-hub_eco">
-      <div className="eco-nav-bar_eco">
-        <div className="eco-nav-inner_eco">
-          <div className="eco-nav-brand_eco">
-            <span className="eco-brand-glow_eco"></span>
-            <h2 className="eco-brand-name_eco">Economy Hub</h2>
-          </div>
+    <div className="page-wrapper_eco">
+      <Navbar />
 
-          <form onSubmit={fetchEconomyData} className="eco-nav-form_eco">
-            <div className="eco-select-wrapper_eco">
-              <select
-                value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                className="eco-nav-select_eco"
-              >
-                <option value="" disabled>Choose Country</option>
-                {COUNTRIES.sort((a, b) => a.name.localeCompare(b.name)).map(c => (
-                  <option key={c.code} value={c.code}>{c.name}</option>
-                ))}
-              </select>
-              <span className="eco-select-arrow_eco"></span>
-            </div>
-            <button type="submit" disabled={loading || !countryCode} className="eco-nav-btn_eco">
-              {loading ? 'Analyzing...' : 'Analyze'}
-            </button>
-          </form>
-          <button className="eco-back-btn_eco" onClick={() => navigate('/home')}>
-            Back to Home
-          </button>
+      {/* ── HERO BANNER ── */}
+      <section className="hero_eco">
+        <div className="hero-text_eco">
+          <span className="hero-eyebrow_eco">World Bank Data</span>
+          <h1>Country<br /><strong>Economy</strong> Insights</h1>
+          <p>
+            Explore 10 years of economic transformation — GDP growth, unemployment,
+            labour force trends and more, powered by live World Bank data.
+          </p>
         </div>
-      </div>
 
-      <div className="eco-main-stage_eco">
-        {error && <div className="eco-toast-error_eco">{error}</div>}
+        {/* Country Selector + Analyze */}
+        <form className="hero-controls_eco" onSubmit={fetchEconomyData}>
+          <div className="select-wrap_eco">
+            <select
+              id="country-select_eco"
+              className="country-select_eco"
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
+            >
+              <option value="" disabled>Choose a Country</option>
+              {COUNTRIES.sort((a, b) => a.name.localeCompare(b.name)).map(c => (
+                <option key={c.code} value={c.code}>{c.name}</option>
+              ))}
+            </select>
+            <span className="material-icons-round select-icon_eco">expand_more</span>
+          </div>
+          <button
+            type="submit"
+            id="analyze-btn_eco"
+            className="analyze-btn_eco"
+            disabled={loading || !countryCode}
+          >
+            <span className="material-icons-round">
+              {loading ? 'hourglass_top' : 'bar_chart'}
+            </span>
+            {loading ? 'Analyzing...' : 'Analyze Country'}
+          </button>
+        </form>
+      </section>
 
+      {/* ── MAIN CONTENT ── */}
+      <div className="main-content_eco">
+
+        {/* Error */}
+        {error && (
+          <div className="error-bar_eco">
+            <span className="material-icons-round">error_outline</span>
+            {error}
+          </div>
+        )}
+
+        {/* Loading */}
         {loading && (
-          <div className="eco-hero-loader_eco">
-            <div className="eco-orb-container_eco">
-              <div className="eco-orb_eco"></div>
-              <div className="eco-orb-inner_eco"></div>
+          <div className="loading-area_eco">
+            <div className="orb-wrap_eco">
+              <div className="orb-ring_eco"></div>
+              <div className="orb-ring_eco"></div>
+              <div className="orb-glow_eco"></div>
             </div>
-            <p className="eco-loading-msg_eco">Syncing Historical Trends...</p>
+            <span className="loading-text_eco">Syncing Historical Trends...</span>
           </div>
         )}
 
+        {/* Welcome state */}
         {!loading && !economyData && !error && (
-          <div className="eco-welcome-stage_eco">
-            <div className="eco-welcome-card_eco">
-              <h1>Select a datastream to begin.</h1>
-              <p>Analyzing the last 10 years of economic transformation, powered by The World Bank.</p>
-            </div>
+          <div className="welcome-state_eco">
+            <span className="material-icons-round welcome-icon_eco">public</span>
+            <h2>Select a Country to Begin</h2>
+            <p>
+              Analysing the last 10 years of economic transformation,
+              powered by The World Bank API.
+            </p>
           </div>
         )}
 
-        {economyData && (
-          <div className={`eco-view-container_eco ${loading ? 'eco-fade-out_eco' : 'eco-fade-in_eco'}`}>
-            <div className="eco-summary-header_eco">
-              <h1 className="eco-stage-title_eco">
-                {economyData.country} <span className="eco-stage-year_eco">[{economyData.year}]</span>
-              </h1>
+        {/* Data View */}
+        {economyData && !loading && (
+          <div className="data-view_eco">
+
+            {/* Country heading */}
+            <div className="data-heading_eco">
+              <h2 className="country-name_eco">{economyData.country}</h2>
+              <span className="year-badge_eco">
+                <span className="material-icons-round">calendar_today</span>
+                {economyData.year}
+              </span>
             </div>
 
-            {/* Multi-Line Historical Trend Chart */}
-            <div className="eco-chart-stage_eco">
-              <div className="eco-chart-glass_eco">
-                <h3 className="eco-chart-header_eco">Historical Evolution [Trend Lines]</h3>
+            {/* Metric cards */}
+            <span className="section-label_eco">Latest Snapshot</span>
+            <div className="metric-cards_eco">
+              {metrics.map((m, i) => (
+                <div key={i} className={`metric-card_eco ${m.color}`}>
+                  <div className="metric-icon_eco">
+                    <span className="material-icons-round">{m.icon}</span>
+                  </div>
+                  <div className="metric-info_eco">
+                    <p className="metric-label_eco">{m.label}</p>
+                    <h3 className="metric-value_eco">{m.value}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Chart */}
+            <div className="chart-panel_eco">
+              <span className="section-label_eco">Historical Trend Lines</span>
+              <div className="chart-glass_eco">
+                <div className="chart-header_eco">
+                  <span className="material-icons-round">show_chart</span>
+                  <h3 className="chart-title_eco">10-Year Economic Evolution</h3>
+                </div>
                 <ResponsiveContainer width="100%" height={450}>
-                  <LineChart data={economyData.trends} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <LineChart
+                    data={economyData.trends}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="rgba(255,255,255,0.04)"
+                      vertical={false}
+                    />
                     <XAxis
                       dataKey="year"
-                      stroke="#64748b"
+                      stroke="#334155"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#94a3b8', fontSize: 11 }}
+                      tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'Outfit' }}
                     />
                     <YAxis
-                      stroke="#64748b"
+                      stroke="#334155"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#94a3b8', fontSize: 11 }}
+                      tick={{ fill: '#64748b', fontSize: 11, fontFamily: 'Outfit' }}
                       tickFormatter={(val) => `${val}%`}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        backgroundColor: 'rgba(15, 23, 42, 0.96)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '12px',
-                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.6)'
+                        borderRadius: '10px',
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
+                        fontFamily: 'Outfit'
                       }}
                       itemStyle={{ fontSize: '13px' }}
                     />
@@ -173,87 +253,58 @@ const Economy = () => {
                       verticalAlign="top"
                       align="center"
                       iconType="circle"
-                      wrapperStyle={{ paddingBottom: '30px' }}
+                      wrapperStyle={{ paddingBottom: '24px', fontFamily: 'Outfit' }}
                     />
                     <Line
                       name="GDP Growth"
                       type="monotone"
                       dataKey="gdp_growth"
                       stroke="#10b981"
-                      strokeWidth={3}
-                      dot={{ r: 4, fill: '#10b981', strokeWidth: 2 }}
-                      activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 0 }}
-                      animationDuration={1500}
+                      strokeWidth={2.5}
+                      dot={{ r: 3.5, fill: '#10b981', strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: '#10b981' }}
+                      animationDuration={1400}
                     />
                     <Line
                       name="Unemployment"
                       type="monotone"
                       dataKey="unemployment"
                       stroke="#f43f5e"
-                      strokeWidth={3}
-                      dot={{ r: 4, fill: '#f43f5e', strokeWidth: 2 }}
-                      activeDot={{ r: 6, stroke: '#f43f5e', strokeWidth: 0 }}
-                      animationDuration={1500}
+                      strokeWidth={2.5}
+                      dot={{ r: 3.5, fill: '#f43f5e', strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: '#f43f5e' }}
+                      animationDuration={1400}
                     />
                     <Line
                       name="Labor Force"
                       type="monotone"
                       dataKey="labor_force"
                       stroke="#00f2fe"
-                      strokeWidth={3}
-                      dot={{ r: 4, fill: '#00f2fe', strokeWidth: 2 }}
-                      activeDot={{ r: 6, stroke: '#00f2fe', strokeWidth: 0 }}
-                      animationDuration={1500}
+                      strokeWidth={2.5}
+                      dot={{ r: 3.5, fill: '#00f2fe', strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: '#00f2fe' }}
+                      animationDuration={1400}
                     />
                     <Line
                       name="Employment Ratio"
                       type="monotone"
                       dataKey="employment_ratio"
                       stroke="#8b5cf6"
-                      strokeWidth={3}
-                      dot={{ r: 4, fill: '#8b5cf6', strokeWidth: 2 }}
-                      activeDot={{ r: 6, stroke: '#8b5cf6', strokeWidth: 0 }}
-                      animationDuration={1500}
+                      strokeWidth={2.5}
+                      dot={{ r: 3.5, fill: '#8b5cf6', strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: '#8b5cf6' }}
+                      animationDuration={1400}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Recent Snapshot Grid */}
-            <div className="eco-insight-grid_eco">
-              <div className="eco-insight-card_eco">
-                <span className="eco-insight-icon_eco eco-icon-green_eco">📈</span>
-                <div className="eco-insight-info_eco">
-                  <p className="eco-insight-label_eco">GDP Growth</p>
-                  <h3 className="eco-insight-value_eco">{formatMetrics(economyData.latest.economy?.gdp_growth)}</h3>
-                </div>
-              </div>
-              <div className="eco-insight-card_eco">
-                <span className="eco-insight-icon_eco eco-icon-red_eco">📉</span>
-                <div className="eco-insight-info_eco">
-                  <p className="eco-insight-label_eco">Unemployment</p>
-                  <h3 className="eco-insight-value_eco">{formatMetrics(economyData.latest.job_market?.unemployment)}</h3>
-                </div>
-              </div>
-              <div className="eco-insight-card_eco">
-                <span className="eco-insight-icon_eco eco-icon-cyan_eco">👥</span>
-                <div className="eco-insight-info_eco">
-                  <p className="eco-insight-label_eco">Labor Force</p>
-                  <h3 className="eco-insight-value_eco">{formatMetrics(economyData.latest.job_market?.labor_force)}</h3>
-                </div>
-              </div>
-              <div className="eco-insight-card_eco">
-                <span className="eco-insight-icon_eco eco-icon-purple_eco">💼</span>
-                <div className="eco-insight-info_eco">
-                  <p className="eco-insight-label_eco">Employment Ratio</p>
-                  <h3 className="eco-insight-value_eco">{formatMetrics(economyData.latest.job_market?.employment_ratio)}</h3>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };

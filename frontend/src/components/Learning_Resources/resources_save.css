@@ -1,166 +1,257 @@
-.save-modal_overlay_ressave {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(8px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
+/* ═══════════════════════════════════════════════
+   resources_save.css  —  _resave suffix
+   Matches Splash / Login / Register aesthetic
+   ═══════════════════════════════════════════════ */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons+Round");
+
+:root {
+  --primary_resave: #2d1ced;
+  --secondary_resave: #74b7db;
+  --bg-white_resave: #ffffff;
+  --bg-gray_resave: #f8f8f8;
+  --text-dark_resave: #252525;
+  --text-muted_resave: #666666;
+  --transition_resave: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.save-modal_content_ressave {
-    background: white;
-    width: 90%;
-    max-width: 500px;
-    padding: 30px;
-    border-radius: 20px;
-    position: relative;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    animation: slideUp_save_ressave 0.3s ease-out;
+/* ── Modal Overlay ── */
+.modal-overlay_resave {
+  position: fixed;
+  inset: 0;
+  background: rgba(37, 37, 37, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: overlayIn_resave 0.3s ease;
 }
 
-@keyframes slideUp_save_ressave {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+@keyframes overlayIn_resave {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.save-close_btn_ressave {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #f1f5f9;
-    border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* ── Modal Panel ── */
+.modal-panel_resave {
+  background: var(--bg-white_resave);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  position: relative;
+  animation: panelUp_resave 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 24px 64px rgba(45,28,237,0.18);
 }
 
-.save-close_btn_ressave:hover {
-    background: #e2e8f0;
-    transform: rotate(90deg);
+@keyframes panelUp_resave {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.save-modal_content_ressave h2 {
-    font-size: 1.5rem;
-    color: #1e293b;
-    margin-bottom: 20px;
+/* Header strip */
+.modal-header_resave {
+  background: linear-gradient(135deg, var(--primary_resave), var(--secondary_resave));
+  padding: 1.5rem 1.8rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.resource-preview_save_ressave {
-    display: flex;
-    gap: 15px;
-    padding: 15px;
-    background: #f8fafc;
-    border-radius: 12px;
-    margin-bottom: 25px;
+.modal-header_resave h2 {
+  font-size: 1.2rem;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.resource-preview_save_ressave img {
-    width: 120px;
-    height: 67px;
-    object-fit: cover;
-    border-radius: 8px;
+.modal-header_resave h2 .material-icons-round { font-size: 1.2rem; }
+
+.close-btn_resave {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+  color: white;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition_resave);
+  flex-shrink: 0;
 }
 
-.resource-preview_save_ressave p {
-    font-size: 0.95rem;
-    color: #475569;
-    font-weight: 500;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-clamp: 3;
+.close-btn_resave:hover { background: rgba(255,255,255,0.28); }
+.close-btn_resave .material-icons-round { font-size: 1.1rem; }
+
+/* Modal body */
+.modal-body_resave {
+  padding: 1.5rem 1.8rem 2rem;
 }
 
-.save-form_learn_ressave {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+/* Resource preview strip */
+.preview-strip_resave {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem;
+  background: var(--bg-gray_resave);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ebebeb;
 }
 
-.form-group_save_ressave {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.preview-thumb_resave {
+  width: 72px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
-.form-group_save_ressave label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #64748b;
+.preview-title_resave {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dark_resave);
+  line-height: 1.4;
+  margin: 0;
 }
 
-.form-group_save_ressave input,
-.form-group_save_ressave select,
-.form-group_save_ressave textarea {
-    padding: 10px 15px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    transition: all 0.2s;
+/* ── Message Banner ── */
+.message-banner_resave {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.form-group_save_ressave input:focus,
-.form-group_save_ressave select:focus,
-.form-group_save_ressave textarea:focus {
-    outline: none;
-    border-color: #4f7df3;
-    box-shadow: 0 0 0 4px rgba(79, 125, 243, 0.1);
+.message-banner_resave.success_resave {
+  background: #f0fdf4;
+  border-left: 4px solid #16a34a;
+  color: #15803d;
 }
 
-.submit-save_btn_ressave {
-    margin-top: 10px;
-    padding: 12px;
-    background: #4f7df3;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+.message-banner_resave.error_resave {
+  background: #fff4f4;
+  border-left: 4px solid #b91c1c;
+  color: #b91c1c;
 }
 
-.submit-save_btn_ressave:hover {
-    background: #3b66d6;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 125, 243, 0.3);
+.message-banner_resave .material-icons-round { font-size: 1rem; flex-shrink: 0; }
+
+/* ── Form ── */
+.save-form_resave { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.form-group_resave { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.form-group_resave label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted_resave);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-.message_save_ressave {
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-    font-weight: 500;
+.form-group_resave label .material-icons-round { font-size: 0.85rem; color: var(--primary_resave); }
+
+.form-group_resave input,
+.form-group_resave select,
+.form-group_resave textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.92rem;
+  color: var(--text-dark_resave);
+  background: var(--bg-gray_resave);
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+  transition: var(--transition_resave);
+  box-sizing: border-box;
+  resize: vertical;
 }
 
-.success_save_ressave {
-    background: #ecfdf5;
-    color: #059669;
-    border: 1px solid #10b981;
+.form-group_resave input:focus,
+.form-group_resave select:focus,
+.form-group_resave textarea:focus {
+  border-color: var(--primary_resave);
+  background: var(--bg-white_resave);
+  box-shadow: 0 0 0 3px rgba(45,28,237,0.08);
 }
 
-.error_save_ressave {
-    background: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #ef4444;
+.form-group_resave input::placeholder,
+.form-group_resave textarea::placeholder {
+  color: #b0b0b0;
+  font-weight: 300;
 }
+
+/* Priority options row */
+.priority-options_resave {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.priority-option_resave {
+  flex: 1;
+  padding: 0.6rem;
+  text-align: center;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: var(--transition_resave);
+  background: var(--bg-white_resave);
+  color: var(--text-muted_resave);
+}
+
+.priority-option_resave.selected_resave[data-val="High"]   { border-color: #b91c1c; background: #fff4f4; color: #b91c1c; }
+.priority-option_resave.selected_resave[data-val="Medium"] { border-color: #d97706; background: #fffbeb; color: #d97706; }
+.priority-option_resave.selected_resave[data-val="Low"]    { border-color: var(--primary_resave); background: rgba(45,28,237,0.06); color: var(--primary_resave); }
+.priority-option_resave:not(.selected_resave):hover { border-color: var(--secondary_resave); }
+
+/* Submit button */
+.submit-btn_resave {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary_resave);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: var(--transition_resave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.submit-btn_resave .material-icons-round { font-size: 1.1rem; }
+.submit-btn_resave:hover:not(:disabled) { background: var(--text-dark_resave); transform: translateY(-2px); }
+.submit-btn_resave:disabled { opacity: 0.65; cursor: not-allowed; }
