@@ -1,0 +1,372 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Page shell ─────────────────────────────────────────────────────── */
+.pp-page {
+  min-height: 100vh;
+  background: #F7F9FC;
+  font-family: 'Inter', sans-serif;
+  color: #1C2033;
+  padding: 0 0 60px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.pp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 48px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E5E9F2;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  gap: 20px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.pp-title-wrap {
+  flex: 1;
+  text-align: center;
+}
+
+.pp-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+  background: linear-gradient(135deg, #5B6EF5, #8B9DFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pp-subtitle {
+  font-size: 0.95rem;
+  color: #6B7280;
+  margin: 0;
+}
+
+.pp-back-btn {
+  background: transparent;
+  color: #5B6EF5;
+  border: 1px solid #5B6EF5;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.pp-back-btn:hover {
+  background: #EEF2FF;
+}
+
+.pp-new-btn {
+  background: #5B6EF5;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(91, 110, 245, 0.28);
+  transition: all 0.2s;
+}
+.pp-new-btn:hover {
+  background: #4757D4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(91, 110, 245, 0.36);
+}
+
+/* ── Centered states (loading / error / empty) ───────────────────────── */
+.pp-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+}
+
+.pp-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #EEF2FF;
+  border-top-color: #5B6EF5;
+  border-radius: 50%;
+  animation: pp-spin 0.9s linear infinite;
+}
+@keyframes pp-spin { to { transform: rotate(360deg); } }
+
+.pp-loading-text {
+  color: #6B7280;
+  font-size: 0.95rem;
+}
+
+.pp-error {
+  color: #EF4444;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.pp-retry-btn {
+  background: #FFF4F4;
+  color: #EF4444;
+  border: 1px solid #FECDD3;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.pp-retry-btn:hover { background: #FEE2E2; }
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.pp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 14px;
+  text-align: center;
+}
+.pp-empty-icon {
+  font-size: 64px;
+  animation: pp-float 3s ease-in-out infinite;
+}
+@keyframes pp-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+.pp-empty h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+.pp-empty p {
+  color: #6B7280;
+  font-size: 0.95rem;
+  max-width: 400px;
+}
+
+/* ── Cards grid ──────────────────────────────────────────────────────── */
+.pp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 28px;
+  padding: 40px 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Individual card ─────────────────────────────────────────────────── */
+.pp-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E9F2;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  box-shadow: 0 4px 16px rgba(91, 110, 245, 0.05);
+}
+.pp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(91, 110, 245, 0.1);
+  border-color: #C7D2FE;
+}
+.pp-card--done {
+  border-color: #10B981;
+  background: #F0FDF4;
+}
+
+/* Card header */
+.pp-card-header {
+  padding: 22px 22px 14px;
+  border-bottom: 1.5px solid #F0F4FF;
+}
+.pp-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.pp-skill-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  text-transform: capitalize;
+  color: #1C2033;
+}
+
+/* Badge */
+.pp-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.pp-badge--progress {
+  background: #EEF2FF;
+  color: #5B6EF5;
+  border: 1px solid #C7D2FE;
+}
+.pp-badge--done {
+  background: #D1FAE5;
+  color: #10B981;
+  border: 1px solid #6EE7B7;
+}
+
+/* Progress bar */
+.pp-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.pp-bar-track {
+  flex: 1;
+  height: 8px;
+  background: #EEF2FF;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.pp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5B6EF5, #8B9DFF);
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+/* If you inline a color state dynamically, it will override the background gradient */
+.pp-pct {
+  font-size: 13px;
+  font-weight: 700;
+  min-width: 38px;
+  text-align: right;
+}
+.pp-steps-count {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin: 0;
+}
+
+/* Task list */
+.pp-task-list {
+  list-style: none;
+  margin: 0;
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #C7D2FE transparent;
+}
+.pp-task-list::-webkit-scrollbar { width: 5px; }
+.pp-task-list::-webkit-scrollbar-thumb {
+  background: #C7D2FE;
+  border-radius: 5px;
+}
+
+.pp-task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: background 0.2s;
+  user-select: none;
+  border: 1px solid transparent;
+}
+.pp-task-item:hover {
+  background: #F7F9FC;
+  border-color: #E5E9F2;
+}
+.pp-task-item--done .pp-task-text {
+  text-decoration: line-through;
+  color: #9CA3AF;
+}
+
+/* Custom checkbox */
+.pp-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  background: #FFFFFF;
+  border: 2px solid #C7D2FE;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: transparent;
+  transition: all 0.2s;
+  margin-top: 1px;
+}
+.pp-checkbox--checked {
+  background: #10B981;
+  border-color: #10B981;
+  color: #fff;
+}
+
+.pp-task-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #4B5563;
+  transition: color 0.2s;
+}
+
+/* Card footer */
+.pp-card-footer {
+  padding: 14px 22px;
+  border-top: 1.5px solid #F0F4FF;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pp-delete-btn {
+  background: #FFFFFF;
+  color: #EF4444;
+  border: 1.5px solid #FECDD3;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pp-delete-btn:hover:not(:disabled) {
+  background: #FFF4F4;
+  border-color: #EF4444;
+}
+.pp-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .pp-header {
+    padding: 20px 20px;
+    flex-direction: column;
+    text-align: center;
+  }
+  .pp-grid {
+    grid-template-columns: 1fr;
+    padding: 24px 16px;
+    gap: 20px;
+  }
+  .pp-title { font-size: 1.5rem; }
+}

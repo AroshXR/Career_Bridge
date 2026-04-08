@@ -26,6 +26,7 @@ import skillRoute from "./Routes/skillRoute.js";
 import authRoutes from "./Routes/authRoutes.js";
 import uploadRoutes from "./Routes/uploadRoutes.js";
 import economy from "./Routes/economyDetailsRoute.js";
+import { initRoadmapReminders } from "./utils/cronScheduler.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -72,17 +73,21 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/v1/economy", economy);
 
 // Swagger Configuration
-app.use('/skill-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/career-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Basic health check
 app.get("/", (req, res) => {
-    res.send("Skill Bridge Backend is running...");
+    res.send("Career Bridge Backend is running...");
 });
 
 const db_connect = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
         log(`MongoDB Successfully Connected`);
+
+        // Initialize Background Email Jobs
+        initRoadmapReminders();
+
         app.listen(PORT, () => {
             log(`Server Running on PORT ${PORT}`);
         });

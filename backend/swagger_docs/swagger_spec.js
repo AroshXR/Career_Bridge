@@ -4,9 +4,9 @@ const swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
         info: {
-            title: 'Skill Bridge API Specification',
+            title: 'Career Bridge API Specification',
             version: '1.0.0',
-            description: 'API Documentation for Skill Bridge Application',
+            description: 'API Documentation for Career Bridge Application',
             contact: {
                 name: 'Developer',
             },

@@ -105,7 +105,7 @@
  *             title: "Full Stack Developer"
  *             description: "Building scalable backend services and responsive UIs."
  *             username: "Aroshana"
- *             company: "Skill Bridge"
+ *             company: "Career Bridge"
  *             location: "Colombo, Sri Lanka"
  *     responses:
  *       201:

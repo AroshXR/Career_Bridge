@@ -1,0 +1,189 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons+Round");
+
+.footer {
+    background: #1a1a1a;
+    color: #ffffff;
+    padding: 4rem 5% 2rem;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ── Brand Wordmark — matches Navbar exactly ── */
+.footer-brand-wrap {
+    margin-bottom: 1rem;
+}
+
+.footer-logo-link {
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-decoration: none;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+    /* override dark background */
+    color: #fff;
+}
+
+.footer-logo-accent {
+    font-size: 2.2rem;
+    background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* ── Section headings ── */
+.footer-section h4 {
+    font-size: 0.72rem;
+    margin-bottom: 1.2rem;
+    color: #f8f9fa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.footer-h-icon {
+    font-size: 1rem !important;
+    color: #007bff;
+    opacity: 0.85;
+}
+
+/* ── Description text ── */
+.footer-section p {
+    color: #adb5bd;
+    line-height: 1.7;
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Social icon buttons ── */
+.footer-social {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.social-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #adb5bd;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.social-icon-btn .material-icons-round {
+    font-size: 0.9rem;
+}
+
+.social-icon-btn:hover {
+    background: rgba(0, 123, 255, 0.15);
+    border-color: rgba(0, 123, 255, 0.3);
+    color: #007bff;
+}
+
+/* Brand-specific hover colors */
+.social-linkedin:hover  { background: rgba(0, 119, 181, 0.15); border-color: rgba(0, 119, 181, 0.35); color: #0077b5; }
+.social-twitter:hover   { background: rgba(0, 0, 0, 0.25);     border-color: rgba(255,255,255, 0.2);   color: #ffffff; }
+.social-github:hover    { background: rgba(110, 84, 148, 0.18); border-color: rgba(110, 84, 148, 0.35); color: #a78bca; }
+.social-youtube:hover   { background: rgba(255, 0, 0, 0.15);   border-color: rgba(255, 0, 0, 0.3);     color: #ff4444; }
+.social-coursera:hover  { background: rgba(0, 86, 210, 0.15);  border-color: rgba(0, 86, 210, 0.3);    color: #0056d2; }
+
+/* SVG icon sizing inside social buttons */
+.social-icon-btn svg {
+    flex-shrink: 0;
+}
+
+/* ── Nav link lists ── */
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.65rem;
+}
+
+.footer-section ul li a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #adb5bd;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.3s ease;
+}
+
+.footer-section ul li a .material-icons-round {
+    font-size: 0.95rem;
+    opacity: 0.65;
+    transition: opacity 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #007bff;
+}
+
+.footer-section ul li a:hover .material-icons-round {
+    opacity: 1;
+}
+
+/* ── Bottom bar ── */
+.footer-bottom {
+    margin-top: 3.5rem;
+    padding-top: 1.8rem;
+    border-top: 1px solid #333333;
+    text-align: center;
+}
+
+.footer-bottom p {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #6c757d;
+    font-size: 0.82rem;
+}
+
+.footer-copy-icon {
+    font-size: 0.95rem !important;
+    opacity: 0.6;
+}
+
+.footer-bottom-brand {
+    background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}

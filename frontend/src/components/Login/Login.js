@@ -11,13 +11,13 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError('');
         try {
             const response = await axios.post('http://localhost:5000/api/auth/login', {
                 email,
                 password
             });
 
-            // Store both token and user data
             localStorage.setItem('token', response.data.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.data.user));
 
@@ -32,49 +32,133 @@ const Login = () => {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <h2>Welcome Back</h2>
-                {error && <div className="error-message">{error}</div>}
-                <form onSubmit={handleLogin}>
-                    <div className="form-group">
-                        <label>Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="login-btn">Login</button>
-                </form>
+        <div className="page-wrapper_log">
 
-                <div className="google-auth-separator" style={{ textAlign: "center", margin: "15px 0", fontSize: "14px", color: "#888" }}>
-                    <span>or</span>
+            {/* ── LEFT FORM PANEL ── */}
+            <div className="form-panel_log">
+                <div className="login-card_log">
+
+                    {/* Back link */}
+                    <Link to="/" className="back-link_log">
+                        ← Back to Home
+                    </Link>
+
+                    {/* Accent bar + heading */}
+                    <div className="accent-bar_log"></div>
+                    <h1 className="login-heading_log">Welcome<br />Back</h1>
+                    <p className="login-subtext_log">
+                        Sign in to continue your career journey.
+                    </p>
+
+                    {/* Error */}
+                    {error && <div className="error-message_log">{error}</div>}
+
+                    {/* Form */}
+                    <form className="login-form_log" onSubmit={handleLogin}>
+
+                        {/* Email */}
+                        <div className="form-group_log">
+                            <label htmlFor="email_log">Email Address</label>
+                            <input
+                                id="email_log"
+                                type="email"
+                                placeholder="Enter your email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div className="form-group_log">
+                            <label htmlFor="password_log">Password</label>
+                            <input
+                                id="password_log"
+                                type="password"
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        {/* Forgot Password */}
+                        <a href="#forgot" className="forgot-link_log">Forgot password?</a>
+
+                        {/* Submit */}
+                        <button type="submit" id="submit-login_log" className="submit-btn_log">
+                            Login
+                        </button>
+                    </form>
+
+                    {/* OR Divider */}
+                    <div className="divider_log">
+                        <span>or</span>
+                    </div>
+
+                    {/* Google Sign-In */}
+                    <button
+                        id="google-signin_log"
+                        type="button"
+                        className="google-btn_log"
+                        onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+                    >
+                        <img
+                            className="google-logo_log"
+                            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+                            alt="Google Logo"
+                        />
+                        Continue with Google
+                    </button>
+
+                    {/* Footer */}
+                    <div className="auth-footer_log">
+                        Don't have an account?&nbsp;<Link to="/register">Sign Up</Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── RIGHT HERO PANEL ── */}
+            <div className="hero-panel_log">
+
+                {/* Brand Logo */}
+                <div className="panel-logo_log">
+                    <Link to="/" className="logo-link_log">
+                        <span className="logo-accent_log">Career</span>Bridge
+                    </Link>
                 </div>
 
-                <button
-                    type="button"
-                    onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
-                    style={{ padding: "10px 20px", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "10px", backgroundColor: "#fff", color: "#333", border: "1px solid #ddd", borderRadius: "5px", cursor: "pointer", width: "100%", fontWeight: "bold", marginBottom: "15px" }}
-                >
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" width="20" height="20" />
-                    Continue with Google
-                </button>
+                {/* Hero Text */}
+                <div className="panel-content_log">
+                    <span className="panel-eyebrow_log">Your Career Awaits</span>
+                    <h2>Pick Up<br />Where You<br />Left Off</h2>
+                    <p>
+                        Access your personalized dashboard, track your progress,
+                        and keep building towards your dream career.
+                    </p>
+                </div>
 
-                <div className="auth-footer">
-                    Don't have an account? <Link to="/register">Register</Link>
+                {/* Feature List */}
+                <div className="panel-features_log">
+                    <div className="feature-item_log">
+                        <div className="feature-icon_log">📊</div>
+                        <span className="feature-text_log">Real-time job market trends</span>
+                    </div>
+                    <div className="feature-item_log">
+                        <div className="feature-icon_log">🎯</div>
+                        <span className="feature-text_log">Personalised skill roadmaps</span>
+                    </div>
+                    <div className="feature-item_log">
+                        <div className="feature-icon_log">🌍</div>
+                        <span className="feature-text_log">Global economy insights</span>
+                    </div>
+                </div>
+
+                {/* Floating Glassmorphism Card */}
+                <div className="floating-card_log">
+                    <div className="card-icon_log">✨</div>
+                    <div className="card-title_log">New Course</div>
+                    <div className="card-value_log">Data Science 2026</div>
                 </div>
             </div>
         </div>
