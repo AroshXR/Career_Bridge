@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './JobSkillAnalyzer.css';
@@ -231,7 +231,7 @@ export default function JobSkillAnalyzer() {
             <header className="jsa-header">
                 <div className="jsa-header-top">
                     <button className="jsa-back-btn" onClick={() => navigate('/home')}>
-                        ← Back
+                        ← Home
                     </button>
                     <button className="jsa-new-btn" onClick={() => setShowModal(true)}>
                         <span>+</span> Analyze New Job
@@ -239,8 +239,9 @@ export default function JobSkillAnalyzer() {
                 </div>
                 <div className="jsa-header-hero">
                     <div className="jsa-header-text">
+                        <p className="jsa-header-eyebrow">AI-Powered Career Tools</p>
                         <h1>Job Skill Analyzer</h1>
-                        <p>AI-powered skill roadmaps built from your saved jobs</p>
+                        <p>Personalized skill roadmaps built from your saved jobs</p>
                     </div>
                     <div className="jsa-stats-row">
                         <div className="jsa-stat">
@@ -350,11 +351,14 @@ export default function JobSkillAnalyzer() {
                                         </div>
                                     </div>
                                     {/* Overall progress bar */}
-                                    <div className="jsa-detail-progress-bar">
-                                        <div
-                                            className="jsa-detail-progress-fill"
-                                            style={{ width: `${getProgress(selectedAnalysis)}%` }}
-                                        />
+                                    <div className="jsa-detail-progress-wrap">
+                                        <div className="jsa-detail-progress-bar">
+                                            <div
+                                                className="jsa-detail-progress-fill"
+                                                style={{ width: `${getProgress(selectedAnalysis)}%` }}
+                                            />
+                                        </div>
+                                        <span className="jsa-detail-progress-pct">{getProgress(selectedAnalysis)}%</span>
                                     </div>
                                 </div>
 
