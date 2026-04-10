@@ -14,6 +14,7 @@ import CvGenerator from '../src/components/CvGenerator/CvGenerator';
 import Economy from '../src/components/Economy/economy';
 import ProgressPage from '../src/components/Progress/progress_page';
 import RecommendedCourses from '../src/components/Dashboards/RecommendedCourses';
+import JobSkillAnalyzer from '../src/components/JobSkillAnalyzer/JobSkillAnalyzer';
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
           <Route path="/economy" element={<Economy />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/recommended" element={<RecommendedCourses />} />
+          <Route path="/skill-analyzer" element={<JobSkillAnalyzer />} />
+          
         </Routes>
       </div>
     </Router>
