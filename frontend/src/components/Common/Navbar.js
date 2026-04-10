@@ -44,6 +44,9 @@ const Navbar = () => {
                 <NavLink to="/saved-jobs" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                     Saved Jobs
                 </NavLink>
+                <NavLink to="/skill-analyzer" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                    Skill Analyzer
+                </NavLink>
             </div>
 
             <div className="navbar-user">

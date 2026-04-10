@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import Navbar from '../Common/Navbar';
+import Footer from '../Common/Footer';
 import './JobSkillAnalyzer.css';
 
 const API_BASE = 'http://localhost:5000';
@@ -65,6 +67,11 @@ function SkillCard({ skill, editingNote, setEditingNote, savingNote, onToggleSta
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function JobSkillAnalyzer() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const autoAnalyzeJobId = location.state?.autoAnalyzeJobId ?? null;
+    const autoAnalyzeJobTitle = location.state?.jobTitle ?? null;
+    const autoTriggered = useRef(false);
+
     const [analyses, setAnalyses] = useState([]);
     const [savedJobs, setSavedJobs] = useState([]);
     const [selectedAnalysis, setSelectedAnalysis] = useState(null);
@@ -107,6 +114,27 @@ export default function JobSkillAnalyzer() {
         if (!token) { navigate('/login'); return; }
         fetchData();
     }, []);
+
+    // Auto-analyze: fires once after initial load completes
+    useEffect(() => {
+        if (loading || autoTriggered.current || !autoAnalyzeJobId) return;
+        autoTriggered.current = true;
+
+        const existing = analyses.find(a => a.jobId === autoAnalyzeJobId);
+        if (existing) {
+            setSelectedAnalysis(existing);
+            setActiveFilter('all');
+            showToast(`Showing analysis for "${autoAnalyzeJobTitle || existing.jobTitle}"`);
+        } else {
+            const jobExists = savedJobs.find(j => j.jobId === autoAnalyzeJobId);
+            if (jobExists) {
+                setShowModal(true);
+                handleAnalyze(autoAnalyzeJobId);
+            } else {
+                showToast('Job not found in saved list. Please try saving it again.');
+            }
+        }
+    }, [loading]);
 
     // ── Actions ──────────────────────────────────────────────────────────────
 
@@ -226,13 +254,11 @@ export default function JobSkillAnalyzer() {
 
     return (
         <div className="jsa-page">
+            <Navbar />
 
             {/* ── Hero Header ── */}
             <header className="jsa-header">
                 <div className="jsa-header-top">
-                    <button className="jsa-back-btn" onClick={() => navigate('/home')}>
-                        ← Home
-                    </button>
                     <button className="jsa-new-btn" onClick={() => setShowModal(true)}>
                         <span>+</span> Analyze New Job
                     </button>
@@ -332,7 +358,6 @@ export default function JobSkillAnalyzer() {
                                                 </div>
                                                 <span className="jsa-card-progress-label">{prog}%</span>
                                             </div>
-                                            {isActive && <div className="jsa-card-active-indicator" />}
                                         </div>
                                     );
                                 })}
@@ -462,6 +487,8 @@ export default function JobSkillAnalyzer() {
             {toast && (
                 <div className="jsa-toast">{toast}</div>
             )}
+
+            <Footer />
         </div>
     );
 }
