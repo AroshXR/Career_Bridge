@@ -152,7 +152,7 @@ const TrendingJobAnalyzer = () => {
         </div>
 
         <div className="hero-controls_trendJob">
-          <span className="select-label_trendJob">Select Industry</span>
+          <label htmlFor="category-select_trendJob" className="select-label_trendJob">Select Industry</label>
           <div className="select-wrap_trendJob">
             <select
               id="category-select_trendJob"
