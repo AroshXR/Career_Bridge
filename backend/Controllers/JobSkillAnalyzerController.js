@@ -1,12 +1,12 @@
 import process from "process";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
 import SkillModel from "../Models/SkillModel.js";
 import ResponseGenerator from "../utils/ResponseGenerator.js";
 import SavedJob from "../Models/SavedJobModel.js";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL   = "llama-3.3-70b-versatile"; // 1,000 req/day free — best quality
+// Fallback: "llama-3.1-8b-instant"             // 14,400 req/day free — faster
 
 
 // --- CREATE: Analyze and Save ---
@@ -25,8 +25,8 @@ export const analyzeAndSaveSkills = async (req, res) => {
             return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Job not found in your saved list", "Skill analysis failed"));
         }
 
-        // Generate skills using Gemini based on the job title and description
-        const skills = await fetchSkillsFromGemini(selectedJob.title, selectedJob.description);
+        // Generate skills using Groq (Llama 3)
+        const skills = await fetchSkillsFromGroq(selectedJob.title, selectedJob.description);
 
         const newSkillDoc = await SkillModel.create({
             userId: userEmail,
@@ -53,7 +53,6 @@ export const getMySavedSkills = async (req, res) => {
         res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, "Fetch failed", error.message));
     }
 };
-
 
 
 // --- UPDATE: Edit Skill/Note/Status ---
@@ -84,8 +83,6 @@ export const updateSkillDetails = async (req, res) => {
 };
 
 
-
-
 // --- DELETE: Remove One Skill ---
 export const removeSkillFromList = async (req, res) => {
     const { jobId, skillId } = req.params;
@@ -106,8 +103,6 @@ export const removeSkillFromList = async (req, res) => {
 };
 
 
-
-
 // --- DELETE: Full Analysis ---
 export const deleteFullAnalysis = async (req, res) => {
     const { jobId } = req.params;
@@ -123,63 +118,66 @@ export const deleteFullAnalysis = async (req, res) => {
 };
 
 
+// --- HELPER: Generate skills using Groq (Llama 3) ---
+const fetchSkillsFromGroq = async (jobTitle, jobDescription) => {
+    const prompt = `You are a career skills analyst. Given the job title and description below, identify the most relevant and specific technical skills required for this role.
 
+Job Title: "${jobTitle}"
+Job Description: "${jobDescription || "Not provided"}"
 
-// --- HELPER: Generate skills using Gemini ---
-const fetchSkillsFromGemini = async (jobTitle, jobDescription) => {
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+Return ONLY a valid JSON array of exactly 15 skill objects (10 essential, 5 optional) with no extra text, markdown, or explanation.
 
-    const prompt = `
-        You are a career skills analyst. Given the job title and description below, identify the most relevant and specific skills required for this role.
+Format:
+[
+  {
+    "name": "skill name",
+    "importance": "Essential",
+    "description": "1-2 sentence explanation of how this skill applies to the role",
+    "altLabels": ["alternative name 1", "alternative name 2"]
+  }
+]
 
-        Job Title: "${jobTitle}"
-        Job Description: "${jobDescription || 'Not provided'}"
+Rules:
+- Skills must be specific and directly relevant to the job title and description
+- Essential: core technical requirements the candidate must have
+- Optional: valuable but not mandatory skills that give a competitive edge
+- Be specific (e.g. "PyTorch model training" not just "Python")
+- Do not include soft skills like "communication" or "teamwork"
+- Return only the raw JSON array`;
 
-        Return ONLY a valid JSON array of exactly 15 skill objects (10 essential, 5 optional) in this format:
-        [
-          {
-            "name": "skill name",
-            "importance": "Essential" or "Optional",
-            "description": "1-2 sentence explanation of how this skill applies to the role",
-            "altLabels": ["alternative name 1", "alternative name 2"]
-          }
-        ]
-
-        Rules:
-        - Skills must be directly relevant to the job title and description
-        - Essential skills are core requirements; optional skills are valuable but not mandatory
-        - Be specific (e.g. "PyTorch model training" not just "Python")
-        - Do not include soft skills like "communication" or "teamwork"
-        - Return only the JSON array, no extra text
-    `;
-
-    let lastError;
-    for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-            const result = await model.generateContent(prompt);
-            const text = await result.response.text();
-
-            const jsonMatch = text.match(/\[[\s\S]*\]/);
-            const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : text);
-
-            if (!Array.isArray(parsed)) throw new Error("Gemini did not return an array");
-
-            return parsed.map(skill => ({
-                name: skill.name || "Unknown Skill",
-                importance: skill.importance === "Optional" ? "Optional" : "Essential",
-                description: skill.description || "",
-                altLabels: Array.isArray(skill.altLabels) ? skill.altLabels : [],
-                userNote: "",
-                status: "pending",
-            }));
-        } catch (err) {
-            lastError = err;
-            if (err.status === 429 || err.status === 503) {
-                await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 2000));
-                continue;
-            }
-            throw err;
+    const response = await axios.post(
+        GROQ_API_URL,
+        {
+            model: GROQ_MODEL,
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.4,
+            max_tokens: 2048,
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+                "Content-Type": "application/json",
+            },
         }
-    }
-    throw lastError;
+    );
+
+    const text = response.data.choices[0]?.message?.content || "";
+
+    // Strip any accidental markdown code fences
+    const cleaned = text.replace(/```(?:json)?/gi, "").replace(/```/g, "").trim();
+
+    const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error("Groq did not return a valid JSON array");
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(parsed)) throw new Error("Parsed response is not an array");
+
+    return parsed.map(skill => ({
+        name:       skill.name        || "Unknown Skill",
+        importance: skill.importance === "Optional" ? "Optional" : "Essential",
+        description: skill.description || "",
+        altLabels:  Array.isArray(skill.altLabels) ? skill.altLabels : [],
+        userNote:   "",
+        status:     "pending",
+    }));
 };
