@@ -19,6 +19,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:audit": "lighthouse http://localhost:3000 --quiet --output html --output-path ./lighthouse-report.html",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -40,7 +41,9 @@
     ]
   },
   "devDependencies": {
-    "cypress": "^15.13.0"
+    "cypress": "^15.13.0",
+    "cypress-lighthouse": "^0.1.0",
+    "lighthouse": "^13.1.0"
   },
   "jest": {
     "moduleNameMapper": {
