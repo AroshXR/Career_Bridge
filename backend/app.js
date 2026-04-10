@@ -37,11 +37,11 @@ const app = express();
 
 // Session middleware
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+    })
 );
 
 app.use(passport.initialize());
@@ -73,7 +73,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/v1/economy", economy);
 
 // Swagger Configuration
-app.use('/career-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(['/career-bridge-api-spec', '/skill-bridge-api-spec'], swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Basic health check
 app.get("/", (req, res) => {
