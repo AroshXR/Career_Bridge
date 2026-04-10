@@ -23,142 +23,143 @@ export const generatePDF = (cvData) => {
         if (typeof section === 'object') return Object.values(section).some(v => v);
         return false;
       };
-      
-      // Header with name
-      if (cvData.personal?.name) {
-        doc.fontSize(28)
+
+      // Helper for section header with line
+      const addSectionHeader = (title) => {
+        doc.moveDown(0.8)
+           .fontSize(14)
            .font('Helvetica-Bold')
+           .text(title.toUpperCase())
+           .moveTo(50, doc.y)
+           .lineTo(545, doc.y)
+           .strokeColor('#2d1ced')
+           .lineWidth(1)
+           .stroke()
+           .moveDown(0.6);
+      };
+      
+      // Header Section
+      if (cvData.personal?.name) {
+        doc.fontSize(24)
+           .font('Helvetica-Bold')
+           .fillColor('#2d1ced')
            .text(cvData.personal.name, { align: 'center' })
-           .moveDown(0.3);
+           .moveDown(0.2);
       }
       
-      // Professional Title/Summary
+      // Professional Summary
       if (cvData.personal?.summary) {
-        doc.fontSize(12)
+        doc.fontSize(11)
            .font('Helvetica')
+           .fillColor('#333333')
            .text(cvData.personal.summary, { 
              align: 'center',
-             color: 'gray'
+             lineGap: 2
            })
-           .moveDown(0.5);
+           .moveDown(0.4);
       }
       
-      // Contact Info (only show if exists)
+      // Contact Info
       const contactLine = [];
-      if (cvData.personal?.email) contactLine.push(`✉️ ${cvData.personal.email}`);
-      if (cvData.personal?.phone) contactLine.push(`📱 ${cvData.personal.phone}`);
+      if (cvData.personal?.email) contactLine.push(cvData.personal.email);
+      if (cvData.personal?.phone) contactLine.push(cvData.personal.phone);
       
       if (contactLine.length > 0) {
         doc.fontSize(10)
            .font('Helvetica')
-           .text(contactLine.join('   •   '), { align: 'center' })
-           .moveDown(0.3);
+           .fillColor('#444444')
+           .text(contactLine.join('  |  '), { align: 'center' })
+           .moveDown(0.2);
       }
       
       // Social Links
       const socialLine = [];
-      if (cvData.personal?.linkedin) socialLine.push(`🔗 LinkedIn: ${cvData.personal.linkedin}`);
-      if (cvData.personal?.github) socialLine.push(`💻 GitHub: ${cvData.personal.github}`);
-      if (cvData.personal?.portfolio) socialLine.push(`🌐 Portfolio: ${cvData.personal.portfolio}`);
+      if (cvData.personal?.linkedin) socialLine.push(`LinkedIn: ${cvData.personal.linkedin}`);
+      if (cvData.personal?.github) socialLine.push(`GitHub: ${cvData.personal.github}`);
+      if (cvData.personal?.portfolio) socialLine.push(`Portfolio: ${cvData.personal.portfolio}`);
       
       if (socialLine.length > 0) {
         doc.fontSize(9)
-           .text(socialLine.join('   •   '), { 
-             align: 'center',
-             color: 'blue' 
-           })
+           .fillColor('#2d1ced')
+           .text(socialLine.join('  |  '), { align: 'center' })
            .moveDown(1);
       }
       
-      doc.moveDown(0.5);
-      
+      // Reset text color
+      doc.fillColor('black');
+
       // EDUCATION SECTION
       if (hasData(cvData.education)) {
-        doc.fontSize(16)
-           .font('Helvetica-Bold')
-           .text('EDUCATION')
-           .moveDown(0.3);
+        addSectionHeader('Education');
         
-        cvData.education.forEach((edu, index) => {
+        cvData.education.forEach((edu) => {
           doc.fontSize(12)
              .font('Helvetica-Bold')
              .text(edu.institution)
              .fontSize(10)
              .font('Helvetica')
-             .text(`${edu.degree}${edu.fieldOfStudy ? ' in ' + edu.fieldOfStudy : ''}`)
-             .text(`${edu.startDate ? new Date(edu.startDate).getFullYear() : ''} - ${edu.current ? 'Present' : (edu.endDate ? new Date(edu.endDate).getFullYear() : '')}`)
+             .text(`${edu.degree}${edu.fieldOfStudy ? ' in ' + edu.fieldOfStudy : ''}`, { continued: true })
+             .font('Helvetica-Oblique')
+             .text(`  (${edu.startDate ? new Date(edu.startDate).getFullYear() : ''} - ${edu.current ? 'Present' : (edu.endDate ? new Date(edu.endDate).getFullYear() : '')})`, { align: 'right' })
+             .font('Helvetica')
              .fontSize(9)
-             .text(edu.description || '')
-             .moveDown(0.5);
+             .text(edu.description || '', { indent: 10 })
+             .moveDown(0.6);
         });
-        doc.moveDown(0.5);
       }
       
       // EXPERIENCE SECTION
       if (hasData(cvData.experience)) {
-        doc.fontSize(16)
-           .font('Helvetica-Bold')
-           .text('WORK EXPERIENCE')
-           .moveDown(0.3);
+        addSectionHeader('Work Experience');
         
-        cvData.experience.forEach((exp, index) => {
+        cvData.experience.forEach((exp) => {
           doc.fontSize(12)
              .font('Helvetica-Bold')
              .text(exp.position)
              .fontSize(10)
              .font('Helvetica')
-             .text(exp.company)
-             .text(`${exp.startDate ? new Date(exp.startDate).getFullYear() : ''} - ${exp.current ? 'Present' : (exp.endDate ? new Date(exp.endDate).getFullYear() : '')}`)
+             .text(exp.company, { continued: true })
+             .font('Helvetica-Oblique')
+             .text(`  (${exp.startDate ? new Date(exp.startDate).getFullYear() : ''} - ${exp.current ? 'Present' : (exp.endDate ? new Date(exp.endDate).getFullYear() : '')})`, { align: 'right' })
+             .font('Helvetica')
              .fontSize(9)
-             .text(exp.description || '');
+             .text(exp.description || '', { indent: 10 });
           
-          // Achievements bullet points
           if (exp.achievements && exp.achievements.length > 0) {
             exp.achievements.forEach(ach => {
               doc.fontSize(9)
-                 .text(`• ${ach}`, { indent: 20 });
+                 .text(`- ${ach}`, { indent: 20 });
             });
           }
-          doc.moveDown(0.5);
+          doc.moveDown(0.6);
         });
-        doc.moveDown(0.5);
       }
       
       // SKILLS SECTION
       if (hasData(cvData.skills)) {
-        doc.fontSize(16)
-           .font('Helvetica-Bold')
-           .text('SKILLS')
-           .moveDown(0.3);
+        addSectionHeader('Skills');
         
-        const skillsList = cvData.skills.map(s => s.name).join('   •   ');
+        const skillsList = cvData.skills.map(s => s.name).join(', ');
         doc.fontSize(10)
            .font('Helvetica')
            .text(skillsList)
-           .moveDown(0.5);
+           .moveDown(0.6);
       }
       
       // LANGUAGES SECTION
       if (hasData(cvData.languages)) {
-        doc.fontSize(16)
-           .font('Helvetica-Bold')
-           .text('LANGUAGES')
-           .moveDown(0.3);
+        addSectionHeader('Languages');
         
-        cvData.languages.forEach(lang => {
-          doc.fontSize(10)
-             .font('Helvetica')
-             .text(`• ${lang.name}${lang.proficiency ? ' - ' + lang.proficiency : ''}`);
-        });
-        doc.moveDown(0.5);
+        const langList = cvData.languages.map(lang => `${lang.name}${lang.proficiency ? ' (' + lang.proficiency + ')' : ''}`).join(', ');
+        doc.fontSize(10)
+           .font('Helvetica')
+           .text(langList)
+           .moveDown(0.6);
       }
       
       // PROJECTS SECTION
       if (hasData(cvData.projects)) {
-        doc.fontSize(16)
-           .font('Helvetica-Bold')
-           .text('PROJECTS')
-           .moveDown(0.3);
+        addSectionHeader('Projects');
         
         cvData.projects.forEach(proj => {
           doc.fontSize(11)
@@ -166,27 +167,27 @@ export const generatePDF = (cvData) => {
              .text(proj.name)
              .fontSize(9)
              .font('Helvetica')
-             .text(proj.description || '');
+             .text(proj.description || '', { indent: 10 });
           
           if (proj.technologies && proj.technologies.length > 0) {
             doc.fontSize(8)
-               .text(`Tech: ${proj.technologies.join(', ')}`, { color: 'gray' });
+               .font('Helvetica-Oblique')
+               .fillColor('#666666')
+               .text(`Technologies: ${proj.technologies.join(', ')}`, { indent: 10 })
+               .fillColor('black');
           }
-          doc.moveDown(0.3);
+          doc.moveDown(0.5);
         });
       }
       
       // ACHIEVEMENTS SECTION
       if (hasData(cvData.achievements)) {
-        doc.fontSize(16)
-           .font('Helvetica-Bold')
-           .text('ACHIEVEMENTS')
-           .moveDown(0.3);
+        addSectionHeader('Achievements');
         
         cvData.achievements.forEach(ach => {
           doc.fontSize(10)
              .font('Helvetica')
-             .text(`• ${ach.title}${ach.description ? ': ' + ach.description : ''}`);
+             .text(`- ${ach.title}${ach.description ? ': ' + ach.description : ''}`, { indent: 10 });
         });
       }
       

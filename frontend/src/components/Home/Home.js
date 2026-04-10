@@ -11,8 +11,20 @@ const Home = () => {
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const token = queryParams.get('token');
+        const userData = queryParams.get('user');
+
         if (token) {
             localStorage.setItem('token', token);
+            
+            // If user data is also sent (from Google Login), store it
+            if (userData) {
+                try {
+                    localStorage.setItem('user', decodeURIComponent(userData));
+                } catch (e) {
+                    console.error("Failed to parse user data from URL", e);
+                }
+            }
+
             navigate('/home', { replace: true });
         }
     }, [location, navigate]);

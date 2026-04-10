@@ -41,8 +41,16 @@ router.get(
       { expiresIn: "2h" }
     );
 
-    // Redirect to frontend with token
-    res.redirect(`http://localhost:3000/home?token=${token}`);
+    // Basic user data for frontend initialization
+    const userData = {
+      userId: req.user.userId,
+      name: req.user.name,
+      email: req.user.email,
+      _id: req.user._id
+    };
+
+    // Redirect to frontend with token AND user data
+    res.redirect(`http://localhost:3000/home?token=${token}&user=${encodeURIComponent(JSON.stringify(userData))}`);
   }
 );
 

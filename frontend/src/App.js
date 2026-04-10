@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './components/Common/ProtectedRoute';
 import Splash from '../src/components/Splash/Splash';
 import Login from '../src/components/Login/Login';
 import Register from '../src/components/Register/Register';
 import Home from '../src/components/Home/Home';
 import TrendingJobAnalyzer from '../src/components/TrendingJobAnalyzer/TrendingJobAnalyzer';
 import SavedJobs from '../src/components/SavedJobs/SavedJobs';
-import YoutubeResources from '../src/components/Learning_Resources/youtube_resources';
+import YoutubeResources from './components/Learning_Resources/youtube_resources';
 import ProfessionalCourses from '../src/components/Learning_Resources/professional_courses';
 import LearningRoadmap from '../src/components/Learning_Resources/learning_roadmap';
 import UserDashboard from '../src/components/Dashboards/dashboardUser';
@@ -21,23 +22,31 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Splash />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/profile" element={<UserDashboard />} />
-          <Route path="/admin-dashboard" element={<DashboardAdmin />} />
-          <Route path="/cv-generator" element={<CvGenerator />} />
-          <Route path="/job-analyzer" element={<TrendingJobAnalyzer />} />
-          <Route path="/saved-jobs" element={<SavedJobs />} />
-          <Route path="/learning-resources" element={<YoutubeResources />} />
-          <Route path="/professional-courses" element={<ProfessionalCourses />} />
-          <Route path="/learning-roadmap" element={<LearningRoadmap />} />
-          <Route path="/economy" element={<Economy />} />
-          <Route path="/progress" element={<ProgressPage />} />
-          <Route path="/recommended" element={<RecommendedCourses />} />
-          <Route path="/skill-analyzer" element={<JobSkillAnalyzer />} />
-          
+
+          {/* Protected User Routes */}
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+          <Route path="/cv-generator" element={<ProtectedRoute><CvGenerator /></ProtectedRoute>} />
+          <Route path="/job-analyzer" element={<ProtectedRoute><TrendingJobAnalyzer /></ProtectedRoute>} />
+          <Route path="/saved-jobs" element={<ProtectedRoute><SavedJobs /></ProtectedRoute>} />
+          <Route path="/learning-resources" element={<ProtectedRoute><YoutubeResources /></ProtectedRoute>} />
+          <Route path="/professional-courses" element={<ProtectedRoute><ProfessionalCourses /></ProtectedRoute>} />
+          <Route path="/learning-roadmap" element={<ProtectedRoute><LearningRoadmap /></ProtectedRoute>} />
+          <Route path="/economy" element={<ProtectedRoute><Economy /></ProtectedRoute>} />
+          <Route path="/progress" element={<ProtectedRoute><ProgressPage /></ProtectedRoute>} />
+          <Route path="/recommended" element={<ProtectedRoute><RecommendedCourses /></ProtectedRoute>} />
+          <Route path="/skill-analyzer" element={<ProtectedRoute><JobSkillAnalyzer /></ProtectedRoute>} />
+                                       
+          {/* Protected Admin Routes */}
+          <Route path="/admin-dashboard" element={
+            <ProtectedRoute adminOnly={true}>
+              <DashboardAdmin />
+            </ProtectedRoute>
+          } />
         </Routes>
       </div>
     </Router>

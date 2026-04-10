@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generatePDF, saveCV, loadSavedCV, importFromGitHub } from '../../services/cvService';
+import Navbar from '../Common/Navbar';
+import Footer from '../Common/Footer';
 import './CvGenerator.css';
 
 const CvGenerator = () => {
@@ -302,8 +304,10 @@ const CvGenerator = () => {
   };
 
   return (
-    <div className="cv-generator-container">
-      <div className="cv-header">
+    <div className="cv-page-wrapper">
+      <Navbar />
+      <div className="cv-generator-container">
+        <div className="cv-header">
         <button className="back-btn" onClick={() => navigate('/profile')}>
           ← Back to Dashboard
         </button>
@@ -843,18 +847,24 @@ const CvGenerator = () => {
                     </div>
                     
                     <div className="form-grid">
-                      <input
-                        type="url"
-                        placeholder="GitHub Link"
-                        value={proj.githubLink}
-                        onChange={(e) => updateProject(index, 'githubLink', e.target.value)}
-                      />
-                      <input
-                        type="url"
-                        placeholder="Live Demo Link"
-                        value={proj.liveLink}
-                        onChange={(e) => updateProject(index, 'liveLink', e.target.value)}
-                      />
+                      <div className="form-group">
+                        <label>GitHub Link</label>
+                        <input
+                          type="url"
+                          placeholder="https://github.com/..."
+                          value={proj.githubLink}
+                          onChange={(e) => updateProject(index, 'githubLink', e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Live Demo Link</label>
+                        <input
+                          type="url"
+                          placeholder="https://demo.com/..."
+                          value={proj.liveLink}
+                          onChange={(e) => updateProject(index, 'liveLink', e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))
@@ -867,15 +877,8 @@ const CvGenerator = () => {
         )}
       </div>
 
-      {/* Floating Action Buttons for Mobile */}
-      <div className="mobile-actions">
-        <button className="save-btn" onClick={handleSave} disabled={loading}>
-          💾
-        </button>
-        <button className="generate-btn" onClick={handleGeneratePDF} disabled={loading}>
-          📄
-        </button>
       </div>
+      <Footer />
     </div>
   );
 };
