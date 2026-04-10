@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Navbar from '../Common/Navbar';
+import Footer from '../Common/Footer';
 import './dashboardAdmin.css';
 
 const DashboardAdmin = () => {
@@ -120,18 +122,15 @@ const DashboardAdmin = () => {
     // Removed unused pendingUsers variable
 
     return (
-        <div className="admin-dashboard-container">
-            <header className="admin-header">
-                <div className="header-left">
-                    <h1>Admin Control Panel</h1>
-                    <span className="platform-name">Skill Bridge App</span>
-                </div>
-                <button className="logout-btn" onClick={() => {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    navigate('/login');
-                }}>Logout</button>
-            </header>
+        <div className="admin-page-wrapper">
+            <Navbar />
+            <div className="admin-dashboard-container">
+                <header className="admin-header">
+                    <div className="header-left">
+                        <h1>Admin Control Panel</h1>
+                        <span className="platform-name">Skill Bridge App</span>
+                    </div>
+                </header>
 
             <div className="admin-content">
                 <div className="admin-stats">
@@ -198,6 +197,8 @@ const DashboardAdmin = () => {
                     </div>
                 </div>
             </div>
+            </div>
+            <Footer />
         </div>
     );
 };

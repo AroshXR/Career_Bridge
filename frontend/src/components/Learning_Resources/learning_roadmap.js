@@ -69,10 +69,10 @@ function LearningRoadmap() {
   };
 
   const followUpMessages = {
-    saving: { text: '⏳ Saving to your progress...', color: '#f39c12' },
-    success: { text: '✅ Added to your Progress Page!', color: '#27ae60' },
-    duplicate: { text: '⚠️ You are already following this roadmap.', color: '#e67e22' },
-    error: { text: '❌ Could not save. Please try again.', color: '#e74c3c' },
+    saving: { text: 'Saving to your progress...', type: 'saving' },
+    success: { text: 'Added to your Progress Page!', type: 'success' },
+    duplicate: { text: 'You are already following this roadmap.', type: 'duplicate' },
+    error: { text: 'Could not save. Please try again.', type: 'error' },
   };
 
   return (
@@ -156,50 +156,29 @@ function LearningRoadmap() {
               ))}
             </div>
 
-            {/* Follow Up Button */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '24px 0 8px' }}>
+            {/* Follow Up UI */}
+            <div className="follow-up-section_roadmap">
               <button
+                className={`follow-up-btn_roadmap ${followUpStatus === 'success' ? 'success' : ''}`}
                 onClick={handleFollowUp}
                 disabled={followUpStatus === 'saving' || followUpStatus === 'success'}
-                style={{
-                  padding: '12px 36px',
-                  background: followUpStatus === 'success' ? '#27ae60' : 'linear-gradient(135deg, #6c5ce7, #a29bfe)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '30px',
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  cursor: followUpStatus === 'saving' || followUpStatus === 'success' ? 'default' : 'pointer',
-                  boxShadow: '0 4px 15px rgba(108,92,231,0.4)',
-                  transition: 'all 0.3s ease',
-                  letterSpacing: '0.5px'
-                }}
               >
-                {followUpStatus === 'saving' ? '⏳ Saving...' : followUpStatus === 'success' ? '✅ Following!' : '🚀 Follow Up'}
+                {followUpStatus === 'saving' ? 'Saving...' : followUpStatus === 'success' ? 'Following' : 'Follow Up'}
               </button>
 
               {followUpStatus && followUpMessages[followUpStatus] && (
-                <p style={{ marginTop: '10px', color: followUpMessages[followUpStatus].color, fontWeight: '600', fontSize: '14px' }}>
+                <p className={`follow-up-status_roadmap ${followUpMessages[followUpStatus].type}`}>
                   {followUpMessages[followUpStatus].text}
                 </p>
               )}
 
               {followUpStatus === 'success' && (
                 <button
+                  className="view-progress-btn_roadmap"
                   onClick={() => navigate('/progress')}
-                  style={{
-                    marginTop: '8px',
-                    padding: '8px 22px',
-                    background: 'transparent',
-                    color: '#6c5ce7',
-                    border: '2px solid #6c5ce7',
-                    borderRadius: '20px',
-                    fontSize: '13px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
                 >
-                  View Progress Page →
+                  View Progress Page
+                  <span className="material-icons-round">east</span>
                 </button>
               )}
             </div>
