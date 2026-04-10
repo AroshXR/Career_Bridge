@@ -5,7 +5,7 @@ import Register from '../src/components/Register/Register';
 import Home from '../src/components/Home/Home';
 import TrendingJobAnalyzer from '../src/components/TrendingJobAnalyzer/TrendingJobAnalyzer';
 import SavedJobs from '../src/components/SavedJobs/SavedJobs';
-import YoutubeResources from '../src/components/Learning_Resources/youtube_resources';
+import YoutubeResources from './components/Learning_Resources/youtube_resources';
 import ProfessionalCourses from '../src/components/Learning_Resources/professional_courses';
 import LearningRoadmap from '../src/components/Learning_Resources/learning_roadmap';
 import UserDashboard from '../src/components/Dashboards/dashboardUser';
