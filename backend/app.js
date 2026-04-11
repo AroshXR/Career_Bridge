@@ -35,6 +35,9 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 5000;
 const app = express();
 
+// Trust proxy for Render/SSL
+app.set('trust proxy', 1);
+
 // Session middleware
 app.use(
     session({
