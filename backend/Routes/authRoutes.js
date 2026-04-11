@@ -50,7 +50,8 @@ router.get(
     };
 
     // Redirect to frontend with token AND user data
-    res.redirect(`http://localhost:3000/home?token=${token}&user=${encodeURIComponent(JSON.stringify(userData))}`);
+    const redirectUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    res.redirect(`${redirectUrl}/home?token=${token}&user=${encodeURIComponent(JSON.stringify(userData))}`);
   }
 );
 

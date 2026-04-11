@@ -65,7 +65,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Middleware
 app.use(express.json());
-app.use(cors());
 
 // Routes
 app.use("/api/v1/users", userRoute);
