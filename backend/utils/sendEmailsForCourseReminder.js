@@ -1,16 +1,13 @@
 import nodemailer from "nodemailer";
 import { configDotenv } from "dotenv";
-import cron from "node-cron";
-import ResponseGenerator from "./ResponseGenerator.js";
 
 configDotenv();
 
-// 1. Core function to send the email
 export const sendEmailsForReminder = async (mto, mSubject, html) => {
   const mailServer = nodemailer.createTransport({
     host: "smtp.googlemail.com",
     port: 587,
-    secure: false, // Use TLS
+    secure: true,
     auth: {
       user: process.env.FROM_EMAIL,
       pass: process.env.EMAIL_HOST_PASSWORD,
