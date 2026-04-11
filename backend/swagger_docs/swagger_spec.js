@@ -10,7 +10,10 @@ const swaggerOptions = {
             contact: {
                 name: 'Developer',
             },
-            servers: [{ url: 'http://localhost:5000' }]
+            servers: [
+                { url: 'https://career-bridge-platform.onrender.com', description: 'Production Server' },
+                { url: 'http://localhost:5000', description: 'Development Server' }
+            ]
         },
         components: {
             securitySchemes: {

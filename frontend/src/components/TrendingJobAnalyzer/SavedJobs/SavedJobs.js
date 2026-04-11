@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../../apiConfig';
 import './SavedJobs.css';
 
 const SavedJobs = () => {
@@ -20,7 +21,7 @@ const SavedJobs = () => {
     const fetchSavedJobs = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs/${username}`);
+            const response = await axios.get(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/getSavedJobs/${username}`);
             if (response.data.success) {
                 setSavedJobs(response.data.savedJobs);
             }
@@ -35,7 +36,7 @@ const SavedJobs = () => {
     const handleDeleteJob = async (id) => {
         if (!window.confirm("Are you sure you want to remove this job?")) return;
         try {
-            await axios.delete(`http://localhost:5000/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`);
+            await axios.delete(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`);
             setSavedJobs(savedJobs.filter(job => job._id !== id));
         } catch (err) {
             console.error("Error deleting job:", err);
@@ -45,7 +46,7 @@ const SavedJobs = () => {
 
     const handleUpdateJob = async (id, updates) => {
         try {
-            const response = await axios.patch(`http://localhost:5000/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates);
+            const response = await axios.patch(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates);
             if (response.data.success) {
                 setSavedJobs(savedJobs.map(job => job._id === id ? { ...job, ...updates } : job));
                 setShowUpdateSuccess(id);

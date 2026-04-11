@@ -44,15 +44,7 @@ app.use(
     })
 );
 
-app.use(cors({
-    origin: "https://your-netlify-url.netlify.app"
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
 // middleware
-//  middleware - bawa chnaged
 const allowedOrigins = [
     "http://localhost:3000",
     process.env.FRONTEND_URL,
@@ -62,6 +54,9 @@ app.use(cors({
     origin: allowedOrigins,
     credentials: true
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 

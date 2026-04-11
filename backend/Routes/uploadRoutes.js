@@ -57,7 +57,7 @@ router.post("/profile-picture/:userId", authMiddleware, uploadProfile.single("im
       return res.status(400).json({ message: "No file uploaded" });
     }
     
-    const imageUrl = `http://localhost:5000/uploads/profiles/${req.file.filename}`;
+    const imageUrl = `/uploads/profiles/${req.file.filename}`;
     res.json({ imageUrl });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -76,7 +76,7 @@ router.post("/cv/:userId", authMiddleware, uploadCV.single("cv"), async (req, re
       return res.status(400).json({ message: "No file uploaded" });
     }
     
-    const cvUrl = `http://localhost:5000/uploads/cvs/${req.file.filename}`;
+    const cvUrl = `/uploads/cvs/${req.file.filename}`;
     res.json({ cvUrl });
   } catch (error) {
     res.status(500).json({ message: error.message });
