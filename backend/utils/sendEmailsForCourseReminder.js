@@ -9,13 +9,16 @@ configDotenv();
 export const sendEmailsForReminder = async (mto, mSubject, html) => {
   const mailServer = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // Use SSL
-    family: 4,    // Force IPv4 to resolve ENETUNREACH errors on Render
+    port: 587,
+    secure: false, // upgrade later with STARTTLS
     auth: {
       user: process.env.FROM_EMAIL,
       pass: process.env.EMAIL_HOST_PASSWORD,
     },
+    // Increased timeouts for Render free tier
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 15000,
     tls: {
       // Do not fail on invalid certs
       rejectUnauthorized: false
