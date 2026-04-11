@@ -69,7 +69,7 @@ export const startSkill = async (req, res) => {
                                     <p style="color: #64748b; line-height: 1.6; font-size: 16px; margin-bottom: 30px;">
                                         You’ve successfully started this career-defining learning roadmap. We’ve set AI-driven milestones to help you stay on track and reach your goals.
                                     </p>
-                                    <a href="http://localhost:3000/" class="button" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">View My Progress</a>
+                                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/" class="button" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">View My Progress</a>
                                 </td>
                             </tr>
                             <!-- Footer -->

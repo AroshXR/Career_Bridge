@@ -57,6 +57,22 @@ app.use(cors({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// CONFIG LOGS - Helper to verify Render environment variables on startup
+const logProductionConfig = () => {
+    log("\n 🚀 [SYSTEM] Skill Bridge Production Check:");
+    const frontend = process.env.FRONTEND_URL || "MISSING (Using fallback: localhost:3000)";
+    const callback = process.env.GOOGLE_CALLBACK_URL || "MISSING";
+    const mongo = process.env.MONGO_URL ? "CONNECTED (Secret Masked)" : "MISSING";
+    
+    // Mask sensitive URLs for logs
+    const maskUrl = (url) => url.length > 10 ? url.substring(0, 10) + "..." + url.substring(url.length - 8) : url;
+
+    log(` - FRONTEND_URL: ${maskUrl(frontend)}`);
+    log(` - GOOGLE_CALLBACK: ${maskUrl(callback)}`);
+    log(` - MONGO_STATUS: ${mongo}`);
+    log(" ⚠️ [WARNING]: If FRONTEND_URL is MISSING or set to localhost above, Google Login WILL NOT work in production.\n");
+};
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -106,6 +122,8 @@ const db_connect = async () => {
 
         // Initialize Background Email Jobs
         initRoadmapReminders();
+
+        logProductionConfig();
 
         app.listen(PORT, () => {
             log(`Server Running on PORT ${PORT}`);
