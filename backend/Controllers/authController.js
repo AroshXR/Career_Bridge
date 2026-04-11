@@ -123,8 +123,10 @@ export const login = async (req, res) => {
             return res.status(401).json(ResponseGenerator.sendError(ResponseGenerator.UNAUTHORIZED, "Invalid email or password", "Login failed"));
         }
 
-        // Direct comparison (plain text)
-        if (password === user.password) {
+        // Secure comparison using bcrypt
+        const isMatch = await user.matchPassword(password);
+
+        if (isMatch) {
             console.log("Login successful:", user.email);
 
             // CREATE JWT TOKEN

@@ -66,6 +66,8 @@ const Login = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
+                                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                title="Enter a valid email (e.g., example@mail.com)"
                             />
                         </div>
 
@@ -79,6 +81,9 @@ const Login = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
+                                minLength="8"
+                                pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
+                                title="Password must be at least 8 characters long, include one uppercase letter and one number"
                             />
                         </div>
 

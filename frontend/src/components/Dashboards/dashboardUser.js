@@ -266,6 +266,8 @@ const UserDashboard = () => {
           <div className="div41_photo_wrap">
             <img
               src={user.profilePicture || "/default-avatar.png"}
+              referrerPolicy="no-referrer"
+              onError={(e) => { e.target.src = "/default-avatar.png"; }}
               alt="profile"
               className="img7_profile_avatar"
             />
@@ -494,6 +496,8 @@ const UserDashboard = () => {
                   <div className="photo_upload_container">
                     <img
                       src={previewImage || user.profilePicture || "/default-avatar.png"}
+                      referrerPolicy="no-referrer"
+                      onError={(e) => { e.target.src = "/default-avatar.png"; }}
                       alt="Preview"
                       className="photo_preview"
                     />
@@ -543,6 +547,8 @@ const UserDashboard = () => {
                       value={formData.phone || ""}
                       onChange={handleInputChange}
                       placeholder="Enter your phone number"
+                      pattern="[0-9]{10}"
+                      maxLength="10"
                     />
                   </div>
 
@@ -568,6 +574,7 @@ const UserDashboard = () => {
                       value={formData.education || ""}
                       onChange={handleInputChange}
                       placeholder="e.g., B.Sc. Computer Science"
+                      pattern="[A-Za-z\s]+"
                     />
                   </div>
 
@@ -597,6 +604,7 @@ const UserDashboard = () => {
                       value={formData.title || ""}
                       onChange={handleInputChange}
                       placeholder="e.g., Senior Developer"
+                      pattern="[A-Za-z\s]+"
                     />
                   </div>
 
