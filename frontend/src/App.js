@@ -1,26 +1,26 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/Common/ProtectedRoute';
 import ScrollToTop from './components/Common/ScrollToTop';
-import Splash from '../src/components/Splash/Splash';
-import Login from '../src/components/Login/Login';
-import Register from '../src/components/Register/Register';
-import Home from '../src/components/Home/Home';
-import TrendingJobAnalyzer from '../src/components/TrendingJobAnalyzer/TrendingJobAnalyzer';
-import SavedJobs from '../src/components/SavedJobs/SavedJobs';
+import Splash from './components/Splash/Splash';
+import Login from './components/Login/Login';
+import Register from './components/Register/Register';
+import Home from './components/Home/Home';
+import TrendingJobAnalyzer from './components/TrendingJobAnalyzer/TrendingJobAnalyzer';
+import SavedJobs from './components/SavedJobs/SavedJobs';
 import YoutubeResources from './components/Learning_Resources/youtube_resources';
-import ProfessionalCourses from '../src/components/Learning_Resources/professional_courses';
-import LearningRoadmap from '../src/components/Learning_Resources/learning_roadmap';
-import UserDashboard from '../src/components/Dashboards/dashboardUser';
-import DashboardAdmin from '../src/components/Dashboards/dashboardAdmin';
-import CvGenerator from '../src/components/CvGenerator/CvGenerator';
-import Economy from '../src/components/Economy/economy';
-import ProgressPage from '../src/components/Progress/progress_page';
-import RecommendedCourses from '../src/components/Dashboards/RecommendedCourses';
-import JobSkillAnalyzer from '../src/components/JobSkillAnalyzer/JobSkillAnalyzer';
+import ProfessionalCourses from './components/Learning_Resources/professional_courses';
+import LearningRoadmap from './components/Learning_Resources/learning_roadmap';
+import UserDashboard from './components/Dashboards/dashboardUser';
+import DashboardAdmin from './components/Dashboards/dashboardAdmin';
+import CvGenerator from './components/CvGenerator/CvGenerator';
+import Economy from './components/Economy/economy';
+import ProgressPage from './components/Progress/progress_page';
+import RecommendedCourses from './components/Dashboards/RecommendedCourses';
+import JobSkillAnalyzer from './components/JobSkillAnalyzer/JobSkillAnalyzer';
 import FeedbackPage from './components/Feedback/FeedbackPage';
 import AdminFeedbackView from './components/Feedback/AdminFeedbackView';
-import ContactUs from '../src/components/ContactUs/ContactUs';
-import PrivacyPolicy from '../src/components/PrivacyPolicy/PrivacyPolicy';
+import ContactUs from './components/ContactUs/ContactUs';
+import PrivacyPolicy from './components/PrivacyPolicy/PrivacyPolicy';
 
 function App() {
   return (
