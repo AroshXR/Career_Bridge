@@ -266,6 +266,8 @@ const UserDashboard = () => {
           <div className="div41_photo_wrap">
             <img
               src={user.profilePicture || "/default-avatar.png"}
+              referrerPolicy="no-referrer"
+              onError={(e) => { e.target.src = "/default-avatar.png"; }}
               alt="profile"
               className="img7_profile_avatar"
             />
@@ -494,6 +496,8 @@ const UserDashboard = () => {
                   <div className="photo_upload_container">
                     <img
                       src={previewImage || user.profilePicture || "/default-avatar.png"}
+                      referrerPolicy="no-referrer"
+                      onError={(e) => { e.target.src = "/default-avatar.png"; }}
                       alt="Preview"
                       className="photo_preview"
                     />
