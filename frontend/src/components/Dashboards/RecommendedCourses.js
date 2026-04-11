@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../Common/Navbar';
+import Footer from '../Common/Footer';
 import './RecommendedCourses.css';
 
 function RecommendedCourses() {
@@ -62,51 +64,60 @@ function RecommendedCourses() {
 
   return (
     <div className="recommendations-page">
-      <div className="rec-header-container">
-        <button className="rec-back-btn" onClick={() => navigate(-1)}>
-          ← Back to Dashboard
-        </button>
-        <div className="rec-title-wrap">
-          <h1 className="rec-page-title">✨ Recommended for You</h1>
-          <p className="rec-subtitle">Curated courses based on your skills and industry trends.</p>
+      <Navbar />
+
+      {/* Hero Banner Section */}
+      <div className="rec-hero">
+        <div className="rec-header-actions">
+          <button className="rec-back-btn" onClick={() => navigate(-1)}>
+            <span className="material-icons-round">arrow_back</span>
+            Dashboard
+          </button>
+        </div>
+        <span className="rec-eyebrow">Curated Learning</span>
+        <h1>Recommended For You</h1>
+        <p>Explore curated courses based on your skills and industry trends.</p>
+      </div>
+
+      <div className="rec-grid-wrapper">
+        <div className="rec-grid">
+          {recommendations.map((course) => (
+            <div key={course.id} className="rec-card">
+              <div className="rec-card-header">
+                <span className="rec-badge">{course.badge}</span>
+                <span className="rec-platform">{course.platform} • {course.duration}</span>
+              </div>
+              
+              <h2 className="rec-course-title">{course.title}</h2>
+              <p className="rec-description">{course.description}</p>
+              
+              <div className="rec-details">
+                <div className="rec-pros">
+                  <h4>Pros</h4>
+                  <ul>
+                    {course.pros.map((pro, index) => (
+                      <li key={index}>{pro}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="rec-cons">
+                  <h4>Cons</h4>
+                  <ul>
+                    {course.cons.map((con, index) => (
+                      <li key={index}>{con}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <button className="rec-enroll-btn">View Course Details &rarr;</button>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="rec-grid">
-        {recommendations.map((course) => (
-          <div key={course.id} className="rec-card">
-            <div className="rec-card-header">
-              <span className="rec-badge">{course.badge}</span>
-              <span className="rec-platform">{course.platform} • {course.duration}</span>
-            </div>
-            
-            <h2 className="rec-course-title">{course.title}</h2>
-            <p className="rec-description">{course.description}</p>
-            
-            <div className="rec-details">
-              <div className="rec-pros">
-                <h4>✅ Pros</h4>
-                <ul>
-                  {course.pros.map((pro, index) => (
-                    <li key={index}>{pro}</li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div className="rec-cons">
-                <h4>⚠️ Cons</h4>
-                <ul>
-                  {course.cons.map((con, index) => (
-                    <li key={index}>{con}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <button className="rec-enroll-btn">View Course Details →</button>
-          </div>
-        ))}
-      </div>
+      <Footer />
     </div>
   );
 }

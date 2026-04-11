@@ -1,54 +1,40 @@
-import axios from "axios";
 import process from "process";
+import axios from "axios";
 import SkillModel from "../Models/SkillModel.js";
 import ResponseGenerator from "../utils/ResponseGenerator.js";
 import SavedJob from "../Models/SavedJobModel.js";
 
-
-
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL   = "llama-3.3-70b-versatile"; // 1,000 req/day free — best quality
+// Fallback: "llama-3.1-8b-instant"             // 14,400 req/day free — faster
 
 
 // --- CREATE: Analyze and Save ---
 export const analyzeAndSaveSkills = async (req, res) => {
-    const { jobId } = req.params; 
-    const userEmail = req.user.email; // Consistent with your Trending Controller
+    const { jobId } = req.params;
+    const userEmail = req.user.email;
 
     try {
-        // Check if this specific job analysis already exists for this user
-        let existingSkillDoc = await SkillModel.findOne({ jobId, userId: userEmail });
+        // Return existing analysis if already done
+        const existingSkillDoc = await SkillModel.findOne({ jobId, userId: userEmail });
         if (existingSkillDoc) return res.status(200).json(ResponseGenerator.sendSuccess(existingSkillDoc, "Analysis already exists"));
 
-        // FETCH FROM DATABASE instead of MOCK_JOBS
-        // We look for the job in the SavedJobModel collection
-        const selectedJob = await SavedJob.findOne({ jobId: jobId, username: userEmail });
-        
+        // Look up the saved job
+        const selectedJob = await SavedJob.findOne({ jobId, username: userEmail });
         if (!selectedJob) {
             return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Job not found in your saved list", "Skill analysis failed"));
         }
 
-        // Use the title from the DB to fetch ESCO skills
-        const { essential, optional } = await fetchSkillsFromEsco(selectedJob.title);
+        // Generate skills using Groq (Llama 3)
+        const skills = await fetchSkillsFromGroq(selectedJob.title, selectedJob.description);
 
-        const enrichData = async (list) => await Promise.all(
-            list.map(async (skill) => ({ 
-                ...skill, 
-                ...(await fetchSkillResourceDetails(skill.uri)),
-                userNote: "",
-                status: "pending" 
-            }))
-        );
-
-        // Create the analysis document using data from the database
         const newSkillDoc = await SkillModel.create({
             userId: userEmail,
             jobId: selectedJob.jobId,
             jobTitle: selectedJob.title,
-            skills: [
-                ...(await enrichData(essential)), 
-                ...(await enrichData(optional))
-            ],
+            skills,
         });
-       
+
         res.status(201).json(ResponseGenerator.sendSuccess(newSkillDoc, "Skill analysis completed and saved"));
     } catch (error) {
         res.status(500).json(ResponseGenerator.sendError(ResponseGenerator.INTERNAL_SERVER_ERROR, error.message, "Analysis failed"));
@@ -58,11 +44,9 @@ export const analyzeAndSaveSkills = async (req, res) => {
 
 // --- READ: Get User Dashboard ---
 export const getMySavedSkills = async (req, res) => {
-    //Extracts userId from the URL parameters
-    const { userId } = req.params;
+    const userId = req.user.email;
 
     try {
-        //Queries the DB for all skill documents associated with that userId
         const mySkills = await SkillModel.find({ userId }).sort({ updatedAt: -1 });
         res.status(200).json(ResponseGenerator.sendSuccess(mySkills, "Saved skills retrieved successfully"));
     } catch (error) {
@@ -71,18 +55,12 @@ export const getMySavedSkills = async (req, res) => {
 };
 
 
-
 // --- UPDATE: Edit Skill/Note/Status ---
 export const updateSkillDetails = async (req, res) => {
-    //Extracts jobId and skillId from the URL parameters
     const { jobId, skillId } = req.params;
-    //Extracts more data from the body of the request
-    const { userNote, importance, status, userId } = req.body;
+    const { userNote, importance, status } = req.body;
+    const userId = req.user.email;
 
-    //checks if userId is provided in the request body
-    if (!userId) return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Update failed"));
-
-    //Finds the specific skill within the skills array of the relevant document and updates it.
     try {
         const updatedDoc = await SkillModel.findOneAndUpdate(
             { jobId, userId, "skills._id": skillId },
@@ -90,7 +68,7 @@ export const updateSkillDetails = async (req, res) => {
                 $set: {
                     "skills.$.userNote": userNote,
                     "skills.$.importance": importance,
-                    "skills.$.status": status // Allows marking as 'completed' or 'pending'
+                    "skills.$.status": status
                 }
             },
             { new: true }
@@ -105,19 +83,11 @@ export const updateSkillDetails = async (req, res) => {
 };
 
 
-
-
 // --- DELETE: Remove One Skill ---
 export const removeSkillFromList = async (req, res) => {
-    //Extracts jobId and skillId from the URL parameters
     const { jobId, skillId } = req.params;
-    //Extracts userId from the query parameters
-    const userId = req.query.userId;
+    const userId = req.user.email;
 
-    //checks if userId is provided in the query parameers
-    if (!userId) return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Delete failed"));
-
-    //Finds the specific skill within the skills array and removes it 
     try {
         const updatedDoc = await SkillModel.findOneAndUpdate(
             { jobId, userId },
@@ -125,7 +95,6 @@ export const removeSkillFromList = async (req, res) => {
             { new: true }
         );
 
-        //If the skill or document isn't found, it returns a 404 error. Otherwise, it returns the updated document with the skill removed.
         if (!updatedDoc) return res.status(404).json(ResponseGenerator.sendError(ResponseGenerator.NOT_FOUND, "Skill not found", "Delete failed"));
         res.status(200).json(ResponseGenerator.sendSuccess(updatedDoc, "Skill removed successfully"));
     } catch (error) {
@@ -134,14 +103,10 @@ export const removeSkillFromList = async (req, res) => {
 };
 
 
-
-
 // --- DELETE: Full Analysis ---
 export const deleteFullAnalysis = async (req, res) => {
-  const { jobId } = req.params;
-  const userId = req.query.userId;
-
-    if (!userId) return res.status(400).json(ResponseGenerator.sendError(ResponseGenerator.BAD_REQUEST, "userId is required", "Delete failed"));
+    const { jobId } = req.params;
+    const userId = req.user.email;
 
     try {
         const deletedDoc = await SkillModel.findOneAndDelete({ jobId, userId });
@@ -153,45 +118,66 @@ export const deleteFullAnalysis = async (req, res) => {
 };
 
 
+// --- HELPER: Generate skills using Groq (Llama 3) ---
+const fetchSkillsFromGroq = async (jobTitle, jobDescription) => {
+    const prompt = `You are a career skills analyst. Given the job title and description below, identify the most relevant and specific technical skills required for this role.
 
+Job Title: "${jobTitle}"
+Job Description: "${jobDescription || "Not provided"}"
 
-// --- HELPERS ---
+Return ONLY a valid JSON array of exactly 15 skill objects (10 essential, 5 optional) with no extra text, markdown, or explanation.
 
-const fetchSkillsFromEsco = async (jobTitle) => {
-    const searchUrl = `https://ec.europa.eu/esco/api/search?text=${encodeURIComponent(jobTitle)}&type=occupation&language=en`;
-    const searchRes = await axios.get(searchUrl);
-    const occupation = searchRes.data?._embedded?.results?.[0];
+Format:
+[
+  {
+    "name": "skill name",
+    "importance": "Essential",
+    "description": "1-2 sentence explanation of how this skill applies to the role",
+    "altLabels": ["alternative name 1", "alternative name 2"]
+  }
+]
 
-    if (!occupation) return { essential: [], optional: [] };
+Rules:
+- Skills must be specific and directly relevant to the job title and description
+- Essential: core technical requirements the candidate must have
+- Optional: valuable but not mandatory skills that give a competitive edge
+- Be specific (e.g. "PyTorch model training" not just "Python")
+- Do not include soft skills like "communication" or "teamwork"
+- Return only the raw JSON array`;
 
-    const profileRes = await axios.get(occupation._links.self.href);
-    const links = profileRes.data._links;
+    const response = await axios.post(
+        GROQ_API_URL,
+        {
+            model: GROQ_MODEL,
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.4,
+            max_tokens: 2048,
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+        }
+    );
 
-    const process = (list, importance) =>
-        list?.map((s) => ({
-            name: s.title,
-            uri: s.uri,
-            importance: importance,
-        })) || [];
+    const text = response.data.choices[0]?.message?.content || "";
 
-    return {
-        essential: process(links.hasEssentialSkill, "Essential").slice(0, 10),
-        optional: process(links.hasOptionalSkill, "Optional").slice(0, 10),
-    };
-};
+    // Strip any accidental markdown code fences
+    const cleaned = text.replace(/```(?:json)?/gi, "").replace(/```/g, "").trim();
 
+    const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error("Groq did not return a valid JSON array");
 
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(parsed)) throw new Error("Parsed response is not an array");
 
-const fetchSkillResourceDetails = async (uri) => {
-    try {
-        const resourceUrl = `https://ec.europa.eu/esco/api/resource/skill?uri=${encodeURIComponent(uri)}&language=en`;
-        const res = await axios.get(resourceUrl);
-        return {
-            description: res.data.description?.en?.literal || "No description available.",
-            altLabels: res.data.alternativeLabel?.en || [],
-            reuseLevel: res.data.reuseLevel || "sector-specific"
-        };
-    } catch (error) {
-        return { description: "Details unavailable.", altLabels: [], reuseLevel: "unknown" };
-    }
+    return parsed.map(skill => ({
+        name:       skill.name        || "Unknown Skill",
+        importance: skill.importance === "Optional" ? "Optional" : "Essential",
+        description: skill.description || "",
+        altLabels:  Array.isArray(skill.altLabels) ? skill.altLabels : [],
+        userNote:   "",
+        status:     "pending",
+    }));
 };

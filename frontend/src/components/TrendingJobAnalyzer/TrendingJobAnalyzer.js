@@ -132,8 +132,30 @@ const TrendingJobAnalyzer = () => {
     }
   };
 
-  const handleAnalyzeSkills = (roleTitle) => {
-    alert(`Starting skill analysis for ${roleTitle}. (Integration with JobSkillAnalyzer)`);
+  const handleAnalyzeSkills = async (role) => {
+    const jobId = `trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        'http://localhost:5000/api/v1/trendingJobAnalyzer/saveJob',
+        {
+          jobId,
+          title: role.title,
+          description: role.description,
+          company: "Market Opportunity",
+          location: "Global / Remote",
+          url: "#"
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      // "already saved" is fine — still proceed to analyzer
+      if (!err.response?.data?.message?.includes("already saved")) {
+        alert("Failed to prepare job for analysis. Please try again.");
+        return;
+      }
+    }
+    navigate('/skill-analyzer', { state: { autoAnalyzeJobId: jobId, jobTitle: role.title } });
   };
 
   return (
@@ -268,7 +290,7 @@ const TrendingJobAnalyzer = () => {
                     <div className="card-actions_trendJob">
                       <button
                         className="analyze-btn_trendJob"
-                        onClick={() => handleAnalyzeSkills(role.title)}
+                        onClick={() => handleAnalyzeSkills(role)}
                       >
                         <span className="material-icons-round">manage_search</span>
                         Analyse Skills

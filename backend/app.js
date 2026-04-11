@@ -37,11 +37,11 @@ const app = express();
 
 // Session middleware
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+    })
 );
 
 app.use(passport.initialize());
@@ -73,17 +73,29 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/v1/economy", economy);
 
 // Swagger Configuration
-app.use('/career-bridge-api-spec', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(['/career-bridge-api-spec', '/skill-bridge-api-spec'], swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Basic health check
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
     res.send("Career Bridge Backend is running...");
 });
+
+const dropStaleIndexes = async () => {
+    try {
+        await mongoose.connection.collection('skillmodels').dropIndex('jobId_1');
+        log('Dropped stale jobId_1 index from skillmodels');
+    } catch (err) {
+        // Index doesn't exist — nothing to do
+    }
+};
 
 const db_connect = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
         log(`MongoDB Successfully Connected`);
+
+        // Drop any stale single-field unique indexes left over from older schema versions
+        await dropStaleIndexes();
 
         // Initialize Background Email Jobs
         initRoadmapReminders();
