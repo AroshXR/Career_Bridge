@@ -88,13 +88,6 @@ const Register = () => {
                         <span className="stat-label_reg">Career Growth</span>
                     </div>
                 </div>
-
-                {/* Floating Glassmorphism Card */}
-                <div className="floating-card_reg">
-                    <div className="card-icon_reg">🚀</div>
-                    <div className="card-title_reg">Top Skill Today</div>
-                    <div className="card-value_reg">AI & Machine Learning</div>
-                </div>
             </div>
 
             {/* ── RIGHT FORM PANEL ── */}

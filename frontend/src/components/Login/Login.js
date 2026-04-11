@@ -159,12 +159,6 @@ const Login = () => {
                     </div>
                 </div>
 
-                {/* Floating Glassmorphism Card */}
-                <div className="floating-card_log">
-                    <div className="card-icon_log">✨</div>
-                    <div className="card-title_log">New Course</div>
-                    <div className="card-value_log">Data Science 2026</div>
-                </div>
             </div>
         </div>
     );
