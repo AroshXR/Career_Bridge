@@ -8,10 +8,16 @@ configDotenv();
 // 1. Core function to send the email
 export const sendEmailsForReminder = async (mto, mSubject, html) => {
   const mailServer = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
       user: process.env.FROM_EMAIL,
-      pass: process.env.EMAIL_HOST_PASSWORD, // Ensure this is an App Password
+      pass: process.env.EMAIL_HOST_PASSWORD,
+    },
+    tls: {
+      // Do not fail on invalid certs
+      rejectUnauthorized: false
     }
   });
 
