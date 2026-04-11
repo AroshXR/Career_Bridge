@@ -1,0 +1,28 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: Warm up
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: Ramp up load
+    - duration: 60
+      arrivalRate: 50
+      name: Sustained high load
+  # Optional: Ensure the server doesn't fail under load
+  ensure:
+    thresholds:
+      - http.response_time.p95: 500 # 95% of requests should be under 500ms
+      - http.response_time.p99: 1000 # 99% of requests should be under 1s
+
+scenarios:
+  - name: "Browsing Trending Jobs"
+    flow:
+      - get:
+          url: "/api/v1/jobs/trending"
+      - think: 1 # Simulate user wait time
+      - get:
+          url: "/api/v1/economy/details"
+      - think: 2

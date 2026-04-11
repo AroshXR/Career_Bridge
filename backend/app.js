@@ -1,5 +1,3 @@
-// import dotenv from 'dotenv';
-// dotenv.config();
 import { configDotenv } from "dotenv";
 configDotenv();
 
@@ -11,7 +9,6 @@ import cors from "cors";
 import passport from "passport";
 import session from "express-session";
 import "./config/passport.js";
-
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -28,7 +25,6 @@ import uploadRoutes from "./Routes/uploadRoutes.js";
 import economy from "./Routes/economyDetailsRoute.js";
 import { initRoadmapReminders } from "./utils/cronScheduler.js";
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -41,7 +37,7 @@ app.set('trust proxy', 1);
 // Session middleware
 app.use(
     session({
-        secret: process.env.SESSION_SECRET,
+        secret: process.env.SESSION_SECRET || 'secret',
         resave: false,
         saveUninitialized: true,
     })
@@ -50,6 +46,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// middleware
 //  middleware - bawa chnaged
 const allowedOrigins = [
     "http://localhost:3000",
@@ -65,9 +62,6 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Serve static files from uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// Middleware
-app.use(express.json());
 
 // Routes
 app.use("/api/v1/users", userRoute);
@@ -87,6 +81,7 @@ app.get("/", (_req, res) => {
     res.send("Career Bridge Backend is running...");
 });
 
+// Database connection and listener (only if not in test mode)
 const dropStaleIndexes = async () => {
     try {
         await mongoose.connection.collection('skillmodels').dropIndex('jobId_1');
@@ -116,4 +111,8 @@ const db_connect = async () => {
     }
 };
 
-db_connect();
+if (process.env.NODE_ENV !== 'test') {
+    db_connect();
+}
+
+export default app;
