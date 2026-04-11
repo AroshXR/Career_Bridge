@@ -42,7 +42,6 @@
   },
   "devDependencies": {
     "cypress": "^15.13.0",
-    "cypress-lighthouse": "^0.1.0",
     "lighthouse": "^13.1.0"
   },
   "jest": {
