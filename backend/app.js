@@ -83,6 +83,10 @@ app.get("/", (_req, res) => {
     res.send("Career Bridge Backend is running...");
 });
 
+app.get("/healthz", (req, res) => {
+    res.status(200).send("Career Bridge Backend is running...");
+});
+
 // Database connection and listener (only if not in test mode)
 const dropStaleIndexes = async () => {
     try {
