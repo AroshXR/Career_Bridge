@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-    Tooltip, ResponsiveContainer, Legend
+    Tooltip, ResponsiveContainer
 } from 'recharts';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
@@ -108,10 +108,6 @@ const DashboardAdmin = () => {
     };
 
     if (loading) return <div className="admin-loading">Loading Admin Dashboard...</div>;
-
-    const activeUsers = users.filter(u => u.status === 'active').length;
-    const blockedUsers = users.filter(u => u.status === 'blocked').length;
-    // Removed unused pendingUsers variable
 
     return (
         <div className="admin-page-wrapper">

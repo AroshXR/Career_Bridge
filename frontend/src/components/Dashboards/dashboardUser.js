@@ -17,7 +17,7 @@ const UserDashboard = () => {
   // Dynamic dashboard states
   const [progressData, setProgressData] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
-  const [recentActivities, setRecentActivities] = useState([
+  const [recentActivities] = useState([
     { id: 1, time: "Today", text: "Logged into dashboard" },
     { id: 2, time: "Yesterday", text: "Updated profile details" }
   ]);

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './TrendingJobAnalyzer.css';
 import Navbar from '../Common/Navbar';
@@ -49,7 +48,6 @@ const getBadgeClass = (level = '') => {
 };
 
 const TrendingJobAnalyzer = () => {
-  const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
   const [stats, setStats] = useState({ totalMarketSignals: 0, analyzedRoles: 0 });
   const [loading, setLoading] = useState(true);
@@ -58,27 +56,9 @@ const TrendingJobAnalyzer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingMsg, setLoadingMsg] = useState(LOADING_MESSAGES[0]);
   const [savedJobIds, setSavedJobIds] = useState(new Set());
-
   const rolesPerPage = 10;
 
-  /* rotating loading messages */
-  useEffect(() => {
-    if (!loading) return;
-    let idx = 0;
-    const interval = setInterval(() => {
-      idx = (idx + 1) % LOADING_MESSAGES.length;
-      setLoadingMsg(LOADING_MESSAGES[idx]);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [loading]);
-
-  /* fetch on category change */
-  useEffect(() => {
-    fetchTrendingJobs();
-    setCurrentPage(1);
-  }, [currentCategory]);
-
-  const fetchTrendingJobs = async () => {
+  const fetchTrendingJobs = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -106,7 +86,24 @@ const TrendingJobAnalyzer = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentCategory]);
+
+  /* rotating loading messages */
+  useEffect(() => {
+    if (!loading) return;
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx = (idx + 1) % LOADING_MESSAGES.length;
+      setLoadingMsg(LOADING_MESSAGES[idx]);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  /* fetch on category change */
+  useEffect(() => {
+    fetchTrendingJobs();
+    setCurrentPage(1);
+  }, [currentCategory, fetchTrendingJobs]);
 
   /* pagination */
   const indexOfLast = currentPage * rolesPerPage;
@@ -145,31 +142,6 @@ const TrendingJobAnalyzer = () => {
     }
   };
 
-  const handleAnalyzeSkills = async (role) => {
-    const jobId = `trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`;
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5000/api/v1/trendingJobAnalyzer/saveJob',
-        {
-          jobId,
-          title: role.title,
-          description: role.description,
-          company: "Market Opportunity",
-          location: "Global / Remote",
-          url: "#"
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } catch (err) {
-      // "already saved" is fine — still proceed to analyzer
-      if (!err.response?.data?.message?.includes("already saved")) {
-        alert("Failed to prepare job for analysis. Please try again.");
-        return;
-      }
-    }
-    navigate('/skill-analyzer', { state: { autoAnalyzeJobId: jobId, jobTitle: role.title } });
-  };
 
   return (
     <div className="page-wrapper_trendJob">
