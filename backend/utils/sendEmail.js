@@ -5,7 +5,7 @@ dotenv.config();
 export const sendEmail = async (to, subject, text, html) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: "smtp.googlemail.com",
       port: 587,
       secure: false, // Use TLS
       auth: {
