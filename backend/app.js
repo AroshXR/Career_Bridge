@@ -23,6 +23,7 @@ import skillRoute from "./Routes/skillRoute.js";
 import authRoutes from "./Routes/authRoutes.js";
 import uploadRoutes from "./Routes/uploadRoutes.js";
 import economy from "./Routes/economyDetailsRoute.js";
+import feedbackRoutes from "./Routes/feedbackRoutes.js";
 import { initRoadmapReminders } from "./utils/cronScheduler.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -71,6 +72,7 @@ app.use('/api/v1/skills', skillRoute);
 app.use("/api/v1/resources", learning_resource);
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/v1/feedback", feedbackRoutes);
 app.use("/api/v1/economy", economy);
 
 // Swagger Configuration
