@@ -31,6 +31,22 @@ const ResourcesSave = ({ resource, onClose, skillName }) => {
     setLoading(true);
     setMessage(null);
     const token = localStorage.getItem('token');
+
+    // Validation 1: Check for past date
+    const selectedDate = new Date(formData.scheduledTime);
+    const now = new Date();
+    if (selectedDate < now) {
+      setMessage({ type: 'error', text: 'Scheduled time cannot be in the past.' });
+      setLoading(false);
+      return;
+    }
+
+    // Validation 2: Check notes length (max 500 characters)
+    if (formData.notes && formData.notes.length > 500) {
+      setMessage({ type: 'error', text: 'Notes must be 500 characters or less.' });
+      setLoading(false);
+      return;
+    }
     const payload = {
       ...formData,
       skillId: '65dabcdef123456789012345',
@@ -116,6 +132,7 @@ const ResourcesSave = ({ resource, onClose, skillName }) => {
                 value={formData.scheduledTime}
                 onChange={handleChange}
                 required
+                min={new Date().toISOString().slice(0, 16)}
               />
             </div>
 
@@ -150,6 +167,7 @@ const ResourcesSave = ({ resource, onClose, skillName }) => {
                 onChange={handleChange}
                 placeholder="Add any notes here..."
                 rows="3"
+                maxLength="500"
               />
             </div>
 
