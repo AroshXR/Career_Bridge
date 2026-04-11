@@ -139,9 +139,9 @@ const Footer = () => {
                     </h4>
                     <ul>
                         <li>
-                            <a href="/faq">
-                                <span className="material-icons-round">help_outline</span>
-                                FAQ
+                            <a href="/feedback">
+                                <span className="material-icons-round">feedback</span>
+                                Feedback
                             </a>
                         </li>
                         <li>

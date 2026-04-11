@@ -16,6 +16,8 @@ import Economy from '../src/components/Economy/economy';
 import ProgressPage from '../src/components/Progress/progress_page';
 import RecommendedCourses from '../src/components/Dashboards/RecommendedCourses';
 import JobSkillAnalyzer from '../src/components/JobSkillAnalyzer/JobSkillAnalyzer';
+import FeedbackPage from './components/Feedback/FeedbackPage';
+import AdminFeedbackView from './components/Feedback/AdminFeedbackView';
 
 function App() {
   return (
@@ -26,6 +28,7 @@ function App() {
           <Route path="/" element={<Splash />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
 
           {/* Protected User Routes */}
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
@@ -45,6 +48,11 @@ function App() {
           <Route path="/admin-dashboard" element={
             <ProtectedRoute adminOnly={true}>
               <DashboardAdmin />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/feedbacks" element={
+            <ProtectedRoute adminOnly={true}>
+              <AdminFeedbackView />
             </ProtectedRoute>
           } />
         </Routes>

@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════════════════
+   Loading.css — SkillBridge Premium Loader
+   Aesthetics: Clean, Modern, Animated
+   ═══════════════════════════════════════════════════════════ */
+
+.loading-overlay_skill {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-content_skill {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* ── Spinner Design ── */
+.spinner_skill {
+    width: 70px;
+    height: 70px;
+    border: 4px solid rgba(45, 28, 237, 0.05);
+    border-top: 4px solid #2d1ced;
+    border-radius: 50%;
+    animation: skill-spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inner-spinner_skill {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(116, 183, 219, 0.1);
+    border-bottom: 3px solid #74b7db;
+    border-radius: 50%;
+    animation: skill-spin-reverse 1.5s linear infinite;
+}
+
+@keyframes skill-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes skill-spin-reverse {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* ── Branding ── */
+.loading-branding_skill {
+    font-family: "Outfit", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #252525;
+    letter-spacing: -0.5px;
+    animation: skill-pulse 2s ease-in-out infinite;
+}
+
+.logo-accent_skill {
+    color: #2d1ced;
+}
+
+.loading-message_skill {
+    font-family: "Outfit", sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+@keyframes skill-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.98); }
+}

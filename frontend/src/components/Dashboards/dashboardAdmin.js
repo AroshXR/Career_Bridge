@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
+import Loading from '../Common/Loading';
 import './dashboardAdmin.css';
 import API_BASE_URL from '../../apiConfig';
 
@@ -107,7 +108,7 @@ const DashboardAdmin = () => {
         }
     };
 
-    if (loading) return <div className="admin-loading">Loading Admin Dashboard...</div>;
+    if (loading) return <Loading message="Synchronizing Admin Data..." />;
 
     const activeUsers = users.filter(u => u.status === 'active').length;
     const blockedUsers = users.filter(u => u.status === 'blocked').length;
@@ -160,7 +161,14 @@ const DashboardAdmin = () => {
                     <div className="admin-users-section">
                         <div className="section-header">
                             <h2>User Management</h2>
-                            <button className="refresh-btn" onClick={fetchDashboardData}>Refresh Data</button>
+                            <div className="admin-actions">
+                                <button className="refresh-btn" onClick={fetchDashboardData}>
+                                    <span className="material-icons-round">refresh</span> Refresh Data
+                                </button>
+                                <button className="refresh-btn feedback-manage-btn" onClick={() => navigate('/admin/feedbacks')} style={{ backgroundColor: '#00bcd4', color: '#fff' }}>
+                                    <span className="material-icons-round">feedback</span> Manage Feedbacks
+                                </button>
+                            </div>
                         </div>
 
                         {error && <p className="error-msg" style={{ backgroundColor: "#f8d7da", color: "#721c24", padding: "10px", borderRadius: "4px", marginBottom: "15px" }}>⚠️ {error}</p>}

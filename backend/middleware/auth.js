@@ -1,6 +1,22 @@
 import jwt from 'jsonwebtoken';
 import ResponseGenerator from '../utils/ResponseGenerator.js';
 
+export const optionalAuth = (req, res, next) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+        req.user = decoded;
+        next();
+    } catch (err) {
+        // If token is invalid or expired, just treat as guest
+        next();
+    }
+};
+
 const authMiddleware = (req, res, next) => {
     // Get token from header
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -11,7 +27,7 @@ const authMiddleware = (req, res, next) => {
 
     try {
         // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
         req.user = decoded;
         next();
     } catch (err) {

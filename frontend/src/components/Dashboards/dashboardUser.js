@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./dashboardUser.css";
 import Footer from "../Common/Footer";
 import Header from "../Common/Navbar";
+import Loading from "../Common/Loading";
 import API_BASE_URL from "../../apiConfig";
 
 const UserDashboard = () => {
@@ -103,7 +104,7 @@ const UserDashboard = () => {
   };
 
   if (!user) {
-    return <div style={{ padding: "2rem", textAlign: "center", fontSize: "1.2rem", fontWeight: "bold" }}>Loading profile...</div>;
+    return <Loading message="Synchronizing Profile..." />;
   }
 
   const handleCVUpload = (e) => {

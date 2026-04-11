@@ -142,6 +142,13 @@
   color: var(--text-dark_admin);
 }
 
+.admin-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .refresh-btn {
   background: var(--primary_admin);
   color: white;
