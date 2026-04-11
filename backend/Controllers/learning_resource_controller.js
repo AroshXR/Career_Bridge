@@ -171,8 +171,7 @@ export const saveResource = async (req, res) => {
 
     const savedResource = await newResource.save();
 
-    // Send confirmation email in background (non-blocking)
-    sendEmailsForReminder(userEmail, `Course Reminder About ${skillName}`, `
+    await sendEmailsForReminder(userEmail, `Course Reminder About ${skillName}`, `
 
         <!DOCTYPE html>
         <html>
