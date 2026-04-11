@@ -70,6 +70,12 @@ const SavedJobs = () => {
         }
     };
 
+    const handleAnalyzeSkills = (job) => {
+        // Navigate to skill analyzer with the jobId and title
+        // The jobId in our saved jobs already has the 'trend_' prefix if it came from Trending Analyzer
+        navigate('/skill-analyzer', { state: { autoAnalyzeJobId: job.jobId, jobTitle: job.title } });
+    };
+
     if (loading) return <div className="loader">Loading your saved jobs...</div>;
 
     return (
@@ -139,6 +145,13 @@ const SavedJobs = () => {
                                 </div>
 
                                 <div className="card-actions">
+                                    <button
+                                        className="analyze-btn"
+                                        onClick={() => handleAnalyzeSkills(job)}
+                                    >
+                                        <span className="material-icons-round">manage_search</span>
+                                        Analyse Skills
+                                    </button>
                                     <button
                                         className="delete-btn"
                                         onClick={() => handleDeleteJob(job._id)}

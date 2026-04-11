@@ -42,20 +42,21 @@ const LOADING_MESSAGES = [
 
 const getBadgeClass = (level = '') => {
   const l = level.toLowerCase();
-  if (l.includes('high'))   return 'high_trendJob';
+  if (l.includes('high')) return 'high_trendJob';
   if (l.includes('medium')) return 'medium_trendJob';
   return 'low_trendJob';
 };
 
 const TrendingJobAnalyzer = () => {
   const navigate = useNavigate();
-  const [roles, setRoles]       = useState([]);
-  const [stats, setStats]       = useState({ totalMarketSignals: 0, analyzedRoles: 0 });
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [roles, setRoles] = useState([]);
+  const [stats, setStats] = useState({ totalMarketSignals: 0, analyzedRoles: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentCategory, setCurrentCategory] = useState("Information Technology");
-  const [currentPage, setCurrentPage]         = useState(1);
-  const [loadingMsg, setLoadingMsg]           = useState(LOADING_MESSAGES[0]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loadingMsg, setLoadingMsg] = useState(LOADING_MESSAGES[0]);
+  const [savedJobIds, setSavedJobIds] = useState(new Set());
 
   const rolesPerPage = 10;
 
@@ -88,6 +89,16 @@ const TrendingJobAnalyzer = () => {
       if (response.data.status === "00") {
         setRoles(response.data.data.roles || []);
         setStats(response.data.data.stats || { totalMarketSignals: 0, analyzedRoles: 0 });
+
+        // Also fetch saved jobs to mark them
+        const savedResp = await axios.get(
+          `http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (savedResp.data.status === "00") {
+          const ids = new Set((savedResp.data.data.jobs || []).map(j => j.jobId));
+          setSavedJobIds(ids);
+        }
       }
     } catch (err) {
       setError("Failed to load trending data. Please try again.");
@@ -97,10 +108,10 @@ const TrendingJobAnalyzer = () => {
   };
 
   /* pagination */
-  const indexOfLast   = currentPage * rolesPerPage;
-  const indexOfFirst  = indexOfLast - rolesPerPage;
-  const currentRoles  = roles.slice(indexOfFirst, indexOfLast);
-  const totalPages    = Math.ceil(roles.length / rolesPerPage);
+  const indexOfLast = currentPage * rolesPerPage;
+  const indexOfFirst = indexOfLast - rolesPerPage;
+  const currentRoles = roles.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(roles.length / rolesPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -122,6 +133,7 @@ const TrendingJobAnalyzer = () => {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      setSavedJobIds(prev => new Set([...prev, `trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`]));
       alert(`${role.title} saved to your career interests!`);
     } catch (err) {
       if (err.response?.data?.message?.includes("already saved")) {
@@ -289,18 +301,14 @@ const TrendingJobAnalyzer = () => {
                     </div>
                     <div className="card-actions_trendJob">
                       <button
-                        className="analyze-btn_trendJob"
-                        onClick={() => handleAnalyzeSkills(role)}
-                      >
-                        <span className="material-icons-round">manage_search</span>
-                        Analyse Skills
-                      </button>
-                      <button
-                        className="save-btn_trendJob"
+                        className={`save-btn_trendJob ${savedJobIds.has(`trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`) ? 'saved-btn_trendJob' : ''}`}
                         onClick={() => handleSaveRole(role)}
+                        disabled={savedJobIds.has(`trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`)}
                       >
-                        <span className="material-icons-round">bookmark_add</span>
-                        Save
+                        <span className="material-icons-round">
+                          {savedJobIds.has(`trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`) ? 'bookmark_check' : 'bookmark_add'}
+                        </span>
+                        {savedJobIds.has(`trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`) ? 'Saved' : 'Save'}
                       </button>
                     </div>
                   </div>

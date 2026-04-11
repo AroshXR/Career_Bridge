@@ -47,14 +47,19 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(45deg, rgba(45,28,237,0.06) 0%, transparent 60%);
+  background: linear-gradient(45deg, rgba(45, 28, 237, 0.06) 0%, transparent 60%);
   animation: shimmer_trendJob 7s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
 @keyframes shimmer_trendJob {
-  from { opacity: 0.5; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.5;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .hero-text_trendJob {
@@ -69,7 +74,7 @@
   letter-spacing: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 0.8rem;
 }
 
@@ -108,7 +113,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 0.1rem;
 }
 
@@ -123,9 +128,9 @@
   font-family: "Outfit", sans-serif;
   font-size: 0.88rem;
   color: white;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.22);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 8px;
   appearance: none;
   outline: none;
@@ -139,8 +144,8 @@
 }
 
 .category-select_trendJob:focus {
-  border-color: rgba(255,255,255,0.5);
-  background: rgba(255,255,255,0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .select-arrow_trendJob {
@@ -149,7 +154,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 1.1rem !important;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
 }
 
@@ -160,9 +165,9 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.2rem;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
   color: white;
   font-family: "Outfit", sans-serif;
@@ -174,9 +179,18 @@
   transition: var(--transition_trendJob);
 }
 
-.refresh-btn_trendJob .material-icons-round { font-size: 1rem; }
-.refresh-btn_trendJob:hover:not(:disabled) { background: rgba(255,255,255,0.25); }
-.refresh-btn_trendJob:disabled { opacity: 0.5; cursor: not-allowed; }
+.refresh-btn_trendJob .material-icons-round {
+  font-size: 1rem;
+}
+
+.refresh-btn_trendJob:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.refresh-btn_trendJob:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* ══════════════════════════════════
    STATS STRIP
@@ -209,7 +223,7 @@
   transform: translateY(-50%);
   width: 1px;
   height: 32px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .stat-icon_trendJob {
@@ -231,7 +245,7 @@
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
   margin-top: 0.2rem;
 }
 
@@ -307,15 +321,24 @@
 }
 
 @keyframes cardFade_trendJob {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* top accent bar on hover */
 .role-card_trendJob::before {
   content: "";
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--primary_trendJob), var(--secondary_trendJob));
   transform: scaleX(0);
@@ -323,11 +346,13 @@
   transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.role-card_trendJob:hover::before { transform: scaleX(1); }
+.role-card_trendJob:hover::before {
+  transform: scaleX(1);
+}
 
 .role-card_trendJob:hover {
   transform: translateY(-5px);
-  box-shadow: 0 16px 40px rgba(45,28,237,0.1);
+  box-shadow: 0 16px 40px rgba(45, 28, 237, 0.1);
   border-color: transparent;
 }
 
@@ -346,11 +371,24 @@
   align-self: flex-start;
 }
 
-.demand-badge_trendJob.high_trendJob    { background: rgba(16,185,129,0.12); color: #10b981; }
-.demand-badge_trendJob.medium_trendJob  { background: rgba(245,158,11,0.12); color: #d97706; }
-.demand-badge_trendJob.low_trendJob     { background: rgba(45,28,237,0.1);   color: var(--primary_trendJob); }
+.demand-badge_trendJob.high_trendJob {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
 
-.demand-badge_trendJob .material-icons-round { font-size: 0.75rem; }
+.demand-badge_trendJob.medium_trendJob {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+
+.demand-badge_trendJob.low_trendJob {
+  background: rgba(45, 28, 237, 0.1);
+  color: var(--primary_trendJob);
+}
+
+.demand-badge_trendJob .material-icons-round {
+  font-size: 0.75rem;
+}
 
 /* Role title */
 .role-title_trendJob {
@@ -403,7 +441,7 @@
 
 .skill-tag_trendJob {
   padding: 0.22rem 0.65rem;
-  background: rgba(45,28,237,0.07);
+  background: rgba(45, 28, 237, 0.07);
   color: var(--primary_trendJob);
   border-radius: 4px;
   font-size: 0.7rem;
@@ -414,7 +452,7 @@
 }
 
 .skill-tag_trendJob:hover {
-  background: rgba(45,28,237,0.14);
+  background: rgba(45, 28, 237, 0.14);
 }
 
 /* Card footer */
@@ -465,8 +503,13 @@
   transition: var(--transition_trendJob);
 }
 
-.analyze-btn_trendJob .material-icons-round { font-size: 0.9rem; }
-.analyze-btn_trendJob:hover { background: var(--text-dark_trendJob); }
+.analyze-btn_trendJob .material-icons-round {
+  font-size: 0.9rem;
+}
+
+.analyze-btn_trendJob:hover {
+  background: var(--text-dark_trendJob);
+}
 
 .save-btn_trendJob {
   display: inline-flex;
@@ -486,10 +529,25 @@
   transition: var(--transition_trendJob);
 }
 
-.save-btn_trendJob .material-icons-round { font-size: 0.9rem; }
+.save-btn_trendJob .material-icons-round {
+  font-size: 0.9rem;
+}
+
 .save-btn_trendJob:hover {
   border-color: var(--primary_trendJob);
   color: var(--primary_trendJob);
+}
+
+.save-btn_trendJob.saved-btn_trendJob {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  color: #10b981;
+  cursor: default;
+}
+
+.save-btn_trendJob.saved-btn_trendJob:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 /* ══════════════════════════════════
@@ -507,13 +565,17 @@
 .loader-ring_trendJob {
   width: 56px;
   height: 56px;
-  border: 3px solid rgba(45,28,237,0.1);
+  border: 3px solid rgba(45, 28, 237, 0.1);
   border-top-color: var(--primary_trendJob);
   border-radius: 50%;
   animation: spin_trendJob 0.8s linear infinite;
 }
 
-@keyframes spin_trendJob { to { transform: rotate(360deg); } }
+@keyframes spin_trendJob {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .loading-msg_trendJob {
   font-size: 0.82rem;
@@ -569,8 +631,13 @@
   transition: var(--transition_trendJob);
 }
 
-.retry-btn_trendJob .material-icons-round { font-size: 1rem; }
-.retry-btn_trendJob:hover { background: var(--text-dark_trendJob); }
+.retry-btn_trendJob .material-icons-round {
+  font-size: 1rem;
+}
+
+.retry-btn_trendJob:hover {
+  background: var(--text-dark_trendJob);
+}
 
 /* ══════════════════════════════════
    PAGINATION
@@ -604,7 +671,9 @@
 }
 
 .pag-prev_trendJob .material-icons-round,
-.pag-next_trendJob .material-icons-round { font-size: 1rem; }
+.pag-next_trendJob .material-icons-round {
+  font-size: 1rem;
+}
 
 .pag-prev_trendJob:hover:not(:disabled),
 .pag-next_trendJob:hover:not(:disabled) {
@@ -613,7 +682,10 @@
 }
 
 .pag-prev_trendJob:disabled,
-.pag-next_trendJob:disabled { opacity: 0.35; cursor: not-allowed; }
+.pag-next_trendJob:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
 
 .page-numbers_trendJob {
   display: flex;
@@ -639,7 +711,10 @@
   transition: var(--transition_trendJob);
 }
 
-.page-num_trendJob:hover { border-color: var(--secondary_trendJob); color: var(--primary_trendJob); }
+.page-num_trendJob:hover {
+  border-color: var(--secondary_trendJob);
+  color: var(--primary_trendJob);
+}
 
 .page-num_trendJob.active_trendJob {
   background: var(--primary_trendJob);
@@ -651,10 +726,21 @@
    RESPONSIVE
 ══════════════════════════════════ */
 @media (max-width: 1024px) {
-  .role-grid_trendJob { grid-template-columns: 1fr; }
-  .hero_trendJob { padding: 3rem 5% 4rem; }
-  .main-content_trendJob { padding: 2.5rem 5% 4rem; }
-  .stats-strip_trendJob { padding: 1rem 5%; }
+  .role-grid_trendJob {
+    grid-template-columns: 1fr;
+  }
+
+  .hero_trendJob {
+    padding: 3rem 5% 4rem;
+  }
+
+  .main-content_trendJob {
+    padding: 2.5rem 5% 4rem;
+  }
+
+  .stats-strip_trendJob {
+    padding: 1rem 5%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -663,15 +749,42 @@
     padding: 2.5rem 5% 3.5rem;
   }
 
-  .hero_trendJob h1 { font-size: 2rem; }
-  .hero-controls_trendJob { min-width: unset; width: 100%; }
-  .section-head_trendJob { flex-direction: column; align-items: flex-start; }
-  .stat-item_trendJob:not(:last-child)::after { display: none; }
+  .hero_trendJob h1 {
+    font-size: 2rem;
+  }
+
+  .hero-controls_trendJob {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .section-head_trendJob {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-item_trendJob:not(:last-child)::after {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
-  .hero_trendJob h1 { font-size: 1.6rem; }
-  .card-footer_trendJob { flex-direction: column; align-items: flex-start; }
-  .card-actions_trendJob { width: 100%; }
-  .analyze-btn_trendJob, .save-btn_trendJob { flex: 1; justify-content: center; }
+  .hero_trendJob h1 {
+    font-size: 1.6rem;
+  }
+
+  .card-footer_trendJob {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-actions_trendJob {
+    width: 100%;
+  }
+
+  .analyze-btn_trendJob,
+  .save-btn_trendJob {
+    flex: 1;
+    justify-content: center;
+  }
 }
