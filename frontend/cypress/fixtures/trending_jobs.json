@@ -1,0 +1,23 @@
+{
+  "status": "00",
+  "data": {
+    "meta": {
+      "category": "Information Technology",
+      "timestamp": "2026-04-10T00:00:00Z"
+    },
+    "stats": {
+      "totalMarketSignals": 100,
+      "analyzedRoles": 5
+    },
+    "roles": [
+      {
+        "title": "Software Architect",
+        "description": "Designs high-level scalable systems.",
+        "key_skills": ["Node.js", "System Design", "Cloud"],
+        "demand_level": "High",
+        "average_salary": "$150k",
+        "growth_factor": "+20%"
+      }
+    ]
+  }
+}
