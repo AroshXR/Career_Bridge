@@ -171,62 +171,62 @@ export const saveResource = async (req, res) => {
 
     const savedResource = await newResource.save();
 
-    await sendEmailsForReminder(userEmail, `Course Reminder About ${skillName}`, `
+    // await sendEmailsForReminder(userEmail, `Course Reminder About ${skillName}`, `
 
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                .button:hover { background-color: #0056b3 !important; }
-            </style>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                    <td align="center" style="padding: 20px 0;">
-                        <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
-                            <!-- Navbar Section -->
-                            <tr>
-                                <td align="center" style="padding: 25px 0; border-bottom: 1px solid #f1f5f9;">
-                                    <div style="font-size: 24px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px;">
-                                        Career<span style="color: #007bff;">Bridge</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Header Image -->
-                            <tr>
-                                <td align="center" style="background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%); padding: 50px 20px;">
-                                    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Great Choice!</h1>
-                                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Success starts with the first step.</p>
-                                </td>
-                            </tr>
-                            <!-- Content -->
-                            <tr>
-                                <td style="padding: 50px 40px; text-align: center;">
-                                    <h2 style="color: #1a1a1a; margin-top: 0; font-size: 22px;">"${videoTitle}" is saved.</h2>
-                                    <p style="color: #64748b; line-height: 1.6; font-size: 16px; margin-bottom: 30px;">
-                                        You’ve successfully added this course to your library. We’ve set a reminder for you to help you stay on track with your goals.
-                                    </p>
-                                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/" class="button" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">View My Library</a>
-                                </td>
-                            </tr>
-                            <!-- Footer -->
-                            <tr>
-                                <td style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #f1f5f9;">
-                                    <p style="font-size: 13px; color: #94a3b8; margin: 0;">
-                                        &copy; 2026 <strong>CareerBridge</strong>. All rights reserved.
-                                    </p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </body>
-        </html>
+    //     <!DOCTYPE html>
+    //     <html>
+    //     <head>
+    //         <meta charset="UTF-8">
+    //         <style>
+    //             .button:hover { background-color: #0056b3 !important; }
+    //         </style>
+    //     </head>
+    //     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+    //         <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    //             <tr>
+    //                 <td align="center" style="padding: 20px 0;">
+    //                     <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+    //                         <!-- Navbar Section -->
+    //                         <tr>
+    //                             <td align="center" style="padding: 25px 0; border-bottom: 1px solid #f1f5f9;">
+    //                                 <div style="font-size: 24px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px;">
+    //                                     Career<span style="color: #007bff;">Bridge</span>
+    //                                 </div>
+    //                             </td>
+    //                         </tr>
+    //                         <!-- Header Image -->
+    //                         <tr>
+    //                             <td align="center" style="background: linear-gradient(135deg, #007bff 0%, #00d4ff 100%); padding: 50px 20px;">
+    //                                 <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Great Choice!</h1>
+    //                                 <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Success starts with the first step.</p>
+    //                             </td>
+    //                         </tr>
+    //                         <!-- Content -->
+    //                         <tr>
+    //                             <td style="padding: 50px 40px; text-align: center;">
+    //                                 <h2 style="color: #1a1a1a; margin-top: 0; font-size: 22px;">"${videoTitle}" is saved.</h2>
+    //                                 <p style="color: #64748b; line-height: 1.6; font-size: 16px; margin-bottom: 30px;">
+    //                                     You’ve successfully added this course to your library. We’ve set a reminder for you to help you stay on track with your goals.
+    //                                 </p>
+    //                                 <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/" class="button" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">View My Library</a>
+    //                             </td>
+    //                         </tr>
+    //                         <!-- Footer -->
+    //                         <tr>
+    //                             <td style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #f1f5f9;">
+    //                                 <p style="font-size: 13px; color: #94a3b8; margin: 0;">
+    //                                     &copy; 2026 <strong>CareerBridge</strong>. All rights reserved.
+    //                                 </p>
+    //                             </td>
+    //                         </tr>
+    //                     </table>
+    //                 </td>
+    //             </tr>
+    //         </table>
+    //     </body>
+    //     </html>
 
-      `);
+    //   `);
 
     scheduleReminderEmail(userEmail, `Course Reminder About ${skillName}`,
       `
