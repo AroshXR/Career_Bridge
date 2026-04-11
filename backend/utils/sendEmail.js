@@ -13,13 +13,13 @@ export const sendEmail = async (to, subject, text, html) => {
     });
 
     await transporter.sendMail({
-      from: `"Skill Bridge" <${process.env.FROM_EMAIL}>`,
+      from: `"Career Bridge" <${process.env.FROM_EMAIL}>`,
       to,
       subject,
       text,
       html,
     });
-    
+
     console.log("✅ Email sent successfully via Nodemailer to", to);
   } catch (error) {
     console.error("❌ Nodemailer Failed to send email:", error.message);

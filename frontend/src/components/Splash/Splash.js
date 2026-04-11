@@ -7,6 +7,7 @@ import economyImg from '../Splash/economy_home.png';
 import dataAi3d from '../Splash/data_ai_3d.png';
 import collaboration3d from '../Splash/collaboration_3d.png';
 import Footer from '../Common/Footer';
+import FeedbackList from '../Feedback/FeedbackList';
 
 const Splash = () => {
     const navigate = useNavigate();
@@ -132,6 +133,22 @@ const Splash = () => {
                 <div className="cta-buttons_splash">
                     <button className="cta-btn_splash" onClick={() => navigate('/register')}>Join Now</button>
                     <button className="cta-btn-outline_splash" onClick={() => navigate('/login')}>Login Now</button>
+                </div>
+            </section>
+
+            {/* FEEDBACK SECTION */}
+            <section className="feedback-section_splash" style={{ padding: '120px 20px' }}>
+                <div className="feedback-container_fb" style={{ maxWidth: '1300px', margin: '0 auto' }}>
+                    <div className="feedback-header_fb">
+                        <span className="eyebrow_fb">Voices of Success</span>
+                        <h2 style={{ fontSize: '3.5rem', fontWeight: '200', textTransform: 'uppercase', marginBottom: '20px' }}>
+                            Success Stories
+                        </h2>
+                        <div style={{ width: '80px', height: '4px', background: 'var(--primary_fb)', margin: '0 auto 40px' }}></div>
+                        <p className="subtitle_fb">Discover how Skill Bridge is transforming careers across the globe.</p>
+                    </div>
+
+                    <FeedbackList layout="row" limit={3} />
                 </div>
             </section>
 
