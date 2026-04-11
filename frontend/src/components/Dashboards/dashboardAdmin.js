@@ -251,6 +251,24 @@ const DashboardAdmin = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* ── SUPPORT MANAGEMENT ── */}
+                <div className="admin-support-section">
+                    <div className="section-header">
+                        <h2>Support & Inquiries</h2>
+                    </div>
+                    <div className="support-link-card">
+                        <span className="material-icons-round support-icon">mail_outline</span>
+                        <div className="support-info">
+                            <h3>Contact Form Submissions</h3>
+                            <p>All user messages from the "Contact Us" page are managed via Web3Forms.</p>
+                            <a href="https://app.web3forms.com/dashboard" target="_blank" rel="noopener noreferrer" className="admin-external-link">
+                                Open Web3Forms Dashboard
+                                <span className="material-icons-round">open_in_new</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <Footer />
         </div>
