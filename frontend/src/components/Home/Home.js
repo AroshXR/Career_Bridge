@@ -11,8 +11,20 @@ const Home = () => {
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const token = queryParams.get('token');
+        const userData = queryParams.get('user');
+
         if (token) {
             localStorage.setItem('token', token);
+            
+            // If user data is also sent (from Google Login), store it
+            if (userData) {
+                try {
+                    localStorage.setItem('user', decodeURIComponent(userData));
+                } catch (e) {
+                    console.error("Failed to parse user data from URL", e);
+                }
+            }
+
             navigate('/home', { replace: true });
         }
     }, [location, navigate]);
@@ -43,13 +55,6 @@ const Home = () => {
             path: '/learning-resources'
         },
         {
-            id: 'job-search',
-            title: 'Smart Job Search',
-            description: 'Discover opportunities that perfectly align with your skill set and aspirations.',
-            icon: 'work_search',
-            path: '/jobs'
-        },
-        {
             id: 'saved-jobs',
             title: 'Saved Jobs',
             description: 'Quickly access and manage the job opportunities you have bookmarked for later.',
@@ -69,6 +74,13 @@ const Home = () => {
             description: 'Analyze global economic indicators and understand how they shape the job market.',
             icon: 'public',
             path: '/economy'
+        },
+        {
+            id: 'skill-analyzer',
+            title: 'Job Skill Analyzer',
+            description: 'Get an AI-powered skill roadmap for your saved jobs.',
+            icon: 'work',
+            path: '/skill-analyzer'
         }
     ];
 

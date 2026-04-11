@@ -215,12 +215,7 @@ const UserDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    console.log("👋 User logged out");
-    navigate("/login");
-  };
+
 
   const handleDeleteAccount = async () => {
     try {
@@ -262,8 +257,8 @@ const UserDashboard = () => {
   };
 
   return (
-      <div>
-        {/* <Header/> */}
+      <div className="user-dashboard-wrapper">
+        <Header/>
 
         <div className="div29_user_dashboard">
         {/* LEFT PANEL - profile + details */}
@@ -314,67 +309,23 @@ const UserDashboard = () => {
             className="button8_update_profile"
             onClick={() => setShowModal(true)}
           >
-            ✎ Update profile
+            Update profile
           </button>
 
           {/* CV Generator Button */}
           <button
             className="button9_cv_generator"
             onClick={handleCVGenerator}
-            style={{
-              marginTop: "10px",
-              padding: "12px",
-              backgroundColor: "#6c5ce7",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "bold",
-              width: "100%"
-            }}
           >
-            📄 Generate CV
-          </button>
-
-          {/* Logout Button */}
-          <button
-            className="button10_logout"
-            onClick={handleLogout}
-            style={{
-              marginTop: "10px",
-              padding: "12px",
-              backgroundColor: "#e74c3c",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "bold",
-              width: "100%"
-            }}
-          >
-            🚪 Logout
+             Generate CV
           </button>
 
           {/* Delete Account Button */}
           <button
             className="button11_delete_account"
             onClick={() => setShowDeleteConfirm(true)}
-            style={{
-              marginTop: "10px",
-              padding: "12px",
-              backgroundColor: "#c0392b",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "bold",
-              width: "100%"
-            }}
           >
-            🗑️ Delete Account
+             Delete Account
           </button>
         </div>
 
@@ -779,7 +730,7 @@ const UserDashboard = () => {
 
       </div>
 
-      {/* <Footer/> */}
+      <Footer/>
 
     </div>
   );

@@ -8,6 +8,7 @@ import {
     updateUserStatus,
     deleteUserAsAdmin
 } from "../Controllers/userController.js";
+import { getAdminStats } from "../Controllers/adminController.js";
 import { analyzeUserProgress } from "../Controllers/userProgressAnalyzer.js";
 
 
@@ -33,6 +34,7 @@ router.put("/:id", authMiddleware, updateUser);
 router.delete("/:id", authMiddleware, deleteUser);
 
 // Admin Override and Status Management
+router.get("/admin/stats", adminAuthMiddleware, getAdminStats);
 router.put("/:id/status", adminAuthMiddleware, updateUserStatus);
 router.delete("/admin/:id", adminAuthMiddleware, deleteUserAsAdmin);
 

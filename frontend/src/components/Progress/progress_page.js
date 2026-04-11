@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Navbar from '../Common/Navbar';
+import Footer from '../Common/Footer';
 import './progress_page.css';
 
 function ProgressPage() {
@@ -84,119 +86,131 @@ function ProgressPage() {
 
   // ── colour for progress bar ───────────────────────────────────────────
   const barColor = (pct) => {
-    if (pct === 100) return '#27ae60';
-    if (pct >= 50)  return '#f39c12';
-    return '#6c5ce7';
+    if (pct === 100) return 'linear-gradient(90deg, #10B981, #34D399)';
+    if (pct >= 50)  return 'linear-gradient(90deg, #f39c12, #f1c40f)';
+    return 'linear-gradient(90deg, var(--primary_pp), var(--secondary_pp))';
   };
 
   // ────────────────────────────────────────────────────────────────────
   return (
     <div className="pp-page">
+      <Navbar />
 
-      {/* ── Header ── */}
-      <div className="pp-header">
-        <button className="pp-back-btn" onClick={() => navigate('/profile')}>← Dashboard</button>
-        <div className="pp-title-wrap">
-          <h1 className="pp-title">📊 My Learning Progress</h1>
-          <p className="pp-subtitle">Track your AI-generated roadmaps. Check off steps as you master them.</p>
-        </div>
-        <button className="pp-new-btn" onClick={() => navigate('/learning-roadmap')}>
-          + New Roadmap
-        </button>
-      </div>
-
-      {/* ── States ── */}
-      {loading && (
-        <div className="pp-center">
-          <div className="pp-spinner"></div>
-          <p className="pp-loading-text">Loading your roadmaps…</p>
-        </div>
-      )}
-
-      {error && !loading && (
-        <div className="pp-center">
-          <p className="pp-error">{error}</p>
-          <button className="pp-retry-btn" onClick={fetchProgress}>Retry</button>
-        </div>
-      )}
-
-      {!loading && !error && progressList.length === 0 && (
-        <div className="pp-empty">
-          <div className="pp-empty-icon">🗺️</div>
-          <h2>No roadmaps yet</h2>
-          <p>Search for a skill and click <strong>Follow Up 🚀</strong> to start tracking your learning journey.</p>
-          <button className="pp-new-btn" onClick={() => navigate('/learning-roadmap')}>
-            Generate a Roadmap
+      {/* ── Hero Banner ── */}
+      <div className="pp-hero">
+        <div className="pp-header-actions">
+          <button className="pp-btn" onClick={() => navigate('/profile')}>
+            <span className="material-icons-round">arrow_back</span>
+            Dashboard
+          </button>
+          <button className="pp-btn pp-new-btn" onClick={() => navigate('/learning-roadmap')}>
+            <span className="material-icons-round">add</span>
+            New Roadmap
           </button>
         </div>
-      )}
+        <span className="pp-eyebrow">Your Journey</span>
+        <h1>Learning Progress</h1>
+        <p>Track your AI-generated roadmaps. Check off steps as you master them.</p>
+      </div>
 
-      {/* ── Cards grid ── */}
-      {!loading && !error && progressList.length > 0 && (
-        <div className="pp-grid">
-          {progressList.map(item => {
-            const pct       = item.progressPercentage || 0;
-            const completed = item.tasks?.filter(t => t.completed).length || 0;
-            const total     = item.tasks?.length || 0;
-            const color     = barColor(pct);
+      {/* ── Content Grid Wrapper ── */}
+      <div className="pp-grid-wrapper">
 
-            return (
-              <div key={item._id} className={`pp-card ${item.status === 'Completed' ? 'pp-card--done' : ''}`}>
+        {/* ── States ── */}
+        {loading && (
+          <div className="pp-center">
+            <div className="pp-spinner"></div>
+            <p style={{marginTop: '1rem', color: 'var(--text-muted_pp)'}}>Loading your roadmaps…</p>
+          </div>
+        )}
 
-                {/* Card header */}
-                <div className="pp-card-header">
-                  <div className="pp-card-title-row">
-                    <h2 className="pp-skill-name">{item.skillName}</h2>
-                    <span className={`pp-badge ${item.status === 'Completed' ? 'pp-badge--done' : 'pp-badge--progress'}`}>
-                      {item.status === 'Completed' ? '🏆 Completed' : '⚡ In Progress'}
-                    </span>
-                  </div>
+        {error && !loading && (
+          <div className="pp-center">
+            <p style={{color: '#e74c3c', fontWeight: 600}}>{error}</p>
+            <button className="pp-btn" style={{marginTop: '1rem', background: '#e74c3c'}} onClick={fetchProgress}>Retry</button>
+          </div>
+        )}
 
-                  {/* Progress bar */}
-                  <div className="pp-bar-wrap">
-                    <div className="pp-bar-track">
-                      <div
-                        className="pp-bar-fill"
-                        style={{ width: `${pct}%`, background: color }}
-                      ></div>
-                    </div>
-                    <span className="pp-pct" style={{ color }}>{pct}%</span>
-                  </div>
-                  <p className="pp-steps-count">{completed} / {total} steps completed</p>
-                </div>
+        {!loading && !error && progressList.length === 0 && (
+          <div className="pp-empty">
+            <h2 style={{fontSize: '3rem', marginBottom: '1rem'}}>🗺️</h2>
+            <h2>No roadmaps yet</h2>
+            <p>Search for a skill and click <strong>Follow Up 🚀</strong> to start tracking your learning journey.</p>
+            <button className="pp-btn pp-new-btn" style={{marginTop: '1rem', background: 'var(--primary_pp)', color:'white'}} onClick={() => navigate('/learning-roadmap')}>
+              Generate a Roadmap
+            </button>
+          </div>
+        )}
 
-                {/* Steps list */}
-                <ul className="pp-task-list">
-                  {item.tasks?.map((task, idx) => (
-                    <li
-                      key={idx}
-                      className={`pp-task-item ${task.completed ? 'pp-task-item--done' : ''}`}
-                      onClick={() => handleToggleTask(item._id, idx)}
-                    >
-                      <span className={`pp-checkbox ${task.completed ? 'pp-checkbox--checked' : ''}`}>
-                        {task.completed ? '✓' : ''}
+        {/* ── Cards grid ── */}
+        {!loading && !error && progressList.length > 0 && (
+          <div className="pp-grid">
+            {progressList.map(item => {
+              const pct       = item.progressPercentage || 0;
+              const completed = item.tasks?.filter(t => t.completed).length || 0;
+              const total     = item.tasks?.length || 0;
+              const bgGradient = barColor(pct);
+
+              return (
+                <div key={item._id} className={`pp-card ${item.status === 'Completed' ? 'pp-card--done' : ''}`}>
+
+                  {/* Card header */}
+                  <div className="pp-card-header">
+                    <div className="pp-card-title-row">
+                      <h2 className="pp-skill-name">{item.skillName}</h2>
+                      <span className={`pp-badge ${item.status === 'Completed' ? 'pp-badge--done' : 'pp-badge--progress'}`}>
+                        {item.status === 'Completed' ? 'Completed' : 'In Progress'}
                       </span>
-                      <span className="pp-task-text">{task.title}</span>
-                    </li>
-                  ))}
-                </ul>
+                    </div>
 
-                {/* Delete button */}
-                <div className="pp-card-footer">
-                  <button
-                    className="pp-delete-btn"
-                    onClick={() => handleDelete(item._id)}
-                    disabled={deletingId === item._id}
-                  >
-                    {deletingId === item._id ? 'Removing…' : '🗑 Remove Roadmap'}
-                  </button>
+                    {/* Progress bar */}
+                    <div className="pp-bar-wrap">
+                      <div className="pp-bar-track">
+                        <div
+                          className="pp-bar-fill"
+                          style={{ width: `${pct}%`, background: bgGradient }}
+                        ></div>
+                      </div>
+                      <span className="pp-pct" style={{ color: pct===100 ? '#10B981' : 'var(--primary_pp)' }}>{pct}%</span>
+                    </div>
+                    <p className="pp-steps-count">{completed} / {total} steps completed</p>
+                  </div>
+
+                  {/* Steps list */}
+                  <ul className="pp-task-list">
+                    {item.tasks?.map((task, idx) => (
+                      <li
+                        key={idx}
+                        className={`pp-task-item ${task.completed ? 'pp-task-item--done' : ''}`}
+                        onClick={() => handleToggleTask(item._id, idx)}
+                      >
+                        <span className={`pp-checkbox ${task.completed ? 'pp-checkbox--checked' : ''}`}>
+                          {task.completed ? '✓' : ''}
+                        </span>
+                        <span className="pp-task-text">{task.title}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Delete button */}
+                  <div className="pp-card-footer">
+                    <button
+                      className="pp-delete-btn"
+                      onClick={() => handleDelete(item._id)}
+                      disabled={deletingId === item._id}
+                    >
+                      {deletingId === item._id ? 'Removing…' : 'Remove'}
+                    </button>
+                  </div>
+
                 </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <Footer />
     </div>
   );
 }
