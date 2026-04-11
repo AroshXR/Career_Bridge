@@ -543,6 +543,8 @@ const UserDashboard = () => {
                       value={formData.phone || ""}
                       onChange={handleInputChange}
                       placeholder="Enter your phone number"
+                      pattern="[0-9]{10}"
+                      maxLength="10"
                     />
                   </div>
 
@@ -568,6 +570,7 @@ const UserDashboard = () => {
                       value={formData.education || ""}
                       onChange={handleInputChange}
                       placeholder="e.g., B.Sc. Computer Science"
+                      pattern="[A-Za-z\s]+"
                     />
                   </div>
 
@@ -597,6 +600,7 @@ const UserDashboard = () => {
                       value={formData.title || ""}
                       onChange={handleInputChange}
                       placeholder="e.g., Senior Developer"
+                      pattern="[A-Za-z\s]+"
                     />
                   </div>
 

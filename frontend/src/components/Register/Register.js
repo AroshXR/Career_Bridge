@@ -158,6 +158,8 @@ const Register = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
+                                pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+                                title="Enter a valid email address (e.g., example@mail.com)"
                             />
                         </div>
 
@@ -172,7 +174,9 @@ const Register = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                minLength="6"
+                               minLength="8"
+                                pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
+                                title="Password must be at least 8 characters long, include one uppercase letter and one number"
                             />
                         </div>
 
@@ -187,7 +191,7 @@ const Register = () => {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 required
-                                minLength="6"
+                                minLength="8"
                             />
                         </div>
 
