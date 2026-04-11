@@ -208,7 +208,7 @@ export const saveResource = async (req, res) => {
                                     <p style="color: #64748b; line-height: 1.6; font-size: 16px; margin-bottom: 30px;">
                                         You’ve successfully added this course to your library. We’ve set a reminder for you to help you stay on track with your goals.
                                     </p>
-                                    <a href="http://localhost:3000/" class="button" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">View My Library</a>
+                                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/" class="button" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">View My Library</a>
                                 </td>
                             </tr>
                             <!-- Footer -->
@@ -271,7 +271,7 @@ export const saveResource = async (req, res) => {
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                         <tr>
                                             <td align="center">
-                                                <a href="http://localhost:3000/" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; padding: 16px 45px; text-decoration: none; border-radius: 30px; font-weight: 700; display: inline-block; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">Resume Learning</a>
+                                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: #ffffff; padding: 16px 45px; text-decoration: none; border-radius: 30px; font-weight: 700; display: inline-block; font-size: 16px; box-shadow: 0 4px 12px rgba(0,123,255,0.2);">Resume Learning</a>
                                             </td>
                                         </tr>
                                     </table>
@@ -282,7 +282,7 @@ export const saveResource = async (req, res) => {
                                 <td style="padding: 30px; border-top: 1px solid #f1f5f9; text-align: center; background-color: #f8fafc;">
                                     <p style="font-size: 12px; color: #94a3b8; margin: 0;">
                                         You're receiving this because you're enrolled in <strong>CareerBridge</strong>.<br>
-                                        <a href="http://localhost:3000/" style="color: #64748b; text-decoration: underline;">Unsubscribe</a> from these reminders.
+                                        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/" style="color: #64748b; text-decoration: underline;">Unsubscribe</a> from these reminders.
                                     </p>
                                 </td>
                             </tr>

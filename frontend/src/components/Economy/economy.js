@@ -10,7 +10,6 @@ import {
   Tooltip,
   Legend
 } from 'recharts';
-import { useNavigate } from 'react-router-dom';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
 import './economy.css';
@@ -40,7 +39,6 @@ const COUNTRIES = [
 ];
 
 const Economy = () => {
-  const navigate = useNavigate();
   const [countryCode, setCountryCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [economyData, setEconomyData] = useState(null);

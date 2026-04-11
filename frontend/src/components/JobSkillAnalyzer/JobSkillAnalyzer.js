@@ -94,6 +94,7 @@ export default function JobSkillAnalyzer() {
     const fetchData = useCallback(async () => {
         try {
             setLoading(true);
+            const headers = { Authorization: `Bearer ${localStorage.getItem('token')}` };
             const [analysesRes, savedJobsRes] = await Promise.all([
                 axios.get(`${API_BASE_URL}/api/v1/skills/user/me`, { headers }),
                 axios.get(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/getSavedJobs`, { headers }),
@@ -112,6 +113,7 @@ export default function JobSkillAnalyzer() {
     useEffect(() => {
         if (!token) { navigate('/login'); return; }
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Auto-analyze: fires once after initial load completes
@@ -133,6 +135,7 @@ export default function JobSkillAnalyzer() {
                 showToast('Job not found in saved list. Please try saving it again.');
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loading]);
 
     // ── Actions ──────────────────────────────────────────────────────────────
