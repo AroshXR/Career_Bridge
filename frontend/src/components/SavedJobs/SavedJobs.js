@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './SavedJobs.css';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
+import API_BASE_URL from '../../apiConfig';
 
 const SavedJobs = () => {
     const [savedJobs, setSavedJobs] = useState([]);
@@ -22,7 +23,7 @@ const SavedJobs = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`, {
+            const response = await axios.get(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/getSavedJobs`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.status === "00") {
@@ -40,7 +41,7 @@ const SavedJobs = () => {
         if (!window.confirm("Are you sure you want to remove this job?")) return;
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.delete(`http://localhost:5000/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`, {
+            const response = await axios.delete(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/deleteSavedJob/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.status === "00") {
@@ -56,7 +57,7 @@ const SavedJobs = () => {
         try {
             // Backend now uses PUT for update as requested by user
             const token = localStorage.getItem('token');
-            const response = await axios.put(`http://localhost:5000/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates, {
+            const response = await axios.put(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/updateSavedJob/${id}`, updates, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.status === "00") {

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { 
-    AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-    Tooltip, ResponsiveContainer, Legend 
+import {
+    AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
+    Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
 import './dashboardAdmin.css';
+import API_BASE_URL from '../../apiConfig';
 
 const DashboardAdmin = () => {
     const navigate = useNavigate();
@@ -49,8 +50,8 @@ const DashboardAdmin = () => {
 
             // Fetch both Users and Backend Aggregated Stats
             const [usersRes, statsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/v1/users', { headers }),
-                axios.get('http://localhost:5000/api/v1/users/admin/stats', { headers })
+                axios.get(`${API_BASE_URL}/api/v1/users`, { headers }),
+                axios.get(`${API_BASE_URL}/api/v1/users/admin/stats`, { headers })
             ]);
 
             setUsers(usersRes.data.data || []);
@@ -79,7 +80,7 @@ const DashboardAdmin = () => {
     const handleUpdateStatus = async (userId, newStatus) => {
         try {
             console.log(`Updating user ${userId} status to ${newStatus}`);
-            const response = await axios.put(`http://localhost:5000/api/v1/users/${userId}/status`,
+            const response = await axios.put(`${API_BASE_URL}/api/v1/users/${userId}/status`,
                 { status: newStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -95,7 +96,7 @@ const DashboardAdmin = () => {
     const handleDeleteUser = async (userId) => {
         if (window.confirm("Are you sure?")) {
             try {
-                await axios.delete(`http://localhost:5000/api/v1/users/admin/${userId}`, {
+                await axios.delete(`${API_BASE_URL}/api/v1/users/admin/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 fetchDashboardData();
@@ -162,47 +163,47 @@ const DashboardAdmin = () => {
                             <button className="refresh-btn" onClick={fetchDashboardData}>Refresh Data</button>
                         </div>
 
-                    {error && <p className="error-msg" style={{ backgroundColor: "#f8d7da", color: "#721c24", padding: "10px", borderRadius: "4px", marginBottom: "15px" }}>⚠️ {error}</p>}
+                        {error && <p className="error-msg" style={{ backgroundColor: "#f8d7da", color: "#721c24", padding: "10px", borderRadius: "4px", marginBottom: "15px" }}>⚠️ {error}</p>}
 
-                    <div className="table-wrapper">
-                        <table className="users-table">
-                            <thead>
-                                <tr>
-                                    <th>User ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {users.length > 0 ? users.map(user => (
-                                    <tr key={user._id}>
-                                        <td className="user-id">{user.userId}</td>
-                                        <td className="user-name">{user.name}</td>
-                                        <td className="user-email">{user.email}</td>
-                                        <td><span className={`role-badge ${user.role || 'user'}`}>{user.role || 'user'}</span></td>
-                                        <td><span className={`status-badge ${user.status || 'active'}`}>{user.status || 'active'}</span></td>
-                                        <td className="action-buttons">
-                                            {(user.status === 'active' || user.status === 'blocked') ? (
-                                                <button className="btn-block" onClick={() => handleUpdateStatus(user._id, user.status === 'active' ? 'blocked' : 'active')}>
-                                                    {user.status === 'active' ? 'Block' : 'Unblock'}
-                                                </button>
-                                            ) : (
-                                                <button className="btn-approve" onClick={() => handleUpdateStatus(user._id, 'active')}>Approve</button>
-                                            )}
-                                            <button className="btn-delete" onClick={() => handleDeleteUser(user._id)}>Delete</button>
-                                        </td>
-                                    </tr>
-                                )) : (
+                        <div className="table-wrapper">
+                            <table className="users-table">
+                                <thead>
                                     <tr>
-                                        <td colSpan="6" className="no-users">No users found in the system.</td>
+                                        <th>User ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {users.length > 0 ? users.map(user => (
+                                        <tr key={user._id}>
+                                            <td className="user-id">{user.userId}</td>
+                                            <td className="user-name">{user.name}</td>
+                                            <td className="user-email">{user.email}</td>
+                                            <td><span className={`role-badge ${user.role || 'user'}`}>{user.role || 'user'}</span></td>
+                                            <td><span className={`status-badge ${user.status || 'active'}`}>{user.status || 'active'}</span></td>
+                                            <td className="action-buttons">
+                                                {(user.status === 'active' || user.status === 'blocked') ? (
+                                                    <button className="btn-block" onClick={() => handleUpdateStatus(user._id, user.status === 'active' ? 'blocked' : 'active')}>
+                                                        {user.status === 'active' ? 'Block' : 'Unblock'}
+                                                    </button>
+                                                ) : (
+                                                    <button className="btn-approve" onClick={() => handleUpdateStatus(user._id, 'active')}>Approve</button>
+                                                )}
+                                                <button className="btn-delete" onClick={() => handleDeleteUser(user._id)}>Delete</button>
+                                            </td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="6" className="no-users">No users found in the system.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     {/* ── ANALYTICS SECTION ── */}
@@ -219,8 +220,8 @@ const DashboardAdmin = () => {
                                         <AreaChart data={stats?.userGrowth || []}>
                                             <defs>
                                                 <linearGradient id="colorReg" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#2d1ced" stopOpacity={0.1}/>
-                                                    <stop offset="95%" stopColor="#2d1ced" stopOpacity={0}/>
+                                                    <stop offset="5%" stopColor="#2d1ced" stopOpacity={0.1} />
+                                                    <stop offset="95%" stopColor="#2d1ced" stopOpacity={0} />
                                                 </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />

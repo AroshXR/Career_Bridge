@@ -44,8 +44,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // middleware
+//  middleware - bawa chnaged
+const allowedOrigins = [
+    "http://localhost:3000",
+    process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true
 }));
 app.use(express.json({ limit: "50mb" }));

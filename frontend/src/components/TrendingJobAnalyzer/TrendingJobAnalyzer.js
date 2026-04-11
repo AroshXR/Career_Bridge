@@ -4,6 +4,7 @@ import axios from 'axios';
 import './TrendingJobAnalyzer.css';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
+import API_BASE_URL from '../../apiConfig';
 
 const CATEGORIES = [
   "Information Technology",
@@ -83,7 +84,7 @@ const TrendingJobAnalyzer = () => {
       setError(null);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/v1/trendingJobAnalyzer/getTrendingJobs?category=${encodeURIComponent(currentCategory)}`,
+        `${API_BASE_URL}/api/v1/trendingJobAnalyzer/getTrendingJobs?category=${encodeURIComponent(currentCategory)}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.status === "00") {
@@ -92,7 +93,7 @@ const TrendingJobAnalyzer = () => {
 
         // Also fetch saved jobs to mark them
         const savedResp = await axios.get(
-          `http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`,
+          `${API_BASE_URL}/api/v1/trendingJobAnalyzer/getSavedJobs`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (savedResp.data.status === "00") {
@@ -122,7 +123,7 @@ const TrendingJobAnalyzer = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5000/api/v1/trendingJobAnalyzer/saveJob',
+        `${API_BASE_URL}/api/v1/trendingJobAnalyzer/saveJob`,
         {
           jobId: `trend_${role.title.replace(/\s+/g, '_').toLowerCase()}`,
           title: role.title,

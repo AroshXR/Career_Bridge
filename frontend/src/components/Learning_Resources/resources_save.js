@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './resources_save.css';
+import API_BASE_URL from '../../apiConfig';
 
 const ResourcesSave = ({ resource, onClose, skillName }) => {
   const userString = localStorage.getItem('user');
@@ -40,7 +41,7 @@ const ResourcesSave = ({ resource, onClose, skillName }) => {
     };
     try {
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.post('http://localhost:5000/api/v1/resources/save-resource', payload, config);
+      const response = await axios.post(`${API_BASE_URL}/api/v1/resources/save-resource`, payload, config);
       setMessage({ type: 'success', text: response.data.message || 'Resource saved successfully!' });
       setTimeout(() => { onClose(); }, 2000);
     } catch (error) {

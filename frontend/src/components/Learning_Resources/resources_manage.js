@@ -3,6 +3,7 @@ import axios from 'axios';
 import './resources_manage.css';
 import NavBar from '../Common/Navbar';
 import Footer from '../Common/Footer';
+import API_BASE_URL from '../../apiConfig';
 
 const ResourcesManage = ({ onClose }) => {
   const [savedResources, setSavedResources] = useState([]);
@@ -23,7 +24,7 @@ const ResourcesManage = ({ onClose }) => {
       }
       try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.get(`http://localhost:5000/api/v1/resources/get-by-id/${userId}`, config);
+        const response = await axios.get(`${API_BASE_URL}/api/v1/resources/get-by-id/${userId}`, config);
         setSavedResources(response.data.data || []);
       } catch (err) {
         if (err.response?.status === 404) {
@@ -42,7 +43,7 @@ const ResourcesManage = ({ onClose }) => {
     if (!window.confirm("Are you sure you want to remove this resource?")) return;
     try {
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.delete(`http://localhost:5000/api/v1/resources/resource-delete/${id}`, config);
+      await axios.delete(`${API_BASE_URL}/api/v1/resources/resource-delete/${id}`, config);
       setSavedResources(prev => prev.filter(res => res._id !== id));
     } catch (err) {
       alert("Failed to delete resource.");

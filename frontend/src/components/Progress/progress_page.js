@@ -4,17 +4,18 @@ import axios from 'axios';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
 import './progress_page.css';
+import API_BASE_URL from '../../apiConfig';
 
 function ProgressPage() {
   const navigate = useNavigate();
   const [progressList, setProgressList] = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
-  const [deletingId, setDeletingId]     = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   // ── helpers ──────────────────────────────────────────────────────────
   const getAuth = () => {
-    const token      = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     return { token, userId: storedUser._id };
   };
@@ -30,7 +31,7 @@ function ProgressPage() {
       if (!userId) { setError('Please log in to view your progress.'); return; }
 
       const res = await axios.get(
-        `http://localhost:5000/api/v1/progress/user/${userId}`,
+        `${API_BASE_URL}/api/v1/progress/user/${userId}`,
         authHeader(token)
       );
       setProgressList(res.data?.data || []);
@@ -52,7 +53,7 @@ function ProgressPage() {
     try {
       const { token } = getAuth();
       const res = await axios.put(
-        'http://localhost:5000/api/v1/progress/complete-task',
+        `${API_BASE_URL}/api/v1/progress/complete-task`,
         { progressId, taskIndex },
         authHeader(token)
       );
@@ -72,7 +73,7 @@ function ProgressPage() {
     try {
       const { token } = getAuth();
       await axios.delete(
-        `http://localhost:5000/api/v1/progress/${progressId}`,
+        `${API_BASE_URL}/api/v1/progress/${progressId}`,
         authHeader(token)
       );
       setProgressList(prev => prev.filter(p => p._id !== progressId));
@@ -87,7 +88,7 @@ function ProgressPage() {
   // ── colour for progress bar ───────────────────────────────────────────
   const barColor = (pct) => {
     if (pct === 100) return 'linear-gradient(90deg, #10B981, #34D399)';
-    if (pct >= 50)  return 'linear-gradient(90deg, #f39c12, #f1c40f)';
+    if (pct >= 50) return 'linear-gradient(90deg, #f39c12, #f1c40f)';
     return 'linear-gradient(90deg, var(--primary_pp), var(--secondary_pp))';
   };
 
@@ -120,23 +121,23 @@ function ProgressPage() {
         {loading && (
           <div className="pp-center">
             <div className="pp-spinner"></div>
-            <p style={{marginTop: '1rem', color: 'var(--text-muted_pp)'}}>Loading your roadmaps…</p>
+            <p style={{ marginTop: '1rem', color: 'var(--text-muted_pp)' }}>Loading your roadmaps…</p>
           </div>
         )}
 
         {error && !loading && (
           <div className="pp-center">
-            <p style={{color: '#e74c3c', fontWeight: 600}}>{error}</p>
-            <button className="pp-btn" style={{marginTop: '1rem', background: '#e74c3c'}} onClick={fetchProgress}>Retry</button>
+            <p style={{ color: '#e74c3c', fontWeight: 600 }}>{error}</p>
+            <button className="pp-btn" style={{ marginTop: '1rem', background: '#e74c3c' }} onClick={fetchProgress}>Retry</button>
           </div>
         )}
 
         {!loading && !error && progressList.length === 0 && (
           <div className="pp-empty">
-            <h2 style={{fontSize: '3rem', marginBottom: '1rem'}}>🗺️</h2>
+            <h2 style={{ fontSize: '3rem', marginBottom: '1rem' }}>🗺️</h2>
             <h2>No roadmaps yet</h2>
             <p>Search for a skill and click <strong>Follow Up 🚀</strong> to start tracking your learning journey.</p>
-            <button className="pp-btn pp-new-btn" style={{marginTop: '1rem', background: 'var(--primary_pp)', color:'white'}} onClick={() => navigate('/learning-roadmap')}>
+            <button className="pp-btn pp-new-btn" style={{ marginTop: '1rem', background: 'var(--primary_pp)', color: 'white' }} onClick={() => navigate('/learning-roadmap')}>
               Generate a Roadmap
             </button>
           </div>
@@ -146,9 +147,9 @@ function ProgressPage() {
         {!loading && !error && progressList.length > 0 && (
           <div className="pp-grid">
             {progressList.map(item => {
-              const pct       = item.progressPercentage || 0;
+              const pct = item.progressPercentage || 0;
               const completed = item.tasks?.filter(t => t.completed).length || 0;
-              const total     = item.tasks?.length || 0;
+              const total = item.tasks?.length || 0;
               const bgGradient = barColor(pct);
 
               return (
@@ -171,7 +172,7 @@ function ProgressPage() {
                           style={{ width: `${pct}%`, background: bgGradient }}
                         ></div>
                       </div>
-                      <span className="pp-pct" style={{ color: pct===100 ? '#10B981' : 'var(--primary_pp)' }}>{pct}%</span>
+                      <span className="pp-pct" style={{ color: pct === 100 ? '#10B981' : 'var(--primary_pp)' }}>{pct}%</span>
                     </div>
                     <p className="pp-steps-count">{completed} / {total} steps completed</p>
                   </div>
