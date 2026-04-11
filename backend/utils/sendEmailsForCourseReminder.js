@@ -11,6 +11,7 @@ export const sendEmailsForReminder = async (mto, mSubject, html) => {
     host: 'smtp.gmail.com',
     port: 465,
     secure: true, // Use SSL
+    family: 4,    // Force IPv4 to resolve ENETUNREACH errors on Render
     auth: {
       user: process.env.FROM_EMAIL,
       pass: process.env.EMAIL_HOST_PASSWORD,

@@ -50,7 +50,8 @@ const getBadgeClass = (level = '') => {
 const TrendingJobAnalyzer = () => {
   const [roles, setRoles] = useState([]);
   const [stats, setStats] = useState({ totalMarketSignals: 0, analyzedRoles: 0 });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const [error, setError] = useState(null);
   const [currentCategory, setCurrentCategory] = useState("Information Technology");
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,6 +63,7 @@ const TrendingJobAnalyzer = () => {
     try {
       setLoading(true);
       setError(null);
+      setHasAnalyzed(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
         `${API_BASE_URL}/api/v1/trendingJobAnalyzer/getTrendingJobs?category=${encodeURIComponent(currentCategory)}`,
@@ -99,11 +101,10 @@ const TrendingJobAnalyzer = () => {
     return () => clearInterval(interval);
   }, [loading]);
 
-  /* fetch on category change */
+  /* Reset page on category change, but don't auto-fetch */
   useEffect(() => {
-    fetchTrendingJobs();
     setCurrentPage(1);
-  }, [currentCategory, fetchTrendingJobs]);
+  }, [currentCategory]);
 
   /* pagination */
   const indexOfLast = currentPage * rolesPerPage;
@@ -184,8 +185,20 @@ const TrendingJobAnalyzer = () => {
         </div>
       </section>
 
-      {/* ── States: loading / error / content ── */}
-      {loading ? (
+      {/* ── States: initial / loading / error / content ── */}
+      {!hasAnalyzed && !loading ? (
+        <div className="initial-analysis-area_trendJob">
+          <div className="initial-card_trendJob">
+            <span className="material-icons-round launch-icon_trendJob">rocket_launch</span>
+            <h2>Ready to scan the market?</h2>
+            <p>Select your industry above and click "Start Analysis" to generate real-time growth insights and salary benchmarks.</p>
+            <button className="start-analysis-btn_trendJob" onClick={fetchTrendingJobs}>
+              <span className="material-icons-round">analytics</span>
+              Start Market Analysis
+            </button>
+          </div>
+        </div>
+      ) : loading ? (
         <div className="loading-area_trendJob">
           <div className="loader-ring_trendJob"></div>
           <p className="loading-msg_trendJob">{loadingMsg}</p>

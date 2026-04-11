@@ -788,3 +788,75 @@
     justify-content: center;
   }
 }
+
+/* ── Initial Analysis Area ── */
+.initial-analysis-area_trendJob {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 8%;
+  background: var(--bg-gray_trendJob);
+}
+
+.initial-card_trendJob {
+  background: var(--bg-white_trendJob);
+  padding: 4rem 3rem;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(45, 28, 237, 0.08);
+  text-align: center;
+  max-width: 550px;
+  border: 1px solid #ebebeb;
+  animation: cardFade_trendJob 0.8s ease backwards;
+}
+
+.launch-icon_trendJob {
+  font-size: 4rem !important;
+  color: var(--primary_trendJob);
+  background: rgba(45, 28, 237, 0.05);
+  padding: 1.5rem;
+  border-radius: 50%;
+  margin-bottom: 2rem;
+}
+
+.initial-card_trendJob h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dark_trendJob);
+  margin-bottom: 1rem;
+}
+
+.initial-card_trendJob p {
+  font-size: 1rem;
+  color: var(--text-muted_trendJob);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.start-analysis-btn_trendJob {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 2.5rem;
+  background: var(--primary_trendJob);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: "Outfit", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: var(--transition_trendJob);
+  box-shadow: 0 10px 25px rgba(45, 28, 237, 0.3);
+}
+
+.start-analysis-btn_trendJob:hover {
+  background: var(--text-dark_trendJob);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.start-analysis-btn_trendJob .material-icons-round {
+  font-size: 1.35rem;
+}
