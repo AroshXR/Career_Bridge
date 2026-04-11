@@ -1,0 +1,263 @@
+/* ═══════════════════════════════════════════════
+   RecommendedCourses.css  —  _rec suffix
+   Matches Splash / Login / Register aesthetic
+   ═══════════════════════════════════════════════ */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons+Round");
+
+:root {
+  --primary_rec: #2d1ced;
+  --secondary_rec: #74b7db;
+  --bg-white_rec: #ffffff;
+  --bg-gray_rec: #f8f8f8;
+  --text-dark_rec: #252525;
+  --text-muted_rec: #666666;
+  --transition_rec: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.recommendations-page {
+  font-family: "Outfit", sans-serif;
+  color: var(--text-dark_rec);
+  background: var(--bg-gray_rec);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Hero Banner ── */
+.rec-hero {
+  position: relative;
+  background-image:
+    linear-gradient(135deg, rgba(45, 28, 237, 0.9) 0%, rgba(116, 183, 219, 0.75) 100%),
+    url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  padding: 4rem 8% 5rem;
+  color: white;
+  overflow: hidden;
+}
+
+.rec-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, rgba(45,28,237,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.rec-eyebrow {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.8rem;
+}
+
+.rec-hero h1 {
+  font-size: 2.8rem;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.8rem 0;
+  line-height: 1.15;
+}
+
+.rec-hero p {
+  font-size: 1rem;
+  font-weight: 300;
+  opacity: 0.85;
+  max-width: 520px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.rec-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.rec-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.4rem;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  color: white;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: var(--transition_rec);
+  white-space: nowrap;
+}
+
+.rec-back-btn:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ── Grid Area ── */
+.rec-grid-wrapper {
+  padding: 3.5rem 8% 5rem;
+  flex: 1;
+}
+
+.rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* ── Card ── */
+.rec-card {
+  background: var(--bg-white_rec);
+  border: 1px solid #ebebeb;
+  border-radius: 8px;
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition_rec);
+}
+
+/* Hover Accent Bar */
+.rec-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary_rec), var(--secondary_rec));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.rec-card:hover::before {
+  transform: scaleX(1);
+}
+
+.rec-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(45, 28, 237, 0.08);
+  border-color: transparent;
+}
+
+.rec-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.rec-badge {
+  background: linear-gradient(135deg, rgba(45, 28, 237, 0.1), rgba(116, 183, 219, 0.15));
+  color: var(--primary_rec);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rec-platform {
+  color: var(--text-muted_rec);
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rec-course-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark_rec);
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+}
+
+.rec-description {
+  color: var(--text-muted_rec);
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.rec-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+  background: var(--bg-gray_rec);
+  padding: 1.2rem;
+  border-radius: 6px;
+  border-left: 2px solid var(--secondary_rec);
+}
+
+.rec-pros h4, .rec-cons h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rec-pros h4 { color: #27ae60; }
+.rec-cons h4 { color: #e74c3c; }
+
+.rec-pros ul, .rec-cons ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--text-dark_rec);
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.rec-pros li, .rec-cons li {
+  margin-bottom: 0.3rem;
+}
+
+.rec-enroll-btn {
+  background: var(--primary_rec);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 6px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: var(--transition_rec);
+  width: 100%;
+  margin-top: auto;
+}
+
+.rec-enroll-btn:hover {
+  background: var(--text-dark_rec);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .rec-hero { padding: 3rem 5% 4rem; }
+  .rec-hero h1 { font-size: 1.9rem; }
+  .rec-grid-wrapper { padding: 2.5rem 5% 4rem; }
+  .rec-grid { grid-template-columns: 1fr; }
+}

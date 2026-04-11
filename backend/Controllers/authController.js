@@ -3,32 +3,38 @@ import User from "../Models/User.js";
 import ResponseGenerator from '../utils/ResponseGenerator.js';
 
 // Function to generate next userId (001, 002, 003, etc.)
-const generateNextUserId = async () => {
+export const generateNextUserId = async () => {
     try {
-        // Get the highest userId
-        const lastUser = await User.findOne().sort({ userId: -1 });
+        const lastUser = await User.findOne().sort({ createdAt: -1 });
 
-        if (!lastUser) {
-            return "001"; // First user
+        if (!lastUser || !lastUser.userId) {
+            return "001";
         }
 
         const lastUserId = lastUser.userId;
 
-        // Check if it's in format "001" or "USR-1001"
-        if (lastUserId.startsWith("USR-")) {
-            // Handle USR-1001 format (your existing user)
-            const num = parseInt(lastUserId.split("-")[1]);
-            const nextNum = num + 1;
-            return `USR-${nextNum}`;
-        } else {
-            // Handle 001 format (new users)
-            const num = parseInt(lastUserId);
-            const nextNum = num + 1;
-            return nextNum.toString().padStart(3, '0');
+        // 🚫 Ignore invalid values like "NaN"
+        if (lastUserId === "NaN") {
+            return "001";
         }
+
+        if (lastUserId.startsWith("USR-")) {
+            const num = parseInt(lastUserId.split("-")[1]);
+
+            if (isNaN(num)) return "USR-1001";
+
+            return `USR-${num + 1}`;
+        } else {
+            const num = parseInt(lastUserId);
+
+            if (isNaN(num)) return "001";
+
+            return (num + 1).toString().padStart(3, '0');
+        }
+
     } catch (error) {
         console.error("Error generating userId:", error);
-        return "001"; // Default fallback
+        return "001";
     }
 };
 
@@ -117,8 +123,10 @@ export const login = async (req, res) => {
             return res.status(401).json(ResponseGenerator.sendError(ResponseGenerator.UNAUTHORIZED, "Invalid email or password", "Login failed"));
         }
 
-        // Direct comparison (plain text)
-        if (password === user.password) {
+        // Secure comparison using bcrypt
+        const isMatch = await user.matchPassword(password);
+
+        if (isMatch) {
             console.log("Login successful:", user.email);
 
             // CREATE JWT TOKEN
@@ -135,6 +143,8 @@ export const login = async (req, res) => {
                 userId: user.userId,
                 name: user.name,
                 email: user.email,
+                role: user.role,
+                status: user.status,
                 _id: user._id
             };
 

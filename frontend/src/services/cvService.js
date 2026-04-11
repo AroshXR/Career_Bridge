@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api/v1/users';
+import API_BASE_URL from '../apiConfig';
+
+const API_URL = `${API_BASE_URL}/api/v1/users`;
 
 // Get auth token
 const getToken = () => localStorage.getItem('token');
@@ -49,7 +51,7 @@ export const saveCV = async (cvData) => {
 
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    
+
     return data;
   } catch (error) {
     console.error('Save CV Error:', error);
@@ -68,7 +70,7 @@ export const loadSavedCV = async () => {
 
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    
+
     return data.data;
   } catch (error) {
     console.error('Load CV Error:', error);
@@ -90,7 +92,7 @@ export const importFromGitHub = async (githubUsername) => {
 
     const data = await response.json();
     if (!response.ok) throw new Error(data.message);
-    
+
     return data.data;
   } catch (error) {
     console.error('GitHub Import Error:', error);

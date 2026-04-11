@@ -1,88 +1,545 @@
-.register-container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f8f9fa;
-    font-family: 'Inter', sans-serif;
+/* ═══════════════════════════════════════════════════════════
+   Register.css — Skill Bridge (Matches Splash Aesthetic)
+   All classes use _reg suffix
+   ═══════════════════════════════════════════════════════════ */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;700&display=swap");
+
+/* ── CSS Variables (mirrored from Splash) ── */
+:root {
+  --primary_reg: #2d1ced;
+  --secondary_reg: #74b7db;
+  --bg-white_reg: #ffffff;
+  --bg-gray_reg: #f8f8f8;
+  --text-dark_reg: #252525;
+  --text-muted_reg: #666666;
+  --transition_reg: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.register-card {
-    background: white;
-    padding: 3rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    width: 100%;
-    max-width: 450px;
+/* ── Page Layout ── */
+.page-wrapper_reg {
+  min-height: 100vh;
+  display: flex;
+  font-family: "Outfit", sans-serif;
+  color: var(--text-dark_reg);
+  background-color: var(--bg-white_reg);
+  overflow: hidden;
 }
 
-.register-card h2 {
-    margin-bottom: 2rem;
-    text-align: center;
-    font-weight: 700;
-    color: #1a1a1a;
+/* ── Left Panel (Hero Image Side) ── */
+.hero-panel_reg {
+  flex: 1.1;
+  position: relative;
+  background-image:
+    linear-gradient(135deg, rgba(45, 28, 237, 0.85) 0%, rgba(116, 183, 219, 0.7) 100%),
+    url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem 3.5rem;
+  overflow: hidden;
+  animation: panelSlideIn_reg 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) both;
 }
 
-.form-row {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
+@keyframes panelSlideIn_reg {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.form-group {
-    margin-bottom: 1.2rem;
-    flex: 1;
+/* Animated background shimmer */
+.hero-panel_reg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(45, 28, 237, 0.15) 0%,
+    transparent 50%,
+    rgba(116, 183, 219, 0.15) 100%
+  );
+  animation: shimmer_reg 6s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #666;
+@keyframes shimmer_reg {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
 }
 
-.form-group input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+/* Brand logo on left panel */
+.panel-logo_reg {
+  position: relative;
+  z-index: 2;
 }
 
-.form-group input:focus {
-    outline: none;
-    border-color: #1e3c72;
+.logo-link_reg {
+  text-decoration: none;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.5px;
 }
 
-.register-btn {
-    width: 100%;
-    padding: 1rem;
-    background: #1e3c72;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-    margin-top: 1rem;
+.logo-accent_reg {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
 }
 
-.register-btn:hover {
-    background: #2a5298;
+/* Hero content on left panel */
+.panel-content_reg {
+  position: relative;
+  z-index: 2;
+  color: white;
 }
 
-.auth-footer {
-    margin-top: 1.5rem;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #666;
+.panel-eyebrow_reg {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 1.2rem;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.auth-footer a {
-    color: #1e3c72;
-    text-decoration: none;
-    font-weight: 600;
+.panel-content_reg h2 {
+  font-size: 3rem;
+  font-weight: 200;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.02em;
+}
+
+.panel-content_reg p {
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.7;
+  opacity: 0.85;
+  max-width: 360px;
+  margin: 0;
+}
+
+/* Stats strip at the bottom of hero panel */
+.panel-stats_reg {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 2.5rem;
+}
+
+.stat-item_reg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stat-number_reg {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -1px;
+}
+
+.stat-label_reg {
+  font-size: 0.72rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Decorative floating card */
+.floating-card_reg {
+  position: absolute;
+  top: 38%;
+  right: -28px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  color: white;
+  z-index: 3;
+  min-width: 190px;
+  animation: floatCard_reg 3s ease-in-out infinite alternate;
+}
+
+@keyframes floatCard_reg {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-12px); }
+}
+
+.floating-card_reg .card-icon_reg {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.floating-card_reg .card-title_reg {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.75;
+  margin-bottom: 0.2rem;
+}
+
+.floating-card_reg .card-value_reg {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* ── Right Panel (Form Side) ── */
+.form-panel_reg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2.5rem;
+  background: var(--bg-white_reg);
+  animation: panelFadeIn_reg 0.8s ease 0.2s both;
+  overflow-y: auto;
+}
+
+@keyframes panelFadeIn_reg {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Form Card ── */
+.register-card_reg {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Back to home link */
+.back-link_reg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted_reg);
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  transition: var(--transition_reg);
+}
+
+.back-link_reg:hover {
+  color: var(--primary_reg);
+  gap: 0.7rem;
+}
+
+/* Accent bar above heading */
+.register-card_reg::after {
+  content: none;
+}
+
+.accent-bar_reg {
+  width: 48px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary_reg), var(--secondary_reg));
+  margin-bottom: 1.5rem;
+}
+
+.register-heading_reg {
+  font-size: 2rem;
+  font-weight: 200;
+  color: var(--text-dark_reg);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.2;
+}
+
+.register-subtext_reg {
+  font-size: 0.95rem;
+  color: var(--text-muted_reg);
+  font-weight: 300;
+  margin: 0 0 2rem 0;
+}
+
+/* ── Error Message ── */
+.error-message_reg {
+  background: #fff4f4;
+  border: 1px solid #fecdd3;
+  color: #b91c1c;
+  padding: 0.7rem 1rem;
+  font-size: 0.87rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1.2rem;
+  border-radius: 4px;
+}
+
+/* ── Form ── */
+.register-form_reg {
+  width: 100%;
+}
+
+/* Two-column name row */
+.form-row_reg {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-row_reg .form-group_reg {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Form Groups */
+.form-group_reg {
+  margin-bottom: 1.2rem;
+}
+
+.form-group_reg label {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text-muted_reg);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.45rem;
+}
+
+.form-group_reg input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-dark_reg);
+  background: var(--bg-gray_reg);
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  transition: var(--transition_reg);
+  box-sizing: border-box;
+  outline: none;
+  letter-spacing: 0.02em;
+}
+
+.form-group_reg input::placeholder {
+  color: #b0b0b0;
+  font-weight: 300;
+}
+
+.form-group_reg input:hover {
+  border-color: var(--secondary_reg);
+  background: #fafbff;
+}
+
+.form-group_reg input:focus {
+  border-color: var(--primary_reg);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(45, 28, 237, 0.08);
+}
+
+/* ── Submit Button ── */
+.submit-btn_reg {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem 2rem;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--primary_reg);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition_reg);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.submit-btn_reg:hover {
+  background: var(--text-dark_reg);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(45, 28, 237, 0.25);
+}
+
+.submit-btn_reg:active {
+  transform: translateY(0);
+}
+
+/* ── Divider ── */
+.divider_reg {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.4rem 0;
+}
+
+.divider_reg::before,
+.divider_reg::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e5e5e5;
+}
+
+.divider_reg span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted_reg);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── Google Sign-In Button ── */
+.google-btn_reg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark_reg);
+  background: var(--bg-white_reg);
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition_reg);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.google-btn_reg:hover {
+  border-color: var(--primary_reg);
+  background: var(--bg-gray_reg);
+  transform: translateY(-2px);
+}
+
+.google-logo_reg {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* ── Auth Footer ── */
+.auth-footer_reg {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.87rem;
+  color: var(--text-muted_reg);
+  font-weight: 300;
+}
+
+.auth-footer_reg a {
+  color: var(--primary_reg);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.auth-footer_reg a:hover {
+  color: var(--text-dark_reg);
+  text-decoration: underline;
+}
+
+/* ── Animations ── */
+@keyframes fadeInUp_reg {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .hero-panel_reg {
+    flex: 0.85;
+    padding: 2.5rem 2.5rem;
+  }
+
+  .panel-content_reg h2 {
+    font-size: 2.4rem;
+  }
+
+  .floating-card_reg {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-wrapper_reg {
+    flex-direction: column;
+  }
+
+  .hero-panel_reg {
+    flex: none;
+    min-height: 280px;
+    padding: 2rem;
+  }
+
+  .panel-content_reg h2 {
+    font-size: 1.8rem;
+  }
+
+  .panel-stats_reg {
+    gap: 1.5rem;
+  }
+
+  .stat-number_reg {
+    font-size: 1.3rem;
+  }
+
+  .form-panel_reg {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .register-card_reg {
+    max-width: 100%;
+  }
+
+  .floating-card_reg {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-panel_reg {
+    min-height: 220px;
+    padding: 1.5rem;
+  }
+
+  .panel-content_reg h2 {
+    font-size: 1.5rem;
+  }
+
+  .panel-stats_reg {
+    display: none;
+  }
+
+  .form-row_reg {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-panel_reg {
+    padding: 2rem 1rem;
+  }
 }

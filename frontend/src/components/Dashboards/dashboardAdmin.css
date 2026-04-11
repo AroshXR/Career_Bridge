@@ -1,0 +1,321 @@
+/* ═══════════════════════════════════════════════════════════
+   dashboardAdmin.css — SkillBridge Premium Theme
+   Matches Splash / User Dashboard / Learning Roadmap
+   ═══════════════════════════════════════════════════════════ */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;700&display=swap");
+
+:root {
+  --primary_admin: #2d1ced;
+  --secondary_admin: #74b7db;
+  --bg-white_admin: #ffffff;
+  --bg-gray_admin: #f8f8f8;
+  --text-dark_admin: #252525;
+  --text-muted_admin: #666666;
+  --glass_admin: rgba(255, 255, 255, 0.8);
+  --shadow_admin: 0 10px 30px rgba(45, 28, 237, 0.05);
+  --transition_admin: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.admin-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: "Outfit", sans-serif;
+  background: var(--bg-gray_admin);
+  color: var(--text-dark_admin);
+}
+
+.admin-dashboard-container {
+  flex: 1;
+  width: 100%;
+}
+
+/* ── Header ── */
+.admin-header {
+  background-color: var(--bg-white_admin);
+  padding: 1.5rem 6%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary_admin), var(--secondary_admin));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.platform-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted_admin);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ── Content Area ── */
+.admin-content {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 3rem 6% 5rem;
+  width: 100%;
+}
+
+/* ── Stat Cards ── */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3.5rem;
+}
+
+.stat-card {
+  background: var(--bg-white_admin);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow_admin);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: var(--transition_admin);
+  border: 1px solid #f0f0f0;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(45, 28, 237, 0.1);
+  border-color: var(--secondary_admin);
+}
+
+.stat-icon {
+  font-size: 2.2rem;
+  color: var(--primary_admin);
+  background: rgba(45, 28, 237, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.stat-card h3 {
+  margin: 0;
+  color: var(--text-muted_admin);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-number {
+  margin: 0.3rem 0 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-dark_admin);
+  line-height: 1;
+}
+
+/* ── User Table Section ── */
+.admin-users-section {
+  background: var(--bg-white_admin);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow_admin);
+  border: 1px solid #f0f0f0;
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-dark_admin);
+}
+
+.refresh-btn {
+  background: var(--primary_admin);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition_admin);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.refresh-btn:hover {
+  background: #1a10c2;
+  box-shadow: 0 5px 15px rgba(45, 28, 237, 0.3);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0;
+}
+
+.users-table th {
+  text-align: left;
+  padding: 1.2rem 1.5rem;
+  color: var(--text-muted_admin);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.users-table td {
+  padding: 1.2rem 1.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 0.95rem;
+}
+
+.users-table tr:hover td {
+  background: rgba(45, 28, 237, 0.02);
+}
+
+.user-id {
+  font-family: monospace;
+  color: var(--text-muted_admin);
+  font-size: 0.8rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-dark_admin);
+}
+
+.user-email {
+  color: var(--text-muted_admin);
+}
+
+.role-badge, .status-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-badge.admin { background: rgba(142, 68, 173, 0.1); color: #8e44ad; }
+.role-badge.user { background: rgba(127, 140, 141, 0.1); color: #7f8c8d; }
+
+.status-badge.active { background: rgba(46, 204, 113, 0.1); color: #27ae60; }
+.status-badge.blocked { background: rgba(231, 76, 60, 0.1); color: #c0392b; }
+.status-badge.pending { background: rgba(241, 196, 15, 0.1); color: #f39c12; }
+
+/* ── Action Buttons ── */
+.action-buttons {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.action-buttons button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: var(--transition_admin);
+}
+
+.btn-block {
+  background: transparent;
+  color: #e67e22;
+  border-color: #e67e22 !important;
+}
+
+.btn-block:hover {
+  background: #e67e22;
+  color: white;
+}
+
+.btn-delete {
+  background: transparent;
+  color: #e74c3c;
+  border-color: #e74c3c !important;
+}
+
+.btn-delete:hover {
+  background: #e74c3c;
+  color: white;
+}
+
+/* ── Analytics ── */
+.admin-analytics-section {
+  margin-top: 4rem;
+  animation: adminFadeIn 0.8s ease backwards;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+}
+
+.chart-card {
+  background: var(--bg-white_admin);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow_admin);
+  border: 1px solid #f0f0f0;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.chart-header p {
+  margin: 0.5rem 0 2rem;
+  font-size: 0.85rem;
+  color: var(--text-muted_admin);
+}
+
+@keyframes adminFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1100px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-header {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 5%;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}

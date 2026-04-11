@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcryptjs';
+
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,14 +15,22 @@ const userSchema = new mongoose.Schema(
     university: { type: String },
     cv: { type: String }, // CV/Resume URL
     profilePicture: { type: String, default: "" },
-    
-    // Additional fields from dashboard
-    phone: { type: String },
-    portfolio: { type: String }, // Portfolio URL
-    github: { type: String }, // GitHub URL
-    linkedin: { type: String }, // LinkedIn URL
 
-   
+    // Role and Status
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    status: { type: String, enum: ['active', 'blocked', 'pending'], default: 'active' },
+
+    // Additional fields from dashboard
+    phone: { type: String, default: "" },
+    education: { type: String, default: "" },      // Added
+    experience: { type: String, default: "" },      // Added
+    location: { type: String, default: "" },
+    title: { type: String, default: "" },
+    bio: { type: String, default: "" },
+    portfolio: { type: String, default: "" },
+    github: { type: String, default: "" },
+    linkedin: { type: String, default: "" },
+
     cvDetails: {
       professionalSummary: { type: String },
       education: [{
@@ -69,11 +79,25 @@ const userSchema = new mongoose.Schema(
         date: Date
       }]
     }
-    
-
   },
   { timestamps: true }
 );
 
+// Hash password before saving
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Method to compare entered password with hashed password
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+
+// Make sure this export is correct
 const User = mongoose.model("User", userSchema);
-export default User;
+export default User;  // This must be exactly this
