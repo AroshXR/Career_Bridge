@@ -6,6 +6,7 @@ import ResourcesSave from './resources_save';
 import ResourcesManage from './resources_manage';
 import NavBar from '../Common/Navbar';
 import Footer from '../Common/Footer';
+import API_BASE_URL from '../../apiConfig';
 
 function ProfessionalCourses() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ function ProfessionalCourses() {
     setError(null);
     try {
       const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
-      const profRes = await axios.get(`http://localhost:5000/api/v1/resources/search_professional/${skill}`, config);
+      const profRes = await axios.get(`${API_BASE_URL}/api/v1/resources/search_professional/${skill}`, config);
       setProfessionalCourses(profRes.data?.data || []);
     } catch (err) {
       const apiErrorMsg = err.response?.data?.error?.errorDescription || err.response?.data?.message;

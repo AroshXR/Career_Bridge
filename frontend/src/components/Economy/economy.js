@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
 import './economy.css';
+import API_BASE_URL from '../../apiConfig';
 
 const COUNTRIES = [
   { code: 'US', name: 'United States' },
@@ -53,7 +54,7 @@ const Economy = () => {
     try {
       const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
       const response = await axios.get(
-        `http://localhost:5000/api/v1/economy/economyDetails/${countryCode}`,
+        `${API_BASE_URL}/api/v1/economy/economyDetails/${countryCode}`,
         config
       );
       setEconomyData(response.data.data);

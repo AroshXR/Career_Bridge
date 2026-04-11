@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Register.css';
+import API_BASE_URL from '../../apiConfig';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Register = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', {
+            const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
@@ -167,7 +168,7 @@ const Register = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                               minLength="8"
+                                minLength="8"
                                 pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
                                 title="Password must be at least 8 characters long, include one uppercase letter and one number"
                             />
@@ -204,7 +205,7 @@ const Register = () => {
                         id="google-signin_reg"
                         type="button"
                         className="google-btn_reg"
-                        onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+                        onClick={() => window.location.href = `${API_BASE_URL}/api/auth/google`}
                     >
                         <img
                             className="google-logo_reg"

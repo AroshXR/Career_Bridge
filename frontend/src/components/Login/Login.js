@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
+import API_BASE_URL from '../../apiConfig';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', {
+            const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
                 email,
                 password
             });
@@ -106,7 +107,7 @@ const Login = () => {
                         id="google-signin_log"
                         type="button"
                         className="google-btn_log"
-                        onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+                        onClick={() => window.location.href = `${API_BASE_URL}/api/auth/google`}
                     >
                         <img
                             className="google-logo_log"

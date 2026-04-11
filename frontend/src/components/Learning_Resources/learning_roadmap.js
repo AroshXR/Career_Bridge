@@ -5,6 +5,7 @@ import './learning_roadmap.css';
 import ResourcesManage from './resources_manage';
 import NavBar from '../Common/Navbar';
 import Footer from '../Common/Footer';
+import API_BASE_URL from '../../apiConfig';
 
 function LearningRoadmap() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ function LearningRoadmap() {
     setFollowUpStatus(null);
     try {
       const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
-      const roadmapRes = await axios.get(`http://localhost:5000/api/v1/resources/roadmap/${skill}`, config);
+      const roadmapRes = await axios.get(`${API_BASE_URL}/api/v1/resources/roadmap/${skill}`, config);
       setRoadmap(roadmapRes.data?.data?.roadmap || []);
     } catch (err) {
       const apiErrorMsg = err.response?.data?.error?.errorDescription || err.response?.data?.message;
@@ -52,7 +53,7 @@ function LearningRoadmap() {
       const tasks = roadmap.map(step => ({ title: step, completed: false }));
 
       await axios.post(
-        'http://localhost:5000/api/v1/progress',
+        `${API_BASE_URL}/api/v1/progress`,
         { userId, skillName: skill, tasks },
         { headers: { Authorization: `Bearer ${token}` } }
       );

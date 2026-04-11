@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./dashboardUser.css";
 import Footer from "../Common/Footer";
 import Header from "../Common/Navbar";
+import API_BASE_URL from "../../apiConfig";
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
@@ -12,7 +13,7 @@ const UserDashboard = () => {
   const [updating, setUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
+
   // Dynamic dashboard states
   const [progressData, setProgressData] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
@@ -20,7 +21,7 @@ const UserDashboard = () => {
     { id: 1, time: "Today", text: "Logged into dashboard" },
     { id: 2, time: "Yesterday", text: "Updated profile details" }
   ]);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +51,7 @@ const UserDashboard = () => {
       if (!userId) return;
 
       const response = await fetch(
-        `http://localhost:5000/api/v1/users/${userId}`,
+        `${API_BASE_URL}/api/v1/users/${userId}`,
         {
           headers: { "Authorization": `Bearer ${token}` }
         }
@@ -78,7 +79,7 @@ const UserDashboard = () => {
       if (!token) return;
 
       // Fetch Progress
-      const progressRes = await fetch(`http://localhost:5000/api/v1/progress/user/${userId}`, {
+      const progressRes = await fetch(`${API_BASE_URL}/api/v1/progress/user/${userId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (progressRes.ok) {
@@ -87,7 +88,7 @@ const UserDashboard = () => {
       }
 
       // Fetch Saved Jobs
-      const jobsRes = await fetch(`http://localhost:5000/api/v1/trendingJobAnalyzer/getSavedJobs`, {
+      const jobsRes = await fetch(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/getSavedJobs`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (jobsRes.ok) {
@@ -173,7 +174,7 @@ const UserDashboard = () => {
       console.log("📤 Sending update data:", dataToSend);
 
       const response = await fetch(
-        `http://localhost:5000/api/v1/users/${user._id}`,
+        `${API_BASE_URL}/api/v1/users/${user._id}`,
         {
           method: "PUT",
           headers: {
@@ -191,22 +192,22 @@ const UserDashboard = () => {
 
       const updatedData = await response.json();
       const updatedUser = updatedData.data || updatedData;
-      
+
       // Keep original name and email
       updatedUser.name = user.name;
       updatedUser.email = user.email;
-      
+
       setUser(updatedUser);
       setFormData(updatedUser);
-      
+
       console.log("✅ Profile updated successfully!");
       setUpdateMessage({ type: "success", text: "Profile updated successfully!" });
-      
+
       setTimeout(() => {
         setShowModal(false);
         setUpdateMessage(null);
       }, 1500);
-      
+
     } catch (error) {
       console.error("❌ Error updating user:", error);
       setUpdateMessage({ type: "error", text: error.message || "Failed to update profile" });
@@ -221,7 +222,7 @@ const UserDashboard = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:5000/api/v1/users/${user._id}`,
+        `${API_BASE_URL}/api/v1/users/${user._id}`,
         {
           method: "DELETE",
           headers: {
@@ -257,10 +258,10 @@ const UserDashboard = () => {
   };
 
   return (
-      <div className="user-dashboard-wrapper">
-        <Header/>
+    <div className="user-dashboard-wrapper">
+      <Header />
 
-        <div className="div29_user_dashboard">
+      <div className="div29_user_dashboard">
         {/* LEFT PANEL - profile + details */}
         <div className="div33_left_profile">
           <div className="div41_photo_wrap">
@@ -297,8 +298,8 @@ const UserDashboard = () => {
             </div>
             <div className="div65_detail_bar">
               <span className="span18_label">CV / Resume</span>
-              <span 
-                className="span19_value" 
+              <span
+                className="span19_value"
                 style={{ cursor: user.cv ? "pointer" : "default", color: user.cv ? "#007bff" : "#666" }}
                 onClick={handleViewCV}
               >
@@ -319,7 +320,7 @@ const UserDashboard = () => {
             className="button9_cv_generator"
             onClick={handleCVGenerator}
           >
-             Generate CV
+            Generate CV
           </button>
 
           {/* Delete Account Button */}
@@ -327,7 +328,7 @@ const UserDashboard = () => {
             className="button11_delete_account"
             onClick={() => setShowDeleteConfirm(true)}
           >
-             Delete Account
+            Delete Account
           </button>
         </div>
 
@@ -723,8 +724,8 @@ const UserDashboard = () => {
                   >
                     Cancel
                   </button>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="save_btn"
                     disabled={updating}
                   >
@@ -738,7 +739,7 @@ const UserDashboard = () => {
 
       </div>
 
-      <Footer/>
+      <Footer />
 
     </div>
   );

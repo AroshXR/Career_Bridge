@@ -4,8 +4,7 @@ import axios from 'axios';
 import Navbar from '../Common/Navbar';
 import Footer from '../Common/Footer';
 import './JobSkillAnalyzer.css';
-
-const API_BASE = 'http://localhost:5000';
+import API_BASE_URL from '../../apiConfig';
 
 // ─── Skill Card ───────────────────────────────────────────────────────────────
 function SkillCard({ skill, editingNote, setEditingNote, savingNote, onToggleStatus, onSaveNote, onDelete }) {
@@ -96,8 +95,8 @@ export default function JobSkillAnalyzer() {
         try {
             setLoading(true);
             const [analysesRes, savedJobsRes] = await Promise.all([
-                axios.get(`${API_BASE}/api/v1/skills/user/me`, { headers }),
-                axios.get(`${API_BASE}/api/v1/trendingJobAnalyzer/getSavedJobs`, { headers }),
+                axios.get(`${API_BASE_URL}/api/v1/skills/user/me`, { headers }),
+                axios.get(`${API_BASE_URL}/api/v1/trendingJobAnalyzer/getSavedJobs`, { headers }),
             ]);
             const fetched = analysesRes.data.data || [];
             setAnalyses(fetched);
@@ -141,7 +140,7 @@ export default function JobSkillAnalyzer() {
     const handleAnalyze = async (jobId) => {
         setAnalyzingJobId(jobId);
         try {
-            const res = await axios.post(`${API_BASE}/api/v1/skills/analyze/${jobId}`, {}, { headers });
+            const res = await axios.post(`${API_BASE_URL}/api/v1/skills/analyze/${jobId}`, {}, { headers });
             const newDoc = res.data.data;
             setAnalyses(prev => [newDoc, ...prev]);
             setSelectedAnalysis(newDoc);
@@ -159,7 +158,7 @@ export default function JobSkillAnalyzer() {
         const newStatus = skill.status === 'completed' ? 'pending' : 'completed';
         try {
             const res = await axios.patch(
-                `${API_BASE}/api/v1/skills/${selectedAnalysis.jobId}/${skill._id}`,
+                `${API_BASE_URL}/api/v1/skills/${selectedAnalysis.jobId}/${skill._id}`,
                 { status: newStatus, userNote: skill.userNote || '', importance: skill.importance },
                 { headers }
             );
@@ -177,7 +176,7 @@ export default function JobSkillAnalyzer() {
         setSavingNote(skill._id);
         try {
             const res = await axios.patch(
-                `${API_BASE}/api/v1/skills/${selectedAnalysis.jobId}/${skill._id}`,
+                `${API_BASE_URL}/api/v1/skills/${selectedAnalysis.jobId}/${skill._id}`,
                 { userNote: note, status: skill.status, importance: skill.importance },
                 { headers }
             );
@@ -196,7 +195,7 @@ export default function JobSkillAnalyzer() {
     const handleDeleteSkill = async (skillId) => {
         try {
             const res = await axios.delete(
-                `${API_BASE}/api/v1/skills/${selectedAnalysis.jobId}/${skillId}`,
+                `${API_BASE_URL}/api/v1/skills/${selectedAnalysis.jobId}/${skillId}`,
                 { headers }
             );
             const updated = res.data.data;
@@ -212,7 +211,7 @@ export default function JobSkillAnalyzer() {
         e.stopPropagation();
         if (!window.confirm('Delete this entire skill analysis? This cannot be undone.')) return;
         try {
-            await axios.delete(`${API_BASE}/api/v1/skills/${jobId}`, { headers });
+            await axios.delete(`${API_BASE_URL}/api/v1/skills/${jobId}`, { headers });
             const remaining = analyses.filter(a => a.jobId !== jobId);
             setAnalyses(remaining);
             setSelectedAnalysis(remaining[0] || null);
