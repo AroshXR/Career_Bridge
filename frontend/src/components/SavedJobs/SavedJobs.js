@@ -77,7 +77,14 @@ const SavedJobs = () => {
         navigate('/skill-analyzer', { state: { autoAnalyzeJobId: job.jobId, jobTitle: job.title } });
     };
 
-    if (loading) return <div className="loader">Loading your saved jobs...</div>;
+    if (loading) {
+        return (
+            <div className="loading-area_savedJobs">
+                <div className="loader-ring_savedJobs"></div>
+                <p className="loading-msg_savedJobs">Curating your saved opportunities...</p>
+            </div>
+        );
+    }
 
     return (
         <>

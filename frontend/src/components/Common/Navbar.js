@@ -26,7 +26,7 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="navbar-logo">
-                <NavLink to="/" className="logo-link">
+                <NavLink to={token ? "/home" : "/"} className="logo-link">
                     <span className="logo-accent">Career</span> Bridge
                 </NavLink>
             </div>

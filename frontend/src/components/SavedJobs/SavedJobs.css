@@ -243,6 +243,42 @@
     color: white;
 }
 
+/* ── Loading State ── */
+.loading-area_savedJobs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 0;
+    gap: 1.5rem;
+    background: #f3f2ef;
+    min-height: 100vh;
+}
+
+.loader-ring_savedJobs {
+    width: 64px;
+    height: 64px;
+    border: 4px solid rgba(10, 102, 194, 0.1);
+    border-top-color: #0a66c2;
+    border-radius: 50%;
+    animation: spin_savedJobs 1s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+}
+
+@keyframes spin_savedJobs {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-msg_savedJobs {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #666e75;
+    text-align: center;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
